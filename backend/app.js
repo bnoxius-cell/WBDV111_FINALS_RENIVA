@@ -28,12 +28,14 @@ const loadComponent = async (elementId, componentPath) => {
     if (el) {
         try {
             const response = await fetch(componentPath);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             el.innerHTML = await response.text();
             if (elementId === 'header-placeholder') {
                 initializeHeaderLogic();
             }
         } catch (error) {
             console.error(`Error loading component ${componentPath}:`, error);
+            el.innerHTML = `<p style="color:red; text-align:center; padding: 1rem;">Failed to load component. Please ensure you are viewing this via a local server (like VS Code Live Server) and not directly via file://.</p>`;
         }
     }
 };

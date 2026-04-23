@@ -232,10 +232,13 @@ header {
 }
 
 /* Footer */
+#footer-placeholder {
+    margin-top: auto;
+}
+
 footer {
     background-color: #1f2937;
     color: #9ca3af;
     text-align: center;
     padding: 2rem;
-    margin-top: auto;
 }
