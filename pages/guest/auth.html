@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Register | CozyCorner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">CozyCorner</div>
+            <ul class="nav-links">
+                <li><a href="index.html" id="nav-home">Home</a></li>
+                <li><a href="index.html#reservations">Reservations</a></li>
+                <li><a href="index.html#about">About Us</a></li>
+                <li><a href="index.html#contact">Contact Us</a></li>
+                <li><a href="auth.html" id="nav-login" class="btn btn-nav">Login/Register</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Login View -->
+        <div id="login-view" class="card">
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Please login to your account</p>
+            <form id="login-form">
+                <div class="input-group">
+                    <input type="text" id="login-username" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="login-password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+                <p class="error" id="login-error"></p>
+            </form>
+            <p class="toggle-text">Don't have an account? <a href="#" id="show-register">Register</a></p>
+        </div>
+
+        <!-- Register View -->
+        <div id="register-view" class="card hidden">
+            <h2>Create Account</h2>
+            <p class="subtitle">Register to get started</p>
+            <form id="register-form">
+                <div class="input-group">
+                    <input type="text" id="register-username" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="register-password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn">Register</button>
+                <p class="error" id="register-error"></p>
+            </form>
+            <p class="toggle-text">Already have an account? <a href="#" id="show-login">Login</a></p>
+        </div>
+
+        <!-- Dashboard View (Temp placement until dashboard page is made) -->
+        <div id="dashboard-view" class="card hidden">
+            <h2>Welcome, <span id="user-display" class="highlight"></span>!</h2>
+            <p class="subtitle">You have successfully logged in.</p>
+            <button id="logout-btn" class="btn btn-outline">Logout</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 CozyCorner by GilMars Airbnb. All rights reserved.</p>
+    </footer>
+
+    <script src="../../backend/app.js"></script>
+</body>
+</html>

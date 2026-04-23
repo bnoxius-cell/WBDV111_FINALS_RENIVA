@@ -3,49 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vanilla JS Auth</title>
+    <title>CozyCorner | GilMars Airbnb</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div id="login-view" class="card">
-            <h2>Welcome Back</h2>
-            <p class="subtitle">Please login to your account</p>
-            <form id="login-form">
-                <div class="input-group">
-                    <input type="text" id="login-username" placeholder="Username" required>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="login-password" placeholder="Password" required>
-                </div>
-                <button type="submit" class="btn">Login</button>
-                <p class="error" id="login-error"></p>
-            </form>
-            <p class="toggle-text">Don't have an account? <a href="#" id="show-register">Register</a></p>
-        </div>
+    <!-- Navigation -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">CozyCorner</div>
+            <ul class="nav-links">
+                <li><a href="index.html" id="nav-home">Home</a></li>
+                <li><a href="#reservations">Reservations</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+                <li><a href="auth.html" id="nav-login" class="btn btn-nav">Login/Register</a></li>
+            </ul>
+        </nav>
+    </header>
 
-        <div id="register-view" class="card hidden">
-            <h2>Create Account</h2>
-            <p class="subtitle">Register to get started</p>
-            <form id="register-form">
-                <div class="input-group">
-                    <input type="text" id="register-username" placeholder="Username" required>
+    <main class="container">
+        <!-- Visitor Home Page / Landing View -->
+        <div id="home-view">
+            <section class="hero">
+                <h1>Welcome to CozyCorner</h1>
+                <p class="subtitle">Your perfect short-term accommodation by GilMars Airbnb.</p>
+                <p>Experience comfortable, affordable, and accessible lodging options for your next adventure. Whether you are an individual, family, or tourist, we have the perfect stay waiting for you.</p>
+                <button class="btn hero-btn" id="hero-book-btn">Book a Rental Now</button>
+            </section>
+            <section class="features">
+                <div class="feature-card">
+                    <h3>Easy Booking</h3>
+                    <p>A simple, user-friendly interface to quickly find and book your perfect stay without the hassle.</p>
                 </div>
-                <div class="input-group">
-                    <input type="password" id="register-password" placeholder="Password" required>
+                <div class="feature-card">
+                    <h3>Quality Listings</h3>
+                    <p>Access detailed and organized property information from a curated pool of GilMars rentals.</p>
                 </div>
-                <button type="submit" class="btn">Register</button>
-                <p class="error" id="register-error"></p>
-            </form>
-            <p class="toggle-text">Already have an account? <a href="#" id="show-login">Login</a></p>
+                <div class="feature-card">
+                    <h3>Centralized Hub</h3>
+                    <p>Easily manage your reservations and view real-time property availability in one place.</p>
+                </div>
+            </section>
         </div>
+    </main>
 
-        <div id="dashboard-view" class="card hidden">
-            <h2>Welcome, <span id="user-display" class="highlight"></span>!</h2>
-            <p class="subtitle">You have successfully logged in.</p>
-            <button id="logout-btn" class="btn btn-outline">Logout</button>
-        </div>
-    </div>
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 CozyCorner by GilMars Airbnb. All rights reserved.</p>
+    </footer>
 
     <script src="../../backend/app.js"></script>
 </body>
