@@ -172,5 +172,6 @@ const checkAuthStatus = () => {
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
     loadComponent('header-placeholder', '../components/header.html');
+    loadComponent('footer-placeholder', '../components/footer.html');
     checkAuthStatus();
 });
