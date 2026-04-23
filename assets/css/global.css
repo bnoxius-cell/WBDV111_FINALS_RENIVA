@@ -1,0 +1,162 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* CSS Variables */
+:root {
+    --primary-color: #0ea5e9; /* Soft Coastal Blue */
+    --primary-hover: #0284c7;
+    --secondary-color: #f8fafc; /* Very Light Blue-Gray */
+    --surface-color: #ffffff;
+    --text-primary: #0f172a; /* Deep Slate Gray */
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    
+    --font-family: 'Poppins', sans-serif;
+    --header-height: 80px;
+    --border-radius: 12px;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* CSS Reset & Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--secondary-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--text-primary);
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.25rem; }
+
+/* Global Container */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Global Button Styles */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    color: #fff;
+}
+
+/* Utility Classes */
+.w-100 { width: 100%; }
+.text-center { text-align: center; }
+
+/* Shared Component: Property Listing Cards */
+.listings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.listing-card {
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.listing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-image {
+    height: 200px;
+    background-color: #cbd5e1;
+    background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
+    background-size: cover;
+    background-position: center;
+}
+
+.card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-content h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-content .location {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.card-content .price {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.card-content .btn {
+    margin-top: auto;
+}

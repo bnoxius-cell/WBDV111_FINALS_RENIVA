@@ -9,7 +9,19 @@
 </head>
 <body>
 
-    <div id="header-placeholder"></div>
+    <header class="main-header">
+        <div class="container">
+            <nav class="main-nav">
+                <a href="index.html" class="logo">CozyCorner</a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="reservations.html">Listings</a></li>
+                    <li><a href="about.html">About</a></li>
+                </ul>
+                <a href="auth.html" class="btn btn-primary">Sign In</a>
+            </nav>
+        </div>
+    </header>
 
     <main>
         <section class="hero">
@@ -82,13 +94,32 @@
                             <a href="#" class="btn btn-primary">Book Now</a>
                         </div>
                     </article>
+
+                    <article class="listing-card">
+                        <div class="card-image">
+                            <!-- Placeholder for image -->
+                        </div>
+                        <div class="card-content">
+                            <h3>Mountain Resort in Baguio</h3>
+                            <p class="location">Baguio City, Benguet</p>
+                            <p class="price">₱5,000 / night</p>
+                            <a href="#" class="btn btn-primary">Book Now</a>
+                        </div>
+                    </article>
                 </div>
             </div>
         </section>
     </main>
 
-    <div id="footer-placeholder"></div>
-
-    <script src="../../backend/app.js"></script>
+    <footer class="main-footer">
+        <div class="container footer-content">
+            <p>&copy; 2024 CozyCorner by GilMars. All rights reserved.</p>
+            <ul class="footer-links">
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </footer>
 </body>
 </html>
