@@ -20,9 +20,45 @@ const showLoginBtn = document.getElementById('show-login');
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
 const logoutBtn = document.getElementById('logout-btn');
-const navHomeBtn = document.getElementById('nav-home');
-const navLoginBtn = document.getElementById('nav-login');
 const heroBookBtn = document.getElementById('hero-book-btn');
+
+// Component Loader
+const loadComponent = async (elementId, componentPath) => {
+    const el = document.getElementById(elementId);
+    if (el) {
+        try {
+            const response = await fetch(componentPath);
+            el.innerHTML = await response.text();
+            if (elementId === 'header-placeholder') {
+                initializeHeaderLogic();
+            }
+        } catch (error) {
+            console.error(`Error loading component ${componentPath}:`, error);
+        }
+    }
+};
+
+// Initialize Header Event Listeners
+const initializeHeaderLogic = () => {
+    const navLoginBtn = document.getElementById('nav-login');
+    
+    if (navLoginBtn) {
+        navLoginBtn.addEventListener('click', (e) => {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (currentUser && document.getElementById('dashboard-view')) {
+                e.preventDefault();
+                showView('dashboard-view');
+            } else if (!currentUser && document.getElementById('login-view')) {
+                e.preventDefault();
+                clearErrors();
+                showView('login-view');
+            }
+        });
+    }
+
+    // Update nav text based on auth
+    checkAuthStatus();
+};
 
 // Event Listeners for Navigation
 if (showRegisterBtn) {
@@ -38,24 +74,6 @@ if (showLoginBtn) {
         e.preventDefault();
         clearErrors();
         showView('login-view');
-    });
-}
-
-if (navLoginBtn) {
-    navLoginBtn.addEventListener('click', (e) => {
-        const currentUser = sessionStorage.getItem('currentUser');
-        if (currentUser) {
-            if (document.getElementById('dashboard-view')) {
-                e.preventDefault();
-                showView('dashboard-view');
-            }
-        } else {
-            if (document.getElementById('login-view')) {
-                e.preventDefault();
-                clearErrors();
-                showView('login-view');
-            }
-        }
     });
 }
 
@@ -152,4 +170,7 @@ const checkAuthStatus = () => {
 };
 
 // Initialize App
-checkAuthStatus();
+document.addEventListener('DOMContentLoaded', () => {
+    loadComponent('header-placeholder', '../components/header.html');
+    checkAuthStatus();
+});
