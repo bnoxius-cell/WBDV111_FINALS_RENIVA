@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login / Register | CozyCorner</title>
     <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/auth.css">
 </head>
 <body>
     <!-- Navigation -->
     <div id="header-placeholder"></div>
 
-    <main class="container">
+    <main class="auth-main">
         <!-- Login View -->
-        <div id="login-view" class="card">
+        <div id="login-view" class="auth-card">
             <h2>Welcome Back</h2>
             <p class="subtitle">Please login to your account</p>
             <form id="login-form">
@@ -29,7 +30,7 @@
         </div>
 
         <!-- Register View -->
-        <div id="register-view" class="card hidden">
+        <div id="register-view" class="auth-card hidden">
             <h2>Create Account</h2>
             <p class="subtitle">Register to get started</p>
             <form id="register-form">
@@ -46,10 +47,10 @@
         </div>
 
         <!-- Dashboard View (Temp placement until dashboard page is made) -->
-        <div id="dashboard-view" class="card hidden">
+        <div id="dashboard-view" class="auth-card hidden">
             <h2>Welcome, <span id="user-display" class="highlight"></span>!</h2>
             <p class="subtitle">You have successfully logged in.</p>
-            <button id="logout-btn" class="btn btn-outline w-100">Logout</button>
+            <button id="logout-btn" class="btn btn-primary w-100">Logout</button>
         </div>
     </main>
 

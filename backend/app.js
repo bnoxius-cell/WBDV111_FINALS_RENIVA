@@ -43,6 +43,17 @@ const loadComponent = async (elementId, componentPath) => {
 // Initialize Header Event Listeners
 const initializeHeaderLogic = () => {
     const navLoginBtn = document.getElementById('nav-login');
+
+    // Add active class to current page link for visual feedback
+    const navLinks = document.querySelectorAll('.nav-links a');
+    const currentPageFilename = window.location.pathname.split('/').pop();
+
+    navLinks.forEach(link => {
+        const linkFilename = link.getAttribute('href').split('/').pop();
+        if (currentPageFilename === linkFilename) {
+            link.classList.add('active');
+        }
+    });
     
     if (navLoginBtn) {
         navLoginBtn.addEventListener('click', (e) => {

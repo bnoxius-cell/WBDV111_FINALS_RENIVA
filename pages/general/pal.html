@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CozyCorner "Streetlamp" Palettes</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #ffffff;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+    }
+    
+    .palette-container {
+      display: flex;
+      gap: 60px;
+    }
+    
+    .palette {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 180px;
+    }
+    
+    .palette-title {
+      margin-bottom: 5px;
+      font-size: 18px;
+      color: #333333;
+      font-weight: 600;
+      text-align: center;
+    }
+    
+    .palette-desc {
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #777777;
+      text-align: center;
+    }
+    
+    .color-box {
+      width: 100%;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 15px;
+      letter-spacing: 1px;
+    }
+    
+    .color-box:first-of-type { border-radius: 16px 16px 0 0; }
+    .color-box:last-of-type { border-radius: 0 0 16px 16px; }
+    
+    /* midnight & amber */
+    .m-night { background-color: #1E293B; color: #F5B041; }
+    .m-pave  { background-color: #334155; color: #F5B041; }
+    .m-lamp  { background-color: #F5B041; color: #1E293B; }
+    
+    /* tungsten glow */
+    .t-halo  { background-color: #FFF8EB; color: #B9770E; }
+    .t-gold  { background-color: #F4D03F; color: #7D4C00; }
+    .t-tung  { background-color: #B9770E; color: #FFF8EB; }
+  </style>
+</head>
+<body>
+
+  <div class="palette-container">
+    
+    <div class="palette">
+      <div class="palette-title">Midnight & Amber</div>
+      <div class="palette-desc">The "Rainy Night" Contrast</div>
+      <div class="color-box m-night">#1E293B</div>
+      <div class="color-box m-pave">#334155</div>
+      <div class="color-box m-lamp">#F5B041</div>
+    </div>
+
+    <div class="palette">
+      <div class="palette-title">Tungsten Glow</div>
+      <div class="palette-desc">The Monochromatic Gold</div>
+      <div class="color-box t-halo">#FFF8EB</div>
+      <div class="color-box t-gold">#F4D03F</div>
+      <div class="color-box t-tung">#B9770E</div>
+    </div>
+
+  </div>
+
+</body>
+</html>
