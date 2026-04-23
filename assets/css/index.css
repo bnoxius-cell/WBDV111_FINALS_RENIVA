@@ -2,7 +2,7 @@
 .hero {
     padding: 5rem 0;
     text-align: center;
-    background-color: #e0f2fe; /* A soft blue background to match coastal theme */
+    background-color: var(--secondary-color);
 }
 
 .hero-content h1 {
@@ -20,7 +20,8 @@
 .search-bar {
     background-color: var(--surface-color);
     border-radius: var(--border-radius);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color);
     padding: 1rem;
     display: flex;
     align-items: center;
@@ -43,7 +44,7 @@
     display: block;
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--text-secondary);
 }
 
 .search-field input {
@@ -52,11 +53,14 @@
     width: 100%;
     font-size: 1rem;
     background: transparent;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     font-family: var(--font-family);
 }
+
+/* Dark mode fix for calendar icon */
 .search-field input[type="date"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
+    filter: invert(0.8);
 }
 
 .search-btn {

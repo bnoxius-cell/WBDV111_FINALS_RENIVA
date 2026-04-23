@@ -55,6 +55,16 @@ const initializeHeaderLogic = () => {
         }
     });
     
+    // Header Scroll Animation Logic
+    const mainHeader = document.querySelector('.main-header');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 20) {
+            mainHeader?.classList.add('scrolled');
+        } else {
+            mainHeader?.classList.remove('scrolled');
+        }
+    });
+
     if (navLoginBtn) {
         navLoginBtn.addEventListener('click', (e) => {
             const currentUser = sessionStorage.getItem('currentUser');
