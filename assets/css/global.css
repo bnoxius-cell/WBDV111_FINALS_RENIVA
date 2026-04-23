@@ -13,10 +13,10 @@
     
     --font-family: 'Poppins', sans-serif;
     --header-height: 80px;
-    --border-radius: 12px;
+    --border-radius: 16px; /* Sleeker, softer corners globally */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 10px 30px -5px rgba(0, 0, 0, 0.08); /* Wider, softer shadow for depth */
+    --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.15); /* Elevated shadow for hover states */
 }
 
 /* CSS Reset & Global Styles */
@@ -113,6 +113,7 @@ h3 { font-size: 1.25rem; }
     background-color: var(--surface-color);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-md);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -120,16 +121,17 @@ h3 { font-size: 1.25rem; }
 }
 
 .listing-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
     box-shadow: var(--shadow-lg);
 }
 
 .card-image {
-    height: 200px;
+    height: 220px;
     background-color: #cbd5e1;
     background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
     background-size: cover;
     background-position: center;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .card-content {
