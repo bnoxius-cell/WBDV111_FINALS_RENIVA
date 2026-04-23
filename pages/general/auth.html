@@ -8,10 +8,14 @@
     <link rel="stylesheet" href="../../assets/css/auth.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <div id="header-placeholder"></div>
 
     <main class="auth-main">
+        <!-- Back to Home Button -->
+        <a href="index.html" class="back-home-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back to Home
+        </a>
+
         <!-- Login View -->
         <div id="login-view" class="auth-card">
             <h2>Welcome Back</h2>
@@ -23,7 +27,7 @@
                 <div class="form-group">
                     <input type="password" id="login-password" class="form-control" placeholder="Password" required>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <button type="submit" class="btn btn-primary btn-glow w-100">Login</button>
                 <p class="error" id="login-error"></p>
             </form>
             <p class="toggle-text">Don't have an account? <a href="#" id="show-register">Register</a></p>
@@ -40,7 +44,7 @@
                 <div class="form-group">
                     <input type="password" id="register-password" class="form-control" placeholder="Password" required>
                 </div>
-                <button type="submit" class="btn btn-primary w-100">Register</button>
+                <button type="submit" class="btn btn-primary btn-glow w-100">Register</button>
                 <p class="error" id="register-error"></p>
             </form>
             <p class="toggle-text">Already have an account? <a href="#" id="show-login">Login</a></p>
@@ -50,7 +54,7 @@
         <div id="dashboard-view" class="auth-card hidden">
             <h2>Welcome, <span id="user-display" class="highlight"></span>!</h2>
             <p class="subtitle">You have successfully logged in.</p>
-            <button id="logout-btn" class="btn btn-primary w-100">Logout</button>
+            <button id="logout-btn" class="btn btn-primary btn-glow w-100">Logout</button>
         </div>
     </main>
 

@@ -1,21 +1,40 @@
+/* Remove the global header padding since this page has no navbar */
+body {
+    padding-top: 0;
+}
+
 /* Auth Page Layout */
 .auth-main {
-    min-height: calc(100vh - var(--header-height));
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #f0f9ff 0%, #bae6fd 100%);
+    background-color: var(--secondary-color);
     padding: 4rem 1rem;
+    position: relative;
+}
+
+/* Back to Home Button */
+.back-home-btn {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.back-home-btn:hover {
+    color: var(--primary-color);
 }
 
 /* Glassmorphism Auth Card */
 .auth-card {
-    background-color: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background-color: var(--surface-color);
     border-radius: 24px;
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-color);
     padding: 3.5rem 2.5rem;
     width: 100%;
     max-width: 420px;
@@ -47,7 +66,7 @@
     font-size: 1rem;
     font-family: var(--font-family);
     color: var(--text-primary);
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: var(--secondary-color);
     border: 1px solid var(--border-color);
     border-radius: 16px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
@@ -56,12 +75,12 @@
 .form-control:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
-    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(245, 176, 65, 0.15); /* Amber glow focus */
+    background-color: var(--secondary-color);
 }
 
 .form-control::placeholder {
-    color: #94a3b8;
+    color: var(--text-secondary);
 }
 
 /* Utilities */
