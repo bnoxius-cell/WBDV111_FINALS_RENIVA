@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login / Register | CozyCorner</title>
-    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/global.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -16,13 +16,13 @@
             <h2>Welcome Back</h2>
             <p class="subtitle">Please login to your account</p>
             <form id="login-form">
-                <div class="input-group">
-                    <input type="text" id="login-username" placeholder="Username" required>
+                <div class="form-group">
+                    <input type="text" id="login-username" class="form-control" placeholder="Username" required>
                 </div>
-                <div class="input-group">
-                    <input type="password" id="login-password" placeholder="Password" required>
+                <div class="form-group">
+                    <input type="password" id="login-password" class="form-control" placeholder="Password" required>
                 </div>
-                <button type="submit" class="btn">Login</button>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
                 <p class="error" id="login-error"></p>
             </form>
             <p class="toggle-text">Don't have an account? <a href="#" id="show-register">Register</a></p>
@@ -33,13 +33,13 @@
             <h2>Create Account</h2>
             <p class="subtitle">Register to get started</p>
             <form id="register-form">
-                <div class="input-group">
-                    <input type="text" id="register-username" placeholder="Username" required>
+                <div class="form-group">
+                    <input type="text" id="register-username" class="form-control" placeholder="Username" required>
                 </div>
-                <div class="input-group">
-                    <input type="password" id="register-password" placeholder="Password" required>
+                <div class="form-group">
+                    <input type="password" id="register-password" class="form-control" placeholder="Password" required>
                 </div>
-                <button type="submit" class="btn">Register</button>
+                <button type="submit" class="btn btn-primary w-100">Register</button>
                 <p class="error" id="register-error"></p>
             </form>
             <p class="toggle-text">Already have an account? <a href="#" id="show-login">Login</a></p>
@@ -49,7 +49,7 @@
         <div id="dashboard-view" class="card hidden">
             <h2>Welcome, <span id="user-display" class="highlight"></span>!</h2>
             <p class="subtitle">You have successfully logged in.</p>
-            <button id="logout-btn" class="btn btn-outline">Logout</button>
+            <button id="logout-btn" class="btn btn-outline w-100">Logout</button>
         </div>
     </main>
 

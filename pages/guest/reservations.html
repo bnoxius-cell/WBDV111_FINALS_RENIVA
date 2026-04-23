@@ -4,16 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservations | CozyCorner</title>
-    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/reservations.css">
 </head>
 <body>
     <div id="header-placeholder"></div>
 
-    <main class="container">
-        <div class="card" style="max-width: 800px;">
+    <main class="container py-section">
+        <div class="reservations-header text-center">
             <h2>Available Rentals</h2>
-            <p class="subtitle">Browse our curated pool of properties</p>
-            <p style="color: var(--text-muted); margin-top: 2rem;">[Temporary Content: A grid or list of GilMars Airbnb rental properties will appear here.]</p>
+            <p class="subtitle mb-0">Browse our curated pool of properties across the Philippines</p>
+        </div>
+
+        <div class="reservations-layout">
+            <aside class="filters-sidebar">
+                <h3>Filters</h3>
+                <form>
+                    <div class="form-group">
+                        <label class="form-label">Location</label>
+                        <input type="text" class="form-control" placeholder="Anywhere">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Max Price (PHP)</label>
+                        <input type="number" class="form-control" placeholder="₱10,000">
+                    </div>
+                    <button type="button" class="btn btn-outline w-100">Apply Filters</button>
+                </form>
+            </aside>
+            
+            <div class="listings-grid">
+                <!-- Dummy Listing 1 -->
+                <article class="listing-card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>Modern Condo in BGC</h3>
+                        <p class="location">Bonifacio Global City, Taguig</p>
+                        <p class="price">₱4,500 / night</p>
+                        <a href="#" class="btn btn-primary w-100 mt-auto">Book Now</a>
+                    </div>
+                </article>
+
+                <!-- Dummy Listing 2 -->
+                <article class="listing-card">
+                    <div class="card-image"></div>
+                    <div class="card-content">
+                        <h3>Beachfront Villa in El Nido</h3>
+                        <p class="location">El Nido, Palawan</p>
+                        <p class="price">₱12,000 / night</p>
+                        <a href="#" class="btn btn-primary w-100 mt-auto">Book Now</a>
+                    </div>
+                </article>
+            </div>
         </div>
     </main>
 

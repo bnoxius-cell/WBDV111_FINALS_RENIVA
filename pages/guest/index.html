@@ -3,40 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CozyCorner | GilMars Airbnb</title>
-    <link rel="stylesheet" href="../../assets/css/style.css">
+    <title>CozyCorner | Find Your Perfect Stay in the Philippines</title>
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/index.css">
 </head>
 <body>
-    <!-- Navigation -->
+
     <div id="header-placeholder"></div>
 
-    <main class="container">
-        <!-- Visitor Home Page / Landing View -->
-        <div id="home-view">
-            <section class="hero">
-                <h1>Welcome to CozyCorner</h1>
-                <p class="subtitle">Your perfect short-term accommodation by GilMars Airbnb.</p>
-                <p>Experience comfortable, affordable, and accessible lodging options for your next adventure. Whether you are an individual, family, or tourist, we have the perfect stay waiting for you.</p>
-                <button class="btn hero-btn" id="hero-book-btn">Book a Rental Now</button>
-            </section>
-            <section class="features">
-                <div class="feature-card">
-                    <h3>Easy Booking</h3>
-                    <p>A simple, user-friendly interface to quickly find and book your perfect stay without the hassle.</p>
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Find Your Perfect Stay</h1>
+                    <p>Book unique homes and experiences all over the Philippines.</p>
                 </div>
-                <div class="feature-card">
-                    <h3>Quality Listings</h3>
-                    <p>Access detailed and organized property information from a curated pool of GilMars rentals.</p>
+                <form class="search-bar">
+                    <div class="search-field">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" placeholder="e.g., Tagaytay City, Cavite">
+                    </div>
+                    <div class="search-field">
+                        <label for="checkin">Check-in</label>
+                        <input type="date" id="checkin">
+                    </div>
+                    <div class="search-field">
+                        <label for="checkout">Check-out</label>
+                        <input type="date" id="checkout">
+                    </div>
+                    <div class="search-field">
+                        <label for="guests">Guests</label>
+                        <input type="number" id="guests" placeholder="2" min="1">
+                    </div>
+                    <button type="submit" class="btn btn-primary search-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <span>Search</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section class="featured-listings">
+            <div class="container">
+                <h2>Featured Properties</h2>
+                <div class="listings-grid">
+                    <article class="listing-card">
+                        <div class="card-image">
+                            <!-- Placeholder for image -->
+                        </div>
+                        <div class="card-content">
+                            <h3>Modern Condo in BGC</h3>
+                            <p class="location">Bonifacio Global City, Taguig</p>
+                            <p class="price">₱4,500 / night</p>
+                            <a href="#" class="btn btn-primary">Book Now</a>
+                        </div>
+                    </article>
+
+                    <article class="listing-card">
+                        <div class="card-image">
+                            <!-- Placeholder for image -->
+                        </div>
+                        <div class="card-content">
+                            <h3>Beachfront Villa in El Nido</h3>
+                            <p class="location">El Nido, Palawan</p>
+                            <p class="price">₱12,000 / night</p>
+                            <a href="#" class="btn btn-primary">Book Now</a>
+                        </div>
+                    </article>
+
+                    <article class="listing-card">
+                        <div class="card-image">
+                            <!-- Placeholder for image -->
+                        </div>
+                        <div class="card-content">
+                            <h3>Cozy Cabin in Tagaytay</h3>
+                            <p class="location">Tagaytay City, Cavite</p>
+                            <p class="price">₱3,200 / night</p>
+                            <a href="#" class="btn btn-primary">Book Now</a>
+                        </div>
+                    </article>
                 </div>
-                <div class="feature-card">
-                    <h3>Centralized Hub</h3>
-                    <p>Easily manage your reservations and view real-time property availability in one place.</p>
-                </div>
-            </section>
-        </div>
+            </div>
+        </section>
     </main>
 
-    <!-- Footer -->
     <div id="footer-placeholder"></div>
 
     <script src="../../backend/app.js"></script>

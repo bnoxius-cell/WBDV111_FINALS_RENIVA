@@ -1,0 +1,30 @@
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-widget {
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    background-color: var(--surface-color);
+    text-align: left;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-widget:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.dashboard-widget h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-widget p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
