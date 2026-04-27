@@ -197,4 +197,18 @@ document.addEventListener('DOMContentLoaded', () => {
     loadComponent('header-placeholder', '../components/header.html');
     loadComponent('footer-placeholder', '../components/footer.html');
     checkAuthStatus();
+
+    // Auth Page Notification Modal Logic
+    const authModal = document.getElementById('auth-notification-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    
+    if (authModal && closeModalBtn) {
+        const currentUser = sessionStorage.getItem('currentUser');
+        if (!currentUser) {
+            authModal.classList.remove('hidden');
+        }
+        closeModalBtn.addEventListener('click', () => {
+            authModal.classList.add('hidden');
+        });
+    }
 });
