@@ -21,6 +21,7 @@ const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
 const logoutBtn = document.getElementById('logout-btn');
 const heroBookBtn = document.getElementById('hero-book-btn');
+const searchForm = document.getElementById('search-form');
 
 // Component Loader
 const loadComponent = async (elementId, componentPath) => {
@@ -106,6 +107,54 @@ if (heroBookBtn) {
             e.preventDefault();
             showView('login-view');
         }
+    });
+}
+
+// Search Bar Logic
+if (searchForm) {
+    searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const locationInput = document.getElementById('location').value.toLowerCase().trim();
+        const checkinInput = document.getElementById('checkin').value;
+        const checkoutInput = document.getElementById('checkout').value;
+        const guestsInput = parseInt(document.getElementById('guests').value) || 0;
+
+        const listingCards = document.querySelectorAll('.featured-listings .listing-card');
+        let visibleCount = 0;
+
+        listingCards.forEach(card => {
+            const cardLocation = card.dataset.location || '';
+            const cardGuests = parseInt(card.dataset.guests) || 0;
+            const availableStart = card.dataset.availableStart;
+            const availableEnd = card.dataset.availableEnd;
+
+            // Check criteria
+            let matchLocation = !locationInput || cardLocation.includes(locationInput);
+            let matchGuests = !guestsInput || cardGuests >= guestsInput;
+            let matchDates = true;
+
+            // Date range validation
+            if (checkinInput && checkoutInput) {
+                if (checkinInput >= checkoutInput || checkinInput < availableStart || checkoutInput > availableEnd) {
+                    matchDates = false;
+                }
+            } else if (checkinInput && (checkinInput < availableStart || checkinInput > availableEnd)) {
+                matchDates = false;
+            } else if (checkoutInput && (checkoutInput < availableStart || checkoutInput > availableEnd)) {
+                matchDates = false;
+            }
+
+            // Show/Hide Card
+            if (matchLocation && matchGuests && matchDates) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Optional: you could add an alert here if visibleCount === 0 to say "No properties found"
     });
 }
 
