@@ -6,9 +6,9 @@ body {
 /* Auth Page Layout */
 .auth-main {
     min-height: 100vh;
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 420px 1fr;
     align-items: center;
-    justify-content: center;
     background-color: var(--secondary-color);
     padding: 4rem 1rem;
     position: relative;
@@ -114,4 +114,49 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 2000;
+}
+
+/* Grid layout specifics for Auth Cards */
+.auth-main > .auth-card:not(#demo-users-view) {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0 auto;
+}
+
+#demo-users-view {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: start;
+    margin-left: 2rem;
+    max-width: 320px;
+    border: 2px dashed var(--primary-color);
+    background-color: rgba(51, 65, 85, 0.4);
+}
+
+/* Temporary/Testing Badge */
+.demo-badge {
+    background-color: #ef4444;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive Auth Layout for smaller screens */
+@media (max-width: 1024px) {
+    .auth-main {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 2rem;
+    }
+    #demo-users-view {
+        margin-left: 0;
+        max-width: 420px;
+    }
 }

@@ -4,7 +4,12 @@ const showView = (viewId) => {
     document.getElementById('login-view')?.classList.add('hidden');
     document.getElementById('register-view')?.classList.add('hidden');
     document.getElementById('dashboard-view')?.classList.add('hidden');
+    document.getElementById('demo-users-view')?.classList.add('hidden');
     document.getElementById(viewId)?.classList.remove('hidden');
+
+    if (viewId === 'login-view') {
+        document.getElementById('demo-users-view')?.classList.remove('hidden');
+    }
 };
 
 const clearErrors = () => {
@@ -164,6 +169,13 @@ if (searchForm) {
     });
 }
 
+// Hardcoded roles extracted for UI display
+const hardcodedUsers = [
+    { username: 'superadmin', password: 'superadmin', role: 'superadmin' },
+    { username: 'admin', password: 'admin', role: 'admin' },
+    { username: 'user', password: 'user', role: 'user' }
+];
+
 // Authentication Logic using LocalStorage
 const getUsers = () => JSON.parse(localStorage.getItem('users')) || [];
 const saveUser = (user) => {
@@ -210,12 +222,6 @@ if (loginForm) {
 
         const users = getUsers();
         
-        // Hardcoded roles
-        const hardcodedUsers = [
-            { username: 'superadmin', password: 'superadmin', role: 'superadmin' },
-            { username: 'admin', password: 'admin', role: 'admin' },
-            { username: 'user', password: 'user', role: 'user' }
-        ];
 
         const user = hardcodedUsers.find(u => u.username === username && u.password === password) 
                   || users.find(u => u.username === username && u.password === password);
@@ -286,6 +292,20 @@ document.addEventListener('DOMContentLoaded', () => {
     loadComponent('header-placeholder', '../components/header.html');
     loadComponent('footer-placeholder', '../components/footer.html');
     checkAuthStatus();
+
+    // Populate Demo Users
+    const demoUsersList = document.getElementById('demo-users-list');
+    if (demoUsersList) {
+        demoUsersList.innerHTML = hardcodedUsers.map(u => `
+            <div style="background: var(--secondary-color); padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
+                <div style="font-weight: 600; color: var(--primary-color); text-transform: capitalize; margin-bottom: 0.25rem;">${u.role} Role</div>
+                <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                    <div><strong>Username:</strong> ${u.username}</div>
+                    <div><strong>Password:</strong> ${u.password}</div>
+                </div>
+            </div>
+        `).join('');
+    }
 
     // Auth Page Notification Modal Logic
     const authModal = document.getElementById('auth-notification-modal');
