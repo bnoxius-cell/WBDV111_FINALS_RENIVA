@@ -10,8 +10,10 @@ const showView = (viewId) => {
 const clearErrors = () => {
     const loginErr = document.getElementById('login-error');
     const regErr = document.getElementById('register-error');
+    const successMsg = document.getElementById('login-success-msg');
     if (loginErr) loginErr.textContent = '';
     if (regErr) regErr.textContent = '';
+    if (successMsg) successMsg.style.display = 'none';
 };
 
 // DOM Elements
@@ -185,7 +187,12 @@ if (registerForm) {
         registerForm.reset();
         clearErrors();
         showView('login-view');
-        alert('Registration successful! Please login.');
+        
+        const successMsg = document.getElementById('login-success-msg');
+        if (successMsg) {
+            successMsg.textContent = 'Registration successful! Please login.';
+            successMsg.style.display = 'block';
+        }
     });
 }
 

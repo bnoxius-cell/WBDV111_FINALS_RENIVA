@@ -20,6 +20,7 @@
         <div id="login-view" class="auth-card">
             <h2>Welcome Back</h2>
             <p class="subtitle">Please login to your account</p>
+            <p id="login-success-msg" style="color: #10b981; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.75rem; border-radius: 8px; margin-bottom: 1.25rem; font-size: 0.9rem; display: none;"></p>
             <form id="login-form">
                 <div class="form-group">
                     <input type="text" id="login-username" class="form-control" placeholder="Username" required>
@@ -53,8 +54,8 @@
         <!-- Dashboard View (Temp placement until dashboard page is made) -->
         <div id="dashboard-view" class="auth-card hidden">
             <h2>Welcome, <span id="user-display" class="highlight"></span>!</h2>
-            <p class="subtitle">You have successfully logged in.</p>
-            <button id="logout-btn" class="btn btn-primary btn-glow w-100">Logout</button>
+            <p class="subtitle">We're thrilled to have you! Ready to find your perfect stay?</p>
+            <a href="index.html" class="btn btn-primary btn-glow w-100" style="margin-bottom: 1rem;">Explore Properties</a>
         </div>
 
         <!-- Notification Modal -->
