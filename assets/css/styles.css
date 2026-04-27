@@ -1,0 +1,94 @@
+/* =========================================
+   RPG-Inspired High-Contrast Variables
+   ========================================= */
+:root {
+    --bg-dark: #0b0c10;
+    --glass-bg: rgba(31, 33, 40, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    
+    /* Vibrant Spectrum */
+    --accent-cyan: #00ffff;
+    --accent-green: #39ff14;
+    --accent-gold: #ff9900;
+    --accent-crimson: #ff003c;
+    
+    --text-light: #ffffff;
+    --text-muted: #a0aab5;
+    --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: var(--font-main);
+    margin: 0;
+    padding: 0;
+}
+
+/* =========================================
+   Glassmorphism Utilities
+   ========================================= */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-panel-glow-green { border-color: rgba(57, 255, 20, 0.4); box-shadow: 0 8px 32px 0 rgba(57, 255, 20, 0.1); }
+.glass-panel-glow-gold { border-color: rgba(255, 153, 0, 0.4); box-shadow: 0 8px 32px 0 rgba(255, 153, 0, 0.1); }
+.glass-panel-glow-crimson { border-color: rgba(255, 0, 60, 0.4); box-shadow: 0 8px 32px 0 rgba(255, 0, 60, 0.1); }
+
+/* =========================================
+   Tabbed UI (For Bookings)
+   ========================================= */
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--glass-border);
+    padding-bottom: 1rem;
+}
+
+.tab-btn {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+}
+
+.tab-btn.active {
+    color: var(--accent-cyan);
+    background: rgba(0, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   Typography Utilities
+   ========================================= */
+.text-cyan { color: var(--accent-cyan); }
+.text-green { color: var(--accent-green); }
+.text-gold { color: var(--accent-gold); }
+.text-crimson { color: var(--accent-crimson); }
+.text-muted { color: var(--text-muted); }

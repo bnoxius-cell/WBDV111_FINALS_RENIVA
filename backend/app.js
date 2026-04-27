@@ -71,9 +71,13 @@ const initializeHeaderLogic = () => {
     if (navLoginBtn) {
         navLoginBtn.addEventListener('click', (e) => {
             const currentUser = sessionStorage.getItem('currentUser');
-            if (currentUser && document.getElementById('dashboard-view')) {
+            const currentRole = sessionStorage.getItem('currentRole') || 'user';
+            
+            if (currentUser) {
                 e.preventDefault();
-                showView('dashboard-view');
+                if (currentRole === 'superadmin') window.location.href = '../superAdmin/dashboard.html';
+                else if (currentRole === 'admin') window.location.href = '../admin/dashboard.html';
+                else window.location.href = '../user/dashboard.html';
             } else if (!currentUser && document.getElementById('login-view')) {
                 e.preventDefault();
                 clearErrors();
@@ -205,13 +209,31 @@ if (loginForm) {
         const errorElement = document.getElementById('login-error');
 
         const users = getUsers();
-        const user = users.find(u => u.username === username && u.password === password);
+        
+        // Hardcoded roles
+        const hardcodedUsers = [
+            { username: 'superadmin', password: 'superadmin', role: 'superadmin' },
+            { username: 'admin', password: 'admin', role: 'admin' },
+            { username: 'user', password: 'user', role: 'user' }
+        ];
+
+        const user = hardcodedUsers.find(u => u.username === username && u.password === password) 
+                  || users.find(u => u.username === username && u.password === password);
 
         if (user) {
+            const role = user.role || 'user'; // Newly registered users default to 'user'
             sessionStorage.setItem('currentUser', username);
+            sessionStorage.setItem('currentRole', role);
             loginForm.reset();
             clearErrors();
-            checkAuthStatus();
+            
+            if (role === 'superadmin') {
+                window.location.href = '../superAdmin/dashboard.html';
+            } else if (role === 'admin') {
+                window.location.href = '../admin/dashboard.html';
+            } else {
+                window.location.href = '../user/dashboard.html';
+            }
         } else {
             errorElement.textContent = 'Invalid username or password.';
         }
@@ -222,7 +244,8 @@ if (loginForm) {
 if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
         sessionStorage.removeItem('currentUser');
-        checkAuthStatus();
+        sessionStorage.removeItem('currentRole');
+        window.location.href = '../general/auth.html';
     });
 }
 
@@ -234,6 +257,16 @@ const checkAuthStatus = () => {
     if (currentUser) {
         const userDisplay = document.getElementById('user-display');
         if (userDisplay) userDisplay.textContent = currentUser;
+
+        // If visiting auth page while logged in, redirect to correct dashboard
+        if (window.location.pathname.includes('auth.html')) {
+            const currentRole = sessionStorage.getItem('currentRole') || 'user';
+            if (currentRole === 'superadmin') window.location.href = '../superAdmin/dashboard.html';
+            else if (currentRole === 'admin') window.location.href = '../admin/dashboard.html';
+            else window.location.href = '../user/dashboard.html';
+            return;
+        }
+
         if (document.getElementById('dashboard-view')) {
             showView('dashboard-view');
         }
