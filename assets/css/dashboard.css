@@ -1,3 +1,6 @@
+/* =========================================
+   Dashboard Widgets
+   ========================================= */
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -27,4 +30,52 @@
 .dashboard-widget p {
     font-size: 0.9rem;
     color: var(--text-secondary);
+}
+
+/* =========================================
+   Dashboard Global Layout (Sidebar + Content)
+   ========================================= */
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.sidebar {
+    background-color: var(--surface-color);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    height: fit-content;
+}
+
+.sidebar-menu {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sidebar-menu button {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-menu button:hover, .sidebar-menu button.active {
+    background-color: rgba(245, 176, 65, 0.1);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .dashboard-layout { grid-template-columns: 1fr; }
 }

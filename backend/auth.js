@@ -5,16 +5,17 @@
  * @param {string} requiredRole - The role needed to view the page ('user', 'admin', 'superadmin')
  */
 const checkAccess = (requiredRole) => {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const currentUsername = sessionStorage.getItem('currentUser');
+    const currentRole = sessionStorage.getItem('currentRole');
     
-    if (!currentUser) {
+    if (!currentUsername) {
         // Not logged in at all
         window.location.href = '../general/auth.html';
         return;
     }
 
     const roleHierarchy = { 'user': 1, 'admin': 2, 'superadmin': 3 };
-    const userLevel = roleHierarchy[currentUser.role] || 0;
+    const userLevel = roleHierarchy[currentRole] || 0;
     const requiredLevel = roleHierarchy[requiredRole] || 0;
 
     // If the user's role level is lower than the required level, kick them out
@@ -27,13 +28,14 @@ const checkAccess = (requiredRole) => {
  * Dynamically updates the header navigation based on login status.
  */
 const updateNavigation = () => {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const currentUsername = sessionStorage.getItem('currentUser');
+    const currentRole = sessionStorage.getItem('currentRole');
     const navActions = document.getElementById('nav-actions');
     
-    if (currentUser && navActions) {
-        let dashboardLink = '../user/my-bookings.html';
-        if (currentUser.role === 'admin') dashboardLink = '../admin/admin-dashboard.html';
-        if (currentUser.role === 'superadmin') dashboardLink = '../superAdmin/super-admin-dashboard.html';
+    if (currentUsername && navActions) {
+        let dashboardLink = '../user/dashboard.html';
+        if (currentRole === 'admin') dashboardLink = '../admin/dashboard.html';
+        if (currentRole === 'superadmin') dashboardLink = '../superAdmin/dashboard.html';
         
         navActions.innerHTML = `
             <a href="${dashboardLink}" class="btn btn-primary btn-glow" style="background: var(--accent-cyan); color: #000;">Dashboard</a>
@@ -43,7 +45,8 @@ const updateNavigation = () => {
 };
 
 const logout = () => {
-    localStorage.removeItem('currentUser');
+    sessionStorage.removeItem('currentUser');
+    sessionStorage.removeItem('currentRole');
     window.location.href = '../general/index.html';
 };
 

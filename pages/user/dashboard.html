@@ -10,27 +10,46 @@
 <body>
     <div id="header-placeholder"></div>
 
-    <main class="container">
-        <div class="card card-lg">
-            <h2>User Dashboard</h2>
-            <p class="subtitle">Welcome to your personal dashboard.</p>
+    <main class="container py-section">
+        <h1 style="color: var(--primary-color);">My Dashboard</h1>
+        
+        <div class="dashboard-layout">
+            <aside class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><button class="active">Overview</button></li>
+                    <li><button onclick="window.location.href='my-bookings.html'">My Bookings</button></li>
+                    <li><button>Profile Settings</button></li>
+                </ul>
+            </aside>
             
-            <div class="dashboard-grid">
-                <div class="dashboard-widget">
-                    <h3>My Reservations</h3><p>View and manage your current bookings.</p>
+            <section class="dashboard-content">
+                <div class="card card-lg" style="margin: 0; max-width: 100%;">
+                    <h2>Welcome back, <span id="user-display-dash" class="text-primary" style="text-transform: capitalize;">Guest</span>!</h2>
+                    <p class="text-muted text-center">Here is a quick overview of your account.</p>
+                    
+                    <hr style="border-color: var(--border-color); margin: 2rem 0; border-style: solid; border-width: 1px 0 0 0;">
+                    <p class="text-center" style="color: var(--text-secondary);">You have no upcoming trips in the next 7 days.</p>
                 </div>
-                <div class="dashboard-widget">
-                    <h3>Profile Management</h3><p>Update your personal information.</p>
-                </div>
-                <div class="dashboard-widget">
-                    <h3>Support</h3><p>Contact GilMars Airbnb support.</p>
-                </div>
-            </div>
-            <button id="logout-btn" class="btn btn-outline w-100">Logout</button>
+            </section>
         </div>
     </main>
 
     <div id="footer-placeholder"></div>
+
     <script src="../../backend/app.js"></script>
+    <script src="../../backend/auth.js"></script>
+    <script>
+        // Immediately protect route ensuring only 'user' roles (or higher) can view
+        checkAccess('user');
+        
+        // Update username display dynamically from Auth
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = sessionStorage.getItem('currentUser');
+            if (username) {
+                const display = document.getElementById('user-display-dash');
+                if (display) display.textContent = username;
+            }
+        });
+    </script>
 </body>
 </html>

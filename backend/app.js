@@ -130,6 +130,7 @@ if (searchForm) {
         const checkinInput = document.getElementById('checkin').value;
         const checkoutInput = document.getElementById('checkout').value;
         const guestsInput = parseInt(document.getElementById('guests').value) || 0;
+        const maxPriceInput = parseFloat(document.getElementById('max-price').value) || Infinity;
 
         const listingCards = document.querySelectorAll('.featured-listings .listing-card');
         let visibleCount = 0;
@@ -139,11 +140,13 @@ if (searchForm) {
             const cardGuests = parseInt(card.dataset.guests) || 0;
             const availableStart = card.dataset.availableStart;
             const availableEnd = card.dataset.availableEnd;
+            const cardRate = parseFloat(card.dataset.rate) || 0;
 
             // Check criteria
             let matchLocation = !locationInput || cardLocation.includes(locationInput);
             let matchGuests = !guestsInput || cardGuests >= guestsInput;
             let matchDates = true;
+            let matchPrice = cardRate <= maxPriceInput;
 
             // Date range validation
             if (checkinInput && checkoutInput) {
@@ -157,7 +160,7 @@ if (searchForm) {
             }
 
             // Show/Hide Card
-            if (matchLocation && matchGuests && matchDates) {
+            if (matchLocation && matchGuests && matchDates && matchPrice) {
                 card.style.display = 'flex';
                 visibleCount++;
             } else {

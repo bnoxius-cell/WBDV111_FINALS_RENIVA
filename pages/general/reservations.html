@@ -5,60 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservations | CozyCorner</title>
     <link rel="stylesheet" href="../../assets/css/global.css">
-    <link rel="stylesheet" href="../../assets/css/reservations.css">
 </head>
 <body>
     <div id="header-placeholder"></div>
 
     <main class="container py-section">
-        <div class="reservations-header text-center">
-            <h2>Available Rentals</h2>
-            <p class="subtitle mb-0">Browse our curated pool of properties across the Philippines</p>
+        <div class="text-center">
+            <h1 style="color: var(--primary-color);">Available Properties</h1>
+            <p class="text-muted">Browse our exclusive collection of stays.</p>
         </div>
 
-        <div class="reservations-layout">
-            <aside class="filters-sidebar">
-                <h3>Filters</h3>
-                <form>
-                    <div class="form-group">
-                        <label class="form-label">Location</label>
-                        <input type="text" class="form-control" placeholder="Anywhere">
+        <div class="page-with-sidebar">
+            <!-- Filter Sidebar -->
+            <form id="search-form" class="card filter-sidebar">
+                <h3 class="mb-0">Filter Stays</h3>
+                <div class="filter-controls">
+                    <input type="text" id="location" class="form-control" placeholder="Location">
+                    <div class="date-group">
+                        <input type="date" id="checkin" class="form-control" aria-label="Check-in Date">
+                        <input type="date" id="checkout" class="form-control" aria-label="Check-out Date">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Max Price (PHP)</label>
-                        <input type="number" class="form-control" placeholder="₱10,000">
-                    </div>
-                    <button type="button" class="btn btn-outline w-100">Apply Filters</button>
-                </form>
-            </aside>
-            
-            <div class="listings-grid">
-                <!-- Dummy Listing 1 -->
-                <article class="listing-card">
-                    <div class="card-image"></div>
-                    <div class="card-content">
-                        <h3>Modern Condo in BGC</h3>
-                        <p class="location">Bonifacio Global City, Taguig</p>
-                        <p class="price">₱4,500 / night</p>
-                        <a href="#" class="btn btn-primary w-100 mt-auto">Book Now</a>
-                    </div>
-                </article>
+                    <input type="number" id="guests" class="form-control" placeholder="Number of Guests" min="1">
+                    <input type="number" id="max-price" class="form-control" placeholder="Max Price ($)" min="1">
+                    <button type="submit" class="btn btn-primary btn-glow w-100">Search</button>
+                </div>
+            </form>
 
-                <!-- Dummy Listing 2 -->
-                <article class="listing-card">
-                    <div class="card-image"></div>
-                    <div class="card-content">
-                        <h3>Beachfront Villa in El Nido</h3>
-                        <p class="location">El Nido, Palawan</p>
-                        <p class="price">₱12,000 / night</p>
-                        <a href="#" class="btn btn-primary w-100 mt-auto">Book Now</a>
-                    </div>
-                </article>
+            <div class="listings-grid featured-listings">
+            <!-- Listing Card 1 -->
+            <div class="listing-card" data-location="neon city" data-guests="2" data-rate="120" data-available-start="2024-10-01" data-available-end="2024-12-31">
+                <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="card-content">
+                    <h3>Neon City Loft</h3>
+                    <p class="location">Neon City Downtown</p>
+                    <p class="price">$120 / night</p>
+                    <button class="btn btn-primary btn-glow hero-book-btn">Book Now</button>
+                </div>
+            </div>
+            
+            <!-- Listing Card 2 -->
+            <div class="listing-card" data-location="crimson peak" data-guests="4" data-rate="250" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1449844908441-8829872d2607?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="card-content">
+                    <h3>Crimson Peak Cabin</h3>
+                    <p class="location">Crimson Mountains</p>
+                    <p class="price">$250 / night</p>
+                    <button class="btn btn-primary btn-glow hero-book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <!-- Listing Card 3 -->
+            <div class="listing-card" data-location="azure beach" data-guests="6" data-rate="300" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="card-content">
+                    <h3>Azure Beach Resort</h3>
+                    <p class="location">Azure Coastline</p>
+                    <p class="price">$300 / night</p>
+                    <button class="btn btn-primary btn-glow hero-book-btn">Book Now</button>
+                </div>
+            </div>
+            
+            <!-- Listing Card 4 -->
+            <div class="listing-card" data-location="emerald forest" data-guests="2" data-rate="150" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="card-content">
+                    <h3>Emerald Forest Retreat</h3>
+                    <p class="location">Emerald Valley</p>
+                    <p class="price">$150 / night</p>
+                    <button class="btn btn-primary btn-glow hero-book-btn">Book Now</button>
+                </div>
+            </div>
             </div>
         </div>
     </main>
 
     <div id="footer-placeholder"></div>
+
     <script src="../../backend/app.js"></script>
+    <script src="../../backend/auth.js"></script>
+    <script>
+        // Enforces UI behavior if a guest clicks a "Book Now" button
+        checkAuthStatus();
+    </script>
 </body>
 </html>

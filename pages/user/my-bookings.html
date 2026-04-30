@@ -56,6 +56,10 @@
         </div>
     </main>
 
+    <!-- Footer Component Loader -->
+    <div id="footer-placeholder"></div>
+
+    <script src="../../backend/app.js"></script>
     <script src="../../backend/auth.js"></script>
     <script>
         // 1. Immediately protect route ensuring only 'user' roles (or higher) can view
@@ -69,14 +73,6 @@
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
         }
-
-        // 3. Load the refactored header and fire the updateNavigation logic
-        fetch('../components/header.html')
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById('header-placeholder').innerHTML = data;
-                if (window.updateNavigation) window.updateNavigation();
-            });
     </script>
 </body>
 </html>

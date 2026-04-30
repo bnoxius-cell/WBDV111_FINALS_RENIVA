@@ -9,20 +9,31 @@
 <body>
     <div id="header-placeholder"></div>
 
-    <main class="container">
+    <main class="container py-section">
         <div class="card">
-            <h2>Contact Us</h2>
-            <p class="subtitle">Have a question? Send us a message.</p>
+            <h1 style="color: var(--primary-color); text-align: center;">Contact Us</h1>
+            <p class="text-muted text-center" style="margin-bottom: 2rem;">We'd love to hear from you!</p>
+            
             <form>
-                <div class="form-group"><input type="text" class="form-control" placeholder="Your Name" required></div>
-                <div class="form-group"><input type="email" class="form-control" placeholder="Your Email" required></div>
-                <div class="form-group"><textarea class="form-control resize-y" placeholder="Your Message" rows="5" required></textarea></div>
-                <button type="button" class="btn btn-primary w-100">Send Message</button>
+                <div class="form-group">
+                    <label class="form-label" for="name">Name</label>
+                    <input type="text" id="name" class="form-control" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" id="email" class="form-control" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="message">Message</label>
+                    <textarea id="message" class="form-control resize-y" rows="4" placeholder="How can we help?" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-glow w-100">Send Message</button>
             </form>
         </div>
     </main>
 
     <div id="footer-placeholder"></div>
     <script src="../../backend/app.js"></script>
+    <script src="../../backend/auth.js"></script>
 </body>
 </html>
