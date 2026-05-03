@@ -288,6 +288,11 @@ const checkAuthStatus = () => {
         }
         if (navLoginBtn) navLoginBtn.textContent = 'Login/Register';
     }
+
+    // Apply UI role visibility based on hierarchy
+    if (window.applyRoleVisibility) {
+        window.applyRoleVisibility();
+    }
 };
 
 // Initialize App
