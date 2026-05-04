@@ -20,7 +20,7 @@
         <div id="login-view" class="auth-card">
             <h2>Welcome Back</h2>
             <p class="subtitle">Please login to your account</p>
-            <p id="login-success-msg" style="color: #10b981; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.75rem; border-radius: 8px; margin-bottom: 1.25rem; font-size: 0.9rem; display: none;"></p>
+            <p id="login-success-msg" class="success-msg hidden"></p>
             <form id="login-form">
                 <div class="form-group">
                     <input type="text" id="login-username" class="form-control" placeholder="Username" required>
@@ -38,8 +38,8 @@
         <div id="demo-users-view" class="auth-card">
             <div class="demo-badge">Testing Only</div>
             <h2>Demo Accounts</h2>
-            <p class="subtitle" style="margin-bottom: 1rem;">Temporary credentials for role testing</p>
-            <div id="demo-users-list" style="text-align: left; margin-top: 1rem;"></div>
+            <p class="subtitle mb-2">Temporary credentials for role testing</p>
+            <div id="demo-users-list" class="text-left mt-3"></div>
         </div>
 
         <!-- Register View -->
@@ -63,14 +63,14 @@
         <div id="dashboard-view" class="auth-card hidden">
             <h2>Welcome, <span id="user-display" class="highlight"></span>!</h2>
             <p class="subtitle">We're thrilled to have you! Ready to find your perfect stay?</p>
-            <a href="index.html" class="btn btn-primary btn-glow w-100" style="margin-bottom: 1rem;">Explore Properties</a>
+            <a href="index.html" class="btn btn-primary btn-glow w-100 mb-2">Explore Properties</a>
         </div>
 
         <!-- Notification Modal -->
         <div id="auth-notification-modal" class="modal-overlay hidden">
-            <div class="auth-card" style="padding: 2.5rem 2rem; max-width: 380px; margin: 0 1rem;">
+            <div class="auth-card m-0 mx-1 max-w-400">
                 <h2>Notice</h2>
-                <p class="subtitle" style="margin-bottom: 2rem;">Registration is working! Register now if you don't have an account yet.</p>
+                <p class="subtitle mb-4">Registration is working! Register now if you don't have an account yet.</p>
                 <button id="close-modal-btn" class="btn btn-primary btn-glow w-100">Got it!</button>
             </div>
         </div>
@@ -80,5 +80,6 @@
     <div id="footer-placeholder"></div>
 
     <script src="../../backend/app.js"></script>
+    <script src="../../backend/auth.js"></script>
 </body>
 </html>

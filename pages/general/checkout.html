@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | CozyCorner</title>
+    <link rel="stylesheet" href="../../assets/css/global.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="container py-section">
+        <div class="card card-lg">
+            <h2>Complete Your Booking</h2>
+            <p class="subtitle" id="booking-property-name">Property Name</p>
+            
+            <div id="booking-details" class="mb-3 text-center text-muted">
+                <p id="booking-location">Location</p>
+                <p id="booking-price" class="text-primary price-text">Price</p>
+            </div>
+
+            <form id="checkout-form">
+                <div class="form-group">
+                    <label class="form-label" for="guest-name">Full Name</label>
+                    <input type="text" id="guest-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="guest-email">Email Address</label>
+                    <input type="email" id="guest-email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="guest-phone">Phone Number</label>
+                    <input type="tel" id="guest-phone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="special-requests">Special Requests (Optional)</label>
+                    <textarea id="special-requests" class="form-control resize-y" rows="4"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-glow w-100 mt-3">Confirm Booking</button>
+            </form>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+    <script src="../../backend/app.js"></script>
+    <script src="../../backend/auth.js"></script>
+</body>
+</html>

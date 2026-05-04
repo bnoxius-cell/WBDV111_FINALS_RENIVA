@@ -11,7 +11,7 @@
 
     <main class="container py-section">
         <div class="text-center">
-            <h1 style="color: var(--primary-color);">Available Properties</h1>
+            <h1 class="text-primary">Available Properties</h1>
             <p class="text-muted">Browse our exclusive collection of stays.</p>
         </div>
 
@@ -26,53 +26,249 @@
                         <input type="date" id="checkout" class="form-control" aria-label="Check-out Date">
                     </div>
                     <input type="number" id="guests" class="form-control" placeholder="Number of Guests" min="1">
-                    <input type="number" id="max-price" class="form-control" placeholder="Max Price ($)" min="1">
+                    <input type="number" id="max-price" class="form-control" placeholder="Max Price (₱)" min="1">
                     <button type="submit" class="btn btn-primary btn-glow w-100">Search</button>
                 </div>
             </form>
 
             <div class="listings-grid featured-listings">
-            <!-- Listing Card 1 -->
-            <div class="listing-card" data-location="neon city" data-guests="2" data-rate="120" data-available-start="2024-10-01" data-available-end="2024-12-31">
-                <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+            <div class="listing-card" data-location="makati metro manila" data-guests="2" data-rate="3500" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-neon"></div>
                 <div class="card-content">
-                    <h3>Neon City Loft</h3>
-                    <p class="location">Neon City Downtown</p>
-                    <p class="price">$120 / night</p>
-                    <button class="btn btn-primary btn-glow hero-book-btn">Book Now</button>
+                    <h3>Makati City Loft</h3>
+                    <p class="location">Makati, Metro Manila</p>
+                    <p class="price">₱3,500 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
                 </div>
             </div>
             
-            <!-- Listing Card 2 -->
-            <div class="listing-card" data-location="crimson peak" data-guests="4" data-rate="250" data-available-start="2024-01-01" data-available-end="2024-12-31">
-                <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1449844908441-8829872d2607?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+            <div class="listing-card" data-location="tagaytay cavite" data-guests="4" data-rate="4200" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-crimson"></div>
                 <div class="card-content">
-                    <h3>Crimson Peak Cabin</h3>
-                    <p class="location">Crimson Mountains</p>
-                    <p class="price">$250 / night</p>
-                    <button class="btn btn-primary btn-glow hero-book-btn">Book Now</button>
+                    <h3>Tagaytay Cozy Cabin</h3>
+                    <p class="location">Tagaytay City, Cavite</p>
+                    <p class="price">₱4,200 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
                 </div>
             </div>
 
-            <!-- Listing Card 3 -->
-            <div class="listing-card" data-location="azure beach" data-guests="6" data-rate="300" data-available-start="2024-01-01" data-available-end="2024-12-31">
-                <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+            <div class="listing-card" data-location="boracay aklan" data-guests="6" data-rate="5000" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-azure"></div>
                 <div class="card-content">
-                    <h3>Azure Beach Resort</h3>
-                    <p class="location">Azure Coastline</p>
-                    <p class="price">$300 / night</p>
-                    <button class="btn btn-primary btn-glow hero-book-btn">Book Now</button>
+                    <h3>Boracay Beach Resort</h3>
+                    <p class="location">Boracay Island, Aklan</p>
+                    <p class="price">₱5,000 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
                 </div>
             </div>
             
-            <!-- Listing Card 4 -->
-            <div class="listing-card" data-location="emerald forest" data-guests="2" data-rate="150" data-available-start="2024-01-01" data-available-end="2024-12-31">
-                <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');"></div>
+            <div class="listing-card" data-location="el nido palawan" data-guests="2" data-rate="4800" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-emerald"></div>
                 <div class="card-content">
-                    <h3>Emerald Forest Retreat</h3>
-                    <p class="location">Emerald Valley</p>
-                    <p class="price">$150 / night</p>
-                    <button class="btn btn-primary btn-glow hero-book-btn">Book Now</button>
+                    <h3>Palawan Forest Retreat</h3>
+                    <p class="location">El Nido, Palawan</p>
+                    <p class="price">₱4,800 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="cebu city" data-guests="4" data-rate="3000" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-neon"></div>
+                <div class="card-content">
+                    <h3>Cebu Skyline Condo</h3>
+                    <p class="location">Cebu City, Cebu</p>
+                    <p class="price">₱3,000 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="baguio benguet" data-guests="6" data-rate="2800" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-crimson"></div>
+                <div class="card-content">
+                    <h3>Baguio Pine Villa</h3>
+                    <p class="location">Baguio City, Benguet</p>
+                    <p class="price">₱2,800 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="siargao surigao" data-guests="2" data-rate="4500" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-azure"></div>
+                <div class="card-content">
+                    <h3>Siargao Surf Shack</h3>
+                    <p class="location">Siargao Island, Surigao</p>
+                    <p class="price">₱4,500 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="bohol" data-guests="4" data-rate="3200" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-emerald"></div>
+                <div class="card-content">
+                    <h3>Chocolate Hills View</h3>
+                    <p class="location">Carmen, Bohol</p>
+                    <p class="price">₱3,200 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="coron palawan" data-guests="2" data-rate="4600" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-azure"></div>
+                <div class="card-content">
+                    <h3>Coron Bay Retreat</h3>
+                    <p class="location">Coron, Palawan</p>
+                    <p class="price">₱4,600 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="vigan ilocos sur" data-guests="4" data-rate="2500" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-crimson"></div>
+                <div class="card-content">
+                    <h3>Calle Crisologo Heritage Inn</h3>
+                    <p class="location">Vigan City, Ilocos Sur</p>
+                    <p class="price">₱2,500 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="bgc taguig" data-guests="2" data-rate="4000" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-neon"></div>
+                <div class="card-content">
+                    <h3>BGC High Street Studio</h3>
+                    <p class="location">BGC, Taguig City</p>
+                    <p class="price">₱4,000 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="panglao bohol" data-guests="6" data-rate="3800" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-azure"></div>
+                <div class="card-content">
+                    <h3>Panglao Beachfront Villa</h3>
+                    <p class="location">Panglao, Bohol</p>
+                    <p class="price">₱3,800 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="iloilo" data-guests="2" data-rate="2600" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-neon"></div>
+                <div class="card-content">
+                    <h3>Iloilo Riverwalk Pad</h3>
+                    <p class="location">Iloilo City</p>
+                    <p class="price">₱2,600 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="davao" data-guests="4" data-rate="2700" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-crimson"></div>
+                <div class="card-content">
+                    <h3>Davao Mount Apo View</h3>
+                    <p class="location">Davao City</p>
+                    <p class="price">₱2,700 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="puerto princesa palawan" data-guests="4" data-rate="3100" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-emerald"></div>
+                <div class="card-content">
+                    <h3>Puerto Princesa Hideaway</h3>
+                    <p class="location">Puerto Princesa, Palawan</p>
+                    <p class="price">₱3,100 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="san juan la union" data-guests="2" data-rate="3300" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-azure"></div>
+                <div class="card-content">
+                    <h3>San Juan Surf Lodge</h3>
+                    <p class="location">San Juan, La Union</p>
+                    <p class="price">₱3,300 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="anilao batangas" data-guests="6" data-rate="3400" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-azure"></div>
+                <div class="card-content">
+                    <h3>Anilao Dive Resort</h3>
+                    <p class="location">Anilao, Batangas</p>
+                    <p class="price">₱3,400 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="baler aurora" data-guests="4" data-rate="2900" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-azure"></div>
+                <div class="card-content">
+                    <h3>Sabang Beach House</h3>
+                    <p class="location">Baler, Aurora</p>
+                    <p class="price">₱2,900 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="zambales" data-guests="6" data-rate="3000" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-azure"></div>
+                <div class="card-content">
+                    <h3>Crystal Beach Camping</h3>
+                    <p class="location">San Narciso, Zambales</p>
+                    <p class="price">₱3,000 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="batanes" data-guests="2" data-rate="5500" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-crimson"></div>
+                <div class="card-content">
+                    <h3>Marlboro Hills Stone House</h3>
+                    <p class="location">Basco, Batanes</p>
+                    <p class="price">₱5,500 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="sagada mountain province" data-guests="4" data-rate="2400" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-crimson"></div>
+                <div class="card-content">
+                    <h3>Sagada Log Cabin</h3>
+                    <p class="location">Sagada, Mountain Province</p>
+                    <p class="price">₱2,400 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="camiguin" data-guests="2" data-rate="2800" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-emerald"></div>
+                <div class="card-content">
+                    <h3>White Island View Deck</h3>
+                    <p class="location">Mambajao, Camiguin</p>
+                    <p class="price">₱2,800 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="siquijor" data-guests="4" data-rate="2700" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-emerald"></div>
+                <div class="card-content">
+                    <h3>Siquijor Mystic Cottage</h3>
+                    <p class="location">San Juan, Siquijor</p>
+                    <p class="price">₱2,700 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
+                </div>
+            </div>
+
+            <div class="listing-card" data-location="dumaguete negros oriental" data-guests="2" data-rate="2500" data-available-start="2024-01-01" data-available-end="2024-12-31">
+                <div class="card-image img-neon"></div>
+                <div class="card-content">
+                    <h3>Dumaguete Boulevard Flat</h3>
+                    <p class="location">Dumaguete, Negros Oriental</p>
+                    <p class="price">₱2,500 / night</p>
+                    <button class="btn btn-primary btn-glow book-btn">Book Now</button>
                 </div>
             </div>
             </div>
@@ -83,9 +279,5 @@
 
     <script src="../../backend/app.js"></script>
     <script src="../../backend/auth.js"></script>
-    <script>
-        // Enforces UI behavior if a guest clicks a "Book Now" button
-        checkAuthStatus();
-    </script>
 </body>
 </html>

@@ -27,7 +27,6 @@ const showLoginBtn = document.getElementById('show-login');
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
 const logoutBtn = document.getElementById('logout-btn');
-const heroBookBtn = document.getElementById('hero-book-btn');
 const searchForm = document.getElementById('search-form');
 
 // Component Loader
@@ -43,7 +42,7 @@ const loadComponent = async (elementId, componentPath) => {
             }
         } catch (error) {
             console.error(`Error loading component ${componentPath}:`, error);
-            el.innerHTML = `<p style="color:red; text-align:center; padding: 1rem;">Failed to load component. Please ensure you are viewing this via a local server (like VS Code Live Server) and not directly via file://.</p>`;
+            el.innerHTML = `<p class="error text-center p-3">Failed to load component. Please ensure you are viewing this via a local server (like VS Code Live Server) and not directly via file://.</p>`;
         }
     }
 };
@@ -80,9 +79,7 @@ const initializeHeaderLogic = () => {
             
             if (currentUser) {
                 e.preventDefault();
-                if (currentRole === 'superadmin') window.location.href = '../superAdmin/dashboard.html';
-                else if (currentRole === 'admin') window.location.href = '../admin/dashboard.html';
-                else window.location.href = '../user/dashboard.html';
+                if (window.redirectToDashboard) window.redirectToDashboard();
             } else if (!currentUser && document.getElementById('login-view')) {
                 e.preventDefault();
                 clearErrors();
@@ -109,15 +106,6 @@ if (showLoginBtn) {
         e.preventDefault();
         clearErrors();
         showView('login-view');
-    });
-}
-
-if (heroBookBtn) {
-    heroBookBtn.addEventListener('click', (e) => {
-        if (document.getElementById('login-view')) {
-            e.preventDefault();
-            showView('login-view');
-        }
     });
 }
 
@@ -210,7 +198,7 @@ if (registerForm) {
         const successMsg = document.getElementById('login-success-msg');
         if (successMsg) {
             successMsg.textContent = 'Registration successful! Please login.';
-            successMsg.style.display = 'block';
+            successMsg.classList.remove('hidden');
         }
     });
 }
@@ -236,13 +224,7 @@ if (loginForm) {
             loginForm.reset();
             clearErrors();
             
-            if (role === 'superadmin') {
-                window.location.href = '../superAdmin/dashboard.html';
-            } else if (role === 'admin') {
-                window.location.href = '../admin/dashboard.html';
-            } else {
-                window.location.href = '../user/dashboard.html';
-            }
+            if (window.redirectToDashboard) window.redirectToDashboard();
         } else {
             errorElement.textContent = 'Invalid username or password.';
         }
@@ -251,12 +233,68 @@ if (loginForm) {
 
 // Logout
 if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-        sessionStorage.removeItem('currentUser');
-        sessionStorage.removeItem('currentRole');
-        window.location.href = '../general/auth.html';
+    logoutBtn.addEventListener('click', (e) => {
+        if (window.logout) window.logout();
     });
 }
+
+// Login Prompt Modal Logic
+const showLoginPromptModal = () => {
+    let modal = document.getElementById('login-prompt-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'login-prompt-modal';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="card text-center m-0 mx-1 max-w-400">
+                <h2 class="mb-2">Authentication Required</h2>
+                <p class="subtitle mb-4">Please login or register to book a property.</p>
+                <div class="flex-col gap-1">
+                    <button id="login-redirect-btn" class="btn btn-primary btn-glow w-100">Go to Login</button>
+                    <button id="cancel-prompt-btn" class="btn btn-outline w-100">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        document.getElementById('login-redirect-btn').addEventListener('click', () => window.location.href = '../general/auth.html');
+        document.getElementById('cancel-prompt-btn').addEventListener('click', () => modal.classList.add('hidden'));
+    }
+    modal.classList.remove('hidden');
+};
+
+// Booking Logic
+const setupBookingButtons = () => {
+    document.querySelectorAll('.book-btn').forEach(btn => {
+        // Remove existing listener to prevent duplicates if called multiple times
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+
+        newBtn.addEventListener('click', (e) => {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                e.preventDefault();
+                showLoginPromptModal();
+                return;
+            }
+
+            const card = e.target.closest('.listing-card');
+            if (card) {
+                const propertyName = card.querySelector('h3').textContent;
+                const location = card.querySelector('.location').textContent;
+                const price = card.querySelector('.price').textContent;
+                
+                sessionStorage.setItem('pendingBooking', JSON.stringify({
+                    property: propertyName,
+                    location: location,
+                    price: price
+                }));
+                
+                window.location.href = '../general/checkout.html';
+            }
+        });
+    });
+};
 
 // Auth State Check
 const checkAuthStatus = () => {
@@ -269,10 +307,7 @@ const checkAuthStatus = () => {
 
         // If visiting auth page while logged in, redirect to correct dashboard
         if (window.location.pathname.includes('auth.html')) {
-            const currentRole = sessionStorage.getItem('currentRole') || 'user';
-            if (currentRole === 'superadmin') window.location.href = '../superAdmin/dashboard.html';
-            else if (currentRole === 'admin') window.location.href = '../admin/dashboard.html';
-            else window.location.href = '../user/dashboard.html';
+            if (window.redirectToDashboard) window.redirectToDashboard();
             return;
         }
 
@@ -295,6 +330,19 @@ const checkAuthStatus = () => {
     }
 };
 
+// Setup Tabs Logic
+const setupTabs = () => {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const tabId = e.target.getAttribute('data-tab');
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId)?.classList.add('active');
+            e.currentTarget.classList.add('active');
+        });
+    });
+};
+
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
     loadComponent('header-placeholder', '../components/header.html');
@@ -305,9 +353,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const demoUsersList = document.getElementById('demo-users-list');
     if (demoUsersList) {
         demoUsersList.innerHTML = hardcodedUsers.map(u => `
-            <div style="background: var(--secondary-color); padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
-                <div style="font-weight: 600; color: var(--primary-color); text-transform: capitalize; margin-bottom: 0.25rem;">${u.role} Role</div>
-                <div style="font-size: 0.9rem; color: var(--text-secondary);">
+            <div class="demo-user-card">
+                <div class="demo-user-card-header">${u.role} Role</div>
+                <div class="demo-user-card-body">
                     <div><strong>Username:</strong> ${u.username}</div>
                     <div><strong>Password:</strong> ${u.password}</div>
                 </div>
@@ -328,4 +376,42 @@ document.addEventListener('DOMContentLoaded', () => {
             authModal.classList.add('hidden');
         });
     }
+
+    // Setup booking buttons
+    setupBookingButtons();
+
+    // Checkout Logic
+    const initCheckout = () => {
+        const bookingPropertyName = document.getElementById('booking-property-name');
+        if (bookingPropertyName) {
+            const pendingBooking = JSON.parse(sessionStorage.getItem('pendingBooking'));
+            
+            if (!pendingBooking) {
+                alert('No pending booking found. Redirecting to home.');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            bookingPropertyName.textContent = pendingBooking.property;
+            document.getElementById('booking-location').textContent = pendingBooking.location;
+            document.getElementById('booking-price').textContent = pendingBooking.price;
+            
+            const checkoutForm = document.getElementById('checkout-form');
+            if (checkoutForm) {
+                checkoutForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    alert('Booking confirmed successfully! Redirecting you to your dashboard.');
+                    if (window.redirectToDashboard) window.redirectToDashboard();
+                });
+            }
+        }
+    };
+    initCheckout();
+    
+    const displayDash = document.getElementById('user-display-dash');
+    if (displayDash) {
+        const username = sessionStorage.getItem('currentUser');
+        if (username) displayDash.textContent = username;
+    }
+    setupTabs();
 });

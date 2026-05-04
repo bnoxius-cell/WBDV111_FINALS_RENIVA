@@ -22,6 +22,16 @@ const checkAccess = (requiredRole) => {
 };
 
 /**
+ * Automatically enforces route protection based on URL.
+ */
+const enforceRouteAccess = () => {
+    const path = window.location.pathname;
+    if (path.includes('/admin/')) checkAccess('admin');
+    else if (path.includes('/superAdmin/')) checkAccess('superadmin');
+    else if (path.includes('/user/') || path.includes('checkout.html')) checkAccess('user');
+};
+
+/**
  * Iterates over DOM elements with the 'data-require-role' attribute and
  * shows/hides them dynamically based on the current user's role hierarchy.
  */
@@ -42,6 +52,13 @@ const applyRoleVisibility = () => {
     });
 };
 
+const redirectToDashboard = () => {
+    const currentRole = sessionStorage.getItem('currentRole') || 'user';
+    if (currentRole === 'superadmin') window.location.href = '../superAdmin/dashboard.html';
+    else if (currentRole === 'admin') window.location.href = '../admin/dashboard.html';
+    else window.location.href = '../user/dashboard.html';
+};
+
 /**
  * Dynamically updates the header navigation based on login status.
  */
@@ -51,23 +68,25 @@ const updateNavigation = () => {
     const navActions = document.getElementById('nav-actions');
     
     if (currentUsername && navActions) {
-        let dashboardLink = '../user/dashboard.html';
-        if (currentRole === 'admin') dashboardLink = '../admin/dashboard.html';
-        if (currentRole === 'superadmin') dashboardLink = '../superAdmin/dashboard.html';
-        
         navActions.innerHTML = `
-            <a href="${dashboardLink}" class="btn btn-primary btn-glow" style="background: var(--accent-cyan); color: #000;">Dashboard</a>
-            <button onclick="logout()" class="btn btn-outline" style="margin-left: 10px; color: var(--accent-crimson); border-color: var(--accent-crimson);">Logout</button>
+            <button id="nav-dash-btn" class="btn btn-primary btn-glow">Dashboard</button>
+            <button id="nav-logout-btn" class="btn btn-outline btn-danger ml-2">Logout</button>
         `;
+        document.getElementById('nav-dash-btn').addEventListener('click', redirectToDashboard);
+        document.getElementById('nav-logout-btn').addEventListener('click', logout);
     }
 };
 
 const logout = () => {
     sessionStorage.removeItem('currentUser');
     sessionStorage.removeItem('currentRole');
-    window.location.href = '../general/index.html';
+    window.location.href = '../general/auth.html';
 };
 
 // Expose for components loaded dynamically (like the header)
 window.updateNavigation = updateNavigation;
 window.applyRoleVisibility = applyRoleVisibility;
+window.redirectToDashboard = redirectToDashboard;
+window.logout = logout;
+
+enforceRouteAccess();

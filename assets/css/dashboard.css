@@ -14,12 +14,15 @@
     border-radius: var(--border-radius);
     background-color: var(--surface-color);
     text-align: left;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    border-top: 3px solid transparent;
 }
 
 .dashboard-widget:hover {
     border-color: var(--primary-color);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+    border-top-color: var(--primary-color);
 }
 
 .dashboard-widget h3 {
@@ -47,6 +50,7 @@
     padding: 1.5rem;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
     height: fit-content;
 }
 
