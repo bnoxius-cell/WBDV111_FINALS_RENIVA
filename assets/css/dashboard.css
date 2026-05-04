@@ -61,7 +61,9 @@
     gap: 0.5rem;
 }
 
-.sidebar-menu button {
+.sidebar-menu button,
+.sidebar-menu a {
+    display: block;
     width: 100%;
     text-align: left;
     background: transparent;
@@ -74,7 +76,8 @@
     transition: background 0.2s, color 0.2s;
 }
 
-.sidebar-menu button:hover, .sidebar-menu button.active {
+.sidebar-menu button:hover, .sidebar-menu button.active,
+.sidebar-menu a:hover, .sidebar-menu a.active {
     background-color: rgba(245, 176, 65, 0.1);
     color: var(--primary-color);
     font-weight: 600;

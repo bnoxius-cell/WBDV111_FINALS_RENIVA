@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings | CozyCorner</title>
+    <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
+</head>
+<body>
+    <div id="header-placeholder"></div>
+
+    <main class="container py-section">
+        <h1 class="text-primary">Profile Settings</h1>
+        
+        <div class="dashboard-layout">
+            <aside class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a href="dashboard.html">Overview</a></li>
+                    <li><a href="my-bookings.html">My Bookings</a></li>
+                    <li><a href="settings.html" class="active">Profile Settings</a></li>
+                </ul>
+            </aside>
+            
+            <section class="dashboard-content">
+                <div class="card card-lg m-0 max-w-100">
+                    <h2 class="mb-2">Account Information</h2>
+                    <p class="text-muted text-center mb-4">Update your profile details below.</p>
+                    
+                    <form>
+                        <div class="form-group">
+                            <label class="form-label" for="profile-name">Full Name</label>
+                            <input type="text" id="profile-name" class="form-control" placeholder="Your Name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="profile-email">Email Address</label>
+                            <input type="email" id="profile-email" class="form-control" placeholder="your@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="profile-phone">Phone Number</label>
+                            <input type="tel" id="profile-phone" class="form-control" placeholder="123-456-7890">
+                        </div>
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-glow">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+    <script src="../../backend/app.js"></script>
+    <script src="../../backend/auth.js"></script>
+</body>
+</html>

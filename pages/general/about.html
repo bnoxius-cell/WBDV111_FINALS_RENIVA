@@ -5,18 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us | CozyCorner</title>
     <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
 </head>
 <body>
     <div id="header-placeholder"></div>
 
     <main class="container py-section">
-        <div class="card card-lg">
-            <h1 class="text-primary text-center">About CozyCorner</h1>
-            <p class="text-muted text-center mb-4">Redefining the way you travel.</p>
+        <div class="text-center mb-4">
+            <h1 class="text-primary">About CozyCorner</h1>
+            <p class="text-muted text-lg">Redefining the way you travel.</p>
+        </div>
+        
+        <div class="flex-col gap-5 max-w-1000 mx-auto">
+            <!-- Our Story Card -->
+            <div class="card m-0 max-w-100 p-lg">
+                <h2 class="text-cyan mb-3 text-center">Our Genesis: The GilMars Airbnb Story</h2>
+                <p class="text-muted text-center text-lg max-w-800 mx-auto mb-0">GilMars Airbnb was founded on a simple yet profound idea: to transform the often-stressful process of finding the perfect short-term rental into an experience as delightful as the stay itself. Our founders, a small team of hospitality enthusiasts and tech innovators, noticed a gap in the market for a platform that not only offered exceptional properties but also delivered an intuitive, visually stunning user experience. We envisioned a digital space where every click felt seamless, every search yielded inspiring results, and every booking brought a sense of calm and excitement. From humble beginnings, fueled by late-night coding sessions and a shared passion for connecting travelers with unique homes, GilMars Airbnb emerged as a testament to our belief that technology can truly enhance the joy of travel and the warmth of a temporary home.</p>
+            </div>
             
-            <p>Welcome to CozyCorner, where modern luxury meets intuitive design. We started with a simple vision: to create a booking platform that looks as good as the properties it hosts.</p>
-            <br>
-            <p>Our glassmorphic interfaces and seamless user experience are crafted to take the stress out of planning your next getaway. Whether you're looking for a vibrant city loft or a secluded mountain cabin, CozyCorner is your trusted companion.</p>
+            <!-- Mission & Vision Grid -->
+            <div class="dashboard-grid m-0">
+                <div class="dashboard-widget flex-col p-4">
+                    <div class="icon-box gold mb-3 w-fit">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    </div>
+                    <h3 class="text-gold mb-1">Our Mission</h3>
+                    <p class="text-muted mb-0">To provide a stress-free, aesthetically pleasing platform that connects travelers with unforgettable, verified properties worldwide.</p>
+                </div>
+                
+                <div class="dashboard-widget flex-col p-4">
+                    <div class="icon-box green mb-3 w-fit">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                    </div>
+                    <h3 class="text-green mb-1">Our Vision</h3>
+                    <p class="text-muted mb-0">To become the global standard for intuitive, user-centric travel accommodations, setting new benchmarks in UI/UX design.</p>
+                </div>
+            </div>
+
+            <!-- The CozyCorner Difference Card -->
+            <div class="card m-0 max-w-100 p-lg">
+                <h2 class="text-crimson mb-3 text-center">The CozyCorner Difference</h2>
+                <p class="text-muted mb-4 text-center max-w-800 mx-auto">Our glassmorphic interfaces and seamless user experience are crafted to take the stress out of planning your next getaway. Whether you're looking for a vibrant city loft or a secluded mountain cabin, CozyCorner is your trusted companion.</p>
+                
+                <div class="grid-auto-250">
+                    <div class="glass-panel glass-panel-soft p-4">
+                        <h3 class="text-primary mb-2">Curated Selection</h3>
+                        <p class="text-muted mb-0">Every listing is handpicked for quality and comfort.</p>
+                    </div>
+                    <div class="glass-panel glass-panel-soft p-4">
+                        <h3 class="text-primary mb-2">Immersive Design</h3>
+                        <p class="text-muted mb-0">A beautiful dark mode interface that's easy on the eyes.</p>
+                    </div>
+                    <div class="glass-panel glass-panel-soft p-4">
+                        <h3 class="text-primary mb-2">Secure Bookings</h3>
+                        <p class="text-muted mb-0">State-of-the-art data protection for your peace of mind.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 

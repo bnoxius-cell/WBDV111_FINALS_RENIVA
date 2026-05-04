@@ -7,15 +7,26 @@
     
     <!-- Global Styles & Glassmorphic RPG Theme -->
     <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/dashboard.css">
 </head>
 <body>
 
     <div id="header-placeholder"></div>
 
-    <main class="container">
-        <div class="glass-panel p-lg mt-4">
-            <h1 class="text-cyan mb-4">My Bookings</h1>
+    <main class="container py-section">
+        <h1 class="text-primary">My Bookings</h1>
+        
+        <div class="dashboard-layout">
+            <aside class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a href="dashboard.html">Overview</a></li>
+                    <li><a href="my-bookings.html" class="active">My Bookings</a></li>
+                    <li><a href="settings.html">Profile Settings</a></li>
+                </ul>
+            </aside>
             
+            <section class="dashboard-content">
+                <div class="glass-panel p-lg m-0 max-w-100">
             <!-- Glassmorphic Tab UI -->
             <div class="tabs">
                 <button class="tab-btn active" data-tab="upcoming">Upcoming</button>
@@ -52,6 +63,8 @@
                     <p class="text-crimson mt-3 font-bold">Status: Refunded</p>
                 </div>
             </div>
+                </div>
+            </section>
         </div>
     </main>
 
