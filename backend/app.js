@@ -348,6 +348,60 @@ const initProperties = () => {
 };
 const getProperties = () => JSON.parse(localStorage.getItem('properties')) || [];
 
+// Sync hardcoded HTML listings with LocalStorage to allow dynamic ratings
+const syncProperties = () => {
+    const cards = document.querySelectorAll('.listing-card');
+    if (cards.length === 0) return;
+    
+    let props = getProperties();
+    let updated = false;
+
+    cards.forEach((card, index) => {
+        // Skip dynamically generated trending cards so we don't duplicate them
+        if (card.closest('#trending-destinations-grid')) return;
+
+        const name = card.querySelector('h3')?.textContent.trim();
+        if (!name) return;
+
+        let existingProp = props.find(p => p.name === name);
+        if (!existingProp) {
+            const locationText = card.querySelector('.location')?.textContent.trim() || '';
+            const priceText = card.querySelector('.price')?.textContent || '';
+            const price = parseFloat(priceText.replace(/[^\d.]/g, '')) || 0;
+            
+            existingProp = {
+                id: 'p_sync_' + Date.now() + index,
+                name: name,
+                location: locationText,
+                price: price,
+                rating: 0,
+                reviews: 0,
+                imageClass: Array.from(card.querySelector('.card-image')?.classList || []).find(c => c.startsWith('img-')) || 'img-neon',
+                availableStart: card.dataset.availableStart || '2000-01-01',
+                availableEnd: card.dataset.availableEnd || '2099-12-31',
+                guests: parseInt(card.dataset.guests) || 2,
+                beds: card.querySelectorAll('.text-muted')[1]?.textContent.trim() || '1 Bedroom'
+            };
+            props.push(existingProp);
+            updated = true;
+        }
+
+        // Update the hardcoded HTML element with the local storage rating!
+        const ratingContainer = card.querySelector('.card-rating');
+        if (ratingContainer) {
+            ratingContainer.innerHTML = `
+                <span class="text-muted" style="margin-right: 0.25rem; font-size: 0.85rem;">Avg Rating:</span>
+                <span class="text-primary">★ ${existingProp.rating > 0 ? existingProp.rating.toFixed(1) : 'New'}</span>
+                <span class="text-muted" style="margin-left: 0.25rem;">(${existingProp.reviews} reviews)</span>
+            `;
+        }
+    });
+
+    if (updated) {
+        localStorage.setItem('properties', JSON.stringify(props));
+    }
+};
+
 // Register
 if (registerForm) {
     registerForm.addEventListener('submit', (e) => {
@@ -548,11 +602,12 @@ const renderUserBookings = () => {
             const propertyInfo = props.find(p => p.name === b.property);
             const guestText = propertyInfo ? ` | Recommended: ${propertyInfo.guests} person(s)` : '';
             const bedText = propertyInfo && propertyInfo.beds ? ` | ${propertyInfo.beds}` : '';
+            const ratingText = propertyInfo ? ` | Avg Rating: ★ ${propertyInfo.rating > 0 ? propertyInfo.rating.toFixed(1) : 'New'}` : '';
 
             return `
                 <div class="glass-panel ${glowClass} p-4 flex-col">
                     <h3>${b.property}</h3>
-                    <p class="text-muted">Location: ${b.location} | Price: ${b.price}${guestText}${bedText}</p>
+                    <p class="text-muted">Location: ${b.location} | Price: ${b.price}${guestText}${bedText}${ratingText}</p>
                     <p class="${colorClass} mt-3 font-bold mb-0">Status: ${b.status.charAt(0).toUpperCase() + b.status.slice(1)} (Booked on ${b.dateBooked})</p>
                     ${actionBtn}
                 </div>
@@ -656,8 +711,8 @@ const renderTrendingDestinations = () => {
             return b.rating - a.rating;
         });
 
-        // Limit to 4 properties for the homepage layout
-        const topProps = props.slice(0, 4);
+        // Limit to 3 properties for the homepage layout
+        const topProps = props.slice(0, 3);
 
         grid.innerHTML = topProps.map(p => `
             <div class="listing-card" data-location="${p.location.toLowerCase()}" data-guests="${p.guests}" data-available-start="${p.availableStart}" data-available-end="${p.availableEnd}" data-rate="${p.price}">
@@ -669,8 +724,9 @@ const renderTrendingDestinations = () => {
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">${p.beds || '1 Bedroom'}</p>
                     <p class="price">₱${p.price.toLocaleString()} / night</p>
                     <div class="card-rating mb-3">
+                        <span class="text-muted" style="margin-right: 0.25rem; font-size: 0.85rem;">Avg Rating:</span>
                         <span class="text-primary">★ ${p.rating > 0 ? p.rating.toFixed(1) : 'New'}</span>
-                        <span class="text-muted">(${p.reviews} reviews)</span>
+                        <span class="text-muted" style="margin-left: 0.25rem;">(${p.reviews} reviews)</span>
                     </div>
                     <button class="btn btn-outline w-100 book-btn">Book Now</button>
                 </div>
@@ -737,6 +793,7 @@ const initReviewLogic = () => {
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
     initProperties();
+    syncProperties();
     loadComponent('header-placeholder', '../components/header.html');
     loadComponent('footer-placeholder', '../components/footer.html');
     checkAuthStatus();
