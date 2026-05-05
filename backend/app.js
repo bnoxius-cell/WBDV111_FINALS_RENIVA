@@ -652,11 +652,12 @@ if (loginForm) {
 }
 
 // Logout
-if (logoutBtn) {
-    logoutBtn.addEventListener('click', (e) => {
+document.querySelectorAll('#logout-btn, .sidebar-logout-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
         if (window.logout) window.logout();
     });
-}
+});
 
 // Login Prompt Modal Logic
 const showLoginPromptModal = () => {
