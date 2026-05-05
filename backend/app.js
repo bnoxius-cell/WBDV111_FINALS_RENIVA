@@ -512,11 +512,17 @@ const setupBookingButtons = () => {
                 const price = card.querySelector('.price').textContent;
                 const guests = card.dataset.guests;
                 
+                // Capture active search dates to carry over to checkout
+                const searchCheckin = document.getElementById('checkin')?.value || document.getElementById('hero-checkin')?.value || '';
+                const searchCheckout = document.getElementById('checkout')?.value || document.getElementById('hero-checkout')?.value || '';
+
                 sessionStorage.setItem('pendingBooking', JSON.stringify({
                     property: propertyName,
                     location: location,
                     price: price,
-                    guests: guests
+                    guests: guests,
+                    checkin: searchCheckin,
+                    checkout: searchCheckout
                 }));
                 
                 window.location.href = '../general/checkout.html';
@@ -865,10 +871,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const formatDate = (date) => date.toISOString().split('T')[0];
             
             checkinInput.min = formatDate(today);
-            checkinInput.value = formatDate(today);
+            checkinInput.value = pendingBooking.checkin || formatDate(today);
             
-            checkoutInput.min = formatDate(tomorrow);
-            checkoutInput.value = formatDate(tomorrow);
+            checkoutInput.min = pendingBooking.checkin || formatDate(tomorrow);
+            checkoutInput.value = pendingBooking.checkout || formatDate(tomorrow);
 
             // Real-time calculation logic
             const calculateTotals = () => {
