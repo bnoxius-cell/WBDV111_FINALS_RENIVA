@@ -21,14 +21,23 @@
                 <h3 class="mb-0">Filter Stays</h3>
                 <div class="filter-controls">
                     <input type="text" id="location" class="form-control" placeholder="Location">
-                    <div class="date-group">
-                        <input type="date" id="checkin" class="form-control" aria-label="Check-in Date">
-                        <input type="date" id="checkout" class="form-control" aria-label="Check-out Date">
+                    <div class="form-group mb-0 custom-calendar-wrapper" id="res-dates-wrapper">
+                        <label class="form-label">Dates</label>
+                        <div class="custom-date-trigger form-control" id="res-date-trigger" style="cursor: pointer; height: auto;">Select dates</div>
+                        <input type="hidden" id="checkin" name="checkin">
+                        <input type="hidden" id="checkout" name="checkout">
                     </div>
-                    <input type="number" id="guests" class="form-control" placeholder="Number of Guests" min="1">
+                    <div class="form-group mb-0">
+                        <label for="guests" class="form-label">Guests</label>
+                        <div class="stepper-input-group">
+                            <button type="button" class="stepper-btn-form" data-step="down" aria-label="Remove one guest">-</button>
+                            <input type="number" id="guests" class="form-control" value="1" min="1" readonly>
+                            <button type="button" class="stepper-btn-form" data-step="up" aria-label="Add one guest">+</button>
+                        </div>
+                    </div>
                     <input type="number" id="max-price" class="form-control" placeholder="Max Price (₱)" min="1">
-                    <button type="submit" class="btn btn-primary btn-glow w-100">Search</button>
                 </div>
+                <button type="submit" class="btn btn-primary btn-glow w-100 mt-3">Search</button>
             </form>
 
             <div class="listings-grid featured-listings">

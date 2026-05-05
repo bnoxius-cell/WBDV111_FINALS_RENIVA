@@ -402,6 +402,183 @@ const syncProperties = () => {
     }
 };
 
+// Stepper Input Logic
+const initSteppers = () => {
+    document.querySelectorAll('.stepper-input, .stepper-input-group').forEach(container => {
+        const input = container.querySelector('input[type="number"]');
+        const btnDown = container.querySelector('[data-step="down"]');
+        const btnUp = container.querySelector('[data-step="up"]');
+        const min = parseInt(input.min) || 1;
+
+        if (!input || !btnDown || !btnUp) return;
+
+        btnDown.addEventListener('click', () => {
+            let value = parseInt(input.value) || min;
+            if (value > min) {
+                input.value = value - 1;
+            }
+        });
+
+        btnUp.addEventListener('click', () => {
+            let value = parseInt(input.value) || min;
+            input.value = value + 1;
+        });
+    });
+};
+
+// Custom Calendar Logic
+const initCustomCalendars = () => {
+    const setups = [
+        { wrapperId: 'hero-dates-wrapper', triggerId: 'hero-date-trigger', checkinId: 'hero-checkin', checkoutId: 'hero-checkout', locationId: 'hero-location' },
+        { wrapperId: 'res-dates-wrapper', triggerId: 'res-date-trigger', checkinId: 'checkin', checkoutId: 'checkout', locationId: 'location' }
+    ];
+
+    setups.forEach(setup => {
+        const wrapper = document.getElementById(setup.wrapperId);
+        if (!wrapper) return;
+
+        const trigger = document.getElementById(setup.triggerId);
+        const checkinInput = document.getElementById(setup.checkinId);
+        const checkoutInput = document.getElementById(setup.checkoutId);
+        const locationInput = document.getElementById(setup.locationId);
+        
+        // Inject Popup HTML
+        const popup = document.createElement('div');
+        popup.className = 'calendar-popup glass-panel hidden';
+        popup.innerHTML = `
+            <div class="flex-between mb-3 align-center">
+                <button type="button" class="cal-nav" id="${setup.wrapperId}-prev">&lt;</button>
+                <strong class="cal-month-year text-primary" id="${setup.wrapperId}-month"></strong>
+                <button type="button" class="cal-nav" id="${setup.wrapperId}-next">&gt;</button>
+            </div>
+            <div class="grid-7 text-muted text-sm text-center mb-2 font-bold">
+                <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+            </div>
+            <div class="grid-7 text-center" id="${setup.wrapperId}-days"></div>
+            <div class="cal-warnings mt-3" id="${setup.wrapperId}-warnings"></div>
+        `;
+        wrapper.appendChild(popup);
+
+        let currentMonth = new Date();
+        currentMonth.setDate(1);
+        let startDate = checkinInput.value ? new Date(checkinInput.value) : null;
+        let endDate = checkoutInput.value ? new Date(checkoutInput.value) : null;
+
+        const formatDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+
+        const renderCalendar = () => {
+            const daysContainer = document.getElementById(`${setup.wrapperId}-days`);
+            const monthLabel = document.getElementById(`${setup.wrapperId}-month`);
+            
+            daysContainer.innerHTML = '';
+            monthLabel.textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            for (let i = 0; i < firstDayIndex; i++) daysContainer.appendChild(document.createElement('div'));
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dateObj = new Date(year, month, i);
+                const dateStr = formatDateStr(dateObj);
+                const dayEl = document.createElement('div');
+                dayEl.className = 'cal-day';
+                dayEl.textContent = i;
+
+                if (dateObj < today) {
+                    dayEl.classList.add('disabled');
+                } else {
+                    if (startDate && dateStr === formatDateStr(startDate)) dayEl.classList.add('selected');
+                    if (endDate && dateStr === formatDateStr(endDate)) dayEl.classList.add('selected');
+                    if (startDate && endDate && dateObj > startDate && dateObj < endDate) dayEl.classList.add('in-range');
+
+                    dayEl.addEventListener('click', () => {
+                        if (!startDate || (startDate && endDate)) {
+                            startDate = dateObj; endDate = null;
+                        } else if (dateObj < startDate) {
+                            startDate = dateObj; endDate = null;
+                        } else {
+                            endDate = dateObj;
+                        }
+
+                        checkinInput.value = startDate ? formatDateStr(startDate) : '';
+                        checkoutInput.value = endDate ? formatDateStr(endDate) : '';
+                        
+                        renderCalendar();
+                        if (setup.wrapperId === 'res-dates-wrapper' && startDate && endDate && typeof performSearch === 'function') performSearch();
+                    });
+                }
+                daysContainer.appendChild(dayEl);
+            }
+            
+            const s = startDate ? startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Add dates';
+            const e = endDate ? endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+            trigger.innerHTML = `<span class="${startDate ? 'text-primary font-bold' : 'text-muted'}">${s}${e ? ' - ' + e : ''}</span>
+                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
+
+            // Real-time Warnings
+            const warningsContainer = document.getElementById(`${setup.wrapperId}-warnings`);
+            warningsContainer.innerHTML = '';
+            if (startDate && endDate) {
+                const checkinVal = formatDateStr(startDate);
+                const checkoutVal = formatDateStr(endDate);
+                const allBookings = getBookings().filter(b => b.status === 'upcoming');
+                const conflictingBookings = {};
+                
+                const locationVal = locationInput ? locationInput.value.toLowerCase().trim() : '';
+
+                // Only show warnings if the user has inputted a location
+                if (locationVal) {
+                    for (const booking of allBookings) {
+                        if (booking.checkin && booking.checkout && checkinVal < booking.checkout && checkoutVal > booking.checkin) {
+                            if ((booking.location || '').toLowerCase().includes(locationVal)) {
+                                if (!conflictingBookings[booking.property]) conflictingBookings[booking.property] = [];
+                                conflictingBookings[booking.property].push(booking);
+                            }
+                        }
+                    }
+                }
+
+                if (Object.keys(conflictingBookings).length > 0) {
+                    let warningHTML = '<div class="date-warnings-container m-0"><p class="text-gold mb-1" style="font-weight: 600; font-size:0.85rem;">Heads up! Existing bookings on these dates:</p><ul style="margin-top: 0;">';
+                    const formatF = (dateStr) => new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    for (const propName in conflictingBookings) {
+                        const ranges = conflictingBookings[propName].map(b => `${formatF(b.checkin)} - ${formatF(b.checkout)}`).join(', ');
+                        warningHTML += `<li style="font-size: 0.75rem;"><strong>${propName}:</strong> ${ranges}</li>`;
+                    }
+                    warningHTML += '</ul></div>';
+                    warningsContainer.innerHTML = warningHTML;
+                }
+            }
+        };
+
+        document.getElementById(`${setup.wrapperId}-prev`).addEventListener('click', (e) => { e.stopPropagation(); currentMonth.setMonth(currentMonth.getMonth() - 1); renderCalendar(); });
+        document.getElementById(`${setup.wrapperId}-next`).addEventListener('click', (e) => { e.stopPropagation(); currentMonth.setMonth(currentMonth.getMonth() + 1); renderCalendar(); });
+        
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.calendar-popup').forEach(p => { if(p !== popup) p.classList.add('hidden'); });
+            popup.classList.toggle('hidden');
+            renderCalendar();
+        });
+        
+        // Re-render warnings live if user types in the location field while calendar is open
+        if (locationInput) {
+            locationInput.addEventListener('input', () => {
+                if (!popup.classList.contains('hidden')) renderCalendar();
+            });
+        }
+        
+        popup.addEventListener('click', (e) => e.stopPropagation());
+    });
+
+    document.addEventListener('click', () => document.querySelectorAll('.calendar-popup').forEach(p => p.classList.add('hidden')));
+};
+
 // Register
 if (registerForm) {
     registerForm.addEventListener('submit', (e) => {
@@ -490,6 +667,145 @@ const showLoginPromptModal = () => {
     modal.classList.remove('hidden');
 };
 
+// Property Details Modal Logic
+const initPropertyModalUI = () => {
+    if (document.getElementById('property-details-modal')) return;
+    const modal = document.createElement('div');
+    modal.id = 'property-details-modal';
+    modal.className = 'modal-overlay hidden';
+    modal.innerHTML = `
+        <div class="card glass-panel p-0 max-w-1000 w-100 property-modal-content mx-1">
+            <button id="property-modal-close" class="property-modal-close" aria-label="Close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <div id="property-modal-image" class="property-modal-hero"></div>
+            <div class="property-modal-body">
+                <div class="flex-between flex-wrap gap-1">
+                    <div>
+                        <h2 id="property-modal-title" class="text-primary mb-0" style="font-size: 1.75rem;">Property Name</h2>
+                        <p id="property-modal-location" class="text-muted text-lg">Location</p>
+                    </div>
+                    <div class="text-right" style="text-align: right;">
+                        <h3 id="property-modal-price" class="text-primary mb-0" style="font-size: 1.5rem;">₱0 / night</h3>
+                        <div id="property-modal-rating" class="card-rating justify-end mt-1">★ New (0 reviews)</div>
+                    </div>
+                </div>
+                
+                <div class="grid-2-col gap-1 border-t pt-3 border-b pb-3">
+                    <div class="flex-align-center text-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        <span class="ml-2">Recommended: <span id="property-modal-guests" class="font-bold text-primary">2</span> person(s)</span>
+                    </div>
+                    <div class="flex-align-center text-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path></svg>
+                        <span class="ml-2">Layout: <span id="property-modal-beds" class="font-bold text-primary">1 Bedroom</span></span>
+                    </div>
+                </div>
+
+                <div class="property-modal-reviews-container">
+                    <h3 class="mb-2 text-cyan">Guest Reviews</h3>
+                    <div id="property-modal-reviews-list" class="property-modal-reviews-scroll">
+                        <!-- Reviews will be injected here -->
+                    </div>
+                </div>
+                <button id="property-modal-book-btn" class="btn btn-primary btn-glow w-100 mt-2" style="font-size: 1.1rem;">Book This Property</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+    });
+
+    document.getElementById('property-modal-close').addEventListener('click', () => {
+        modal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
+    });
+};
+
+const openPropertyModal = (card) => {
+    const modal = document.getElementById('property-details-modal');
+    if (!modal) return;
+
+    const name = card.querySelector('h3').textContent.trim();
+    const location = card.querySelector('.location').textContent.trim();
+    const price = card.querySelector('.price').textContent.trim();
+    const guests = card.dataset.guests;
+    
+    // Find property in local storage for full details
+    const props = getProperties();
+    const propData = props.find(p => p.name === name);
+
+    document.getElementById('property-modal-title').textContent = name;
+    document.getElementById('property-modal-location').textContent = location;
+    document.getElementById('property-modal-price').textContent = price;
+    document.getElementById('property-modal-guests').textContent = propData?.guests || guests || '2';
+    document.getElementById('property-modal-beds').textContent = propData?.beds || '1 Bedroom';
+    
+    // Setup image
+    const imgEl = document.getElementById('property-modal-image');
+    imgEl.className = 'property-modal-hero'; // reset
+    const imgClass = propData?.imageClass || Array.from(card.querySelector('.card-image').classList).find(c => c.startsWith('img-'));
+    if (imgClass) imgEl.classList.add(imgClass);
+
+    // Rating
+    const ratingHtml = `
+        <span class="text-primary">★ ${propData && propData.rating > 0 ? propData.rating.toFixed(1) : 'New'}</span>
+        <span class="text-muted ml-2">(${propData?.reviews || 0} reviews)</span>
+    `;
+    document.getElementById('property-modal-rating').innerHTML = ratingHtml;
+
+    // Reviews
+    const reviewsContainer = document.getElementById('property-modal-reviews-list');
+    const allBookings = getBookings();
+    const propertyReviews = allBookings.filter(b => b.property === name && b.status === 'past' && b.userRating);
+
+    if (propertyReviews.length > 0) {
+        reviewsContainer.innerHTML = propertyReviews.map(r => `
+            <div class="review-card">
+                <div class="flex-between mb-1">
+                    <strong class="text-capitalize text-cyan">${r.user}</strong>
+                    <span class="text-gold font-bold">★ ${r.userRating}/5</span>
+                </div>
+                <p class="text-muted text-sm mb-0">"${r.userReview}"</p>
+            </div>
+        `).join('');
+    } else {
+        reviewsContainer.innerHTML = '<p class="text-muted text-center py-3">No reviews yet. Be the first to leave one!</p>';
+    }
+
+    // Match button logic with the actual card
+    const bookBtn = document.getElementById('property-modal-book-btn');
+    const cardBookBtn = card.querySelector('.book-btn');
+    
+    bookBtn.onclick = () => {
+        if (cardBookBtn && cardBookBtn.disabled) {
+            alert('This property is fully booked for your selected dates.');
+        } else {
+            cardBookBtn.click();
+        }
+    };
+    
+    if (cardBookBtn && cardBookBtn.disabled) {
+        bookBtn.disabled = true;
+        bookBtn.textContent = 'Unavailable for Selected Dates';
+        bookBtn.classList.remove('btn-primary', 'btn-glow');
+        bookBtn.classList.add('btn-outline');
+    } else {
+        bookBtn.disabled = false;
+        bookBtn.textContent = 'Book This Property';
+        bookBtn.classList.remove('btn-outline');
+        bookBtn.classList.add('btn-primary', 'btn-glow');
+    }
+
+    document.body.classList.add('modal-open');
+    modal.classList.remove('hidden');
+};
+
 // Booking Logic
 const setupBookingButtons = () => {
     document.querySelectorAll('.book-btn').forEach(btn => {
@@ -527,6 +843,17 @@ const setupBookingButtons = () => {
                 
                 window.location.href = '../general/checkout.html';
             }
+        });
+    });
+    
+    // Setup Property Modal Click Event on the parent card
+    document.querySelectorAll('.listing-card').forEach(card => {
+        if (card.dataset.hasModalListener === 'true') return;
+        card.dataset.hasModalListener = 'true';
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', (e) => {
+            if (e.target.classList.contains('book-btn') || e.target.closest('.book-btn')) return;
+            if (typeof openPropertyModal === 'function') openPropertyModal(card);
         });
     });
 };
@@ -800,6 +1127,9 @@ const initReviewLogic = () => {
 document.addEventListener('DOMContentLoaded', () => {
     initProperties();
     syncProperties();
+    initPropertyModalUI();
+    initSteppers();
+    initCustomCalendars();
     loadComponent('header-placeholder', '../components/header.html');
     loadComponent('footer-placeholder', '../components/footer.html');
     checkAuthStatus();

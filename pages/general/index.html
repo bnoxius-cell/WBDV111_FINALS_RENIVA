@@ -24,17 +24,19 @@
                         <label for="hero-location">Location</label>
                         <input type="text" id="hero-location" name="location" placeholder="Where are you going?">
                     </div>
-                    <div class="search-field">
-                        <label for="hero-checkin">Check-in</label>
-                        <input type="date" id="hero-checkin" name="checkin">
+                    <div class="search-field custom-calendar-wrapper" id="hero-dates-wrapper">
+                        <label>Dates</label>
+                        <div class="custom-date-trigger" id="hero-date-trigger">Add dates</div>
+                        <input type="hidden" id="hero-checkin" name="checkin">
+                        <input type="hidden" id="hero-checkout" name="checkout">
                     </div>
-                    <div class="search-field">
-                        <label for="hero-checkout">Check-out</label>
-                        <input type="date" id="hero-checkout" name="checkout">
-                    </div>
-                    <div class="search-field">
+                    <div class="search-field guest-stepper">
                         <label for="hero-guests">Guests</label>
-                        <input type="number" id="hero-guests" name="guests" placeholder="Add guests" min="1">
+                        <div class="stepper-input">
+                            <button type="button" class="stepper-btn" data-step="down" aria-label="Remove one guest">-</button>
+                            <input type="number" id="hero-guests" name="guests" value="1" min="1" readonly>
+                            <button type="button" class="stepper-btn" data-step="up" aria-label="Add one guest">+</button>
+                        </div>
                     </div>
                     <div class="search-btn">
                         <button type="submit" class="btn btn-primary btn-glow w-100">

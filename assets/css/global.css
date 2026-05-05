@@ -47,6 +47,11 @@ body {
     min-height: 100vh;
 }
 
+/* Utility to disable body scroll when a modal is open */
+body.modal-open {
+    overflow: hidden;
+}
+
 img {
     max-width: 100%;
     display: block;
@@ -221,6 +226,7 @@ main {
 .text-lg { font-size: 1.1rem; }
 .w-fit { width: fit-content; }
 .resize-y { resize: vertical; }
+.mb-0 { margin-bottom: 0 !important; }
 .form-label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text-primary); }
 .hidden { display: none !important; }
 .text-primary { color: var(--primary-color); }
@@ -667,4 +673,178 @@ main {
         flex-direction: column;
         gap: 1rem;
     }
+}
+
+/* =========================================
+   Property Details Modal
+   ========================================= */
+.property-modal-content {
+    display: grid;
+    grid-template-columns: 40% 1fr;
+    overflow: hidden;
+    max-height: 90vh;
+    position: relative;
+}
+@media (max-width: 768px) {
+    .property-modal-content {
+        grid-template-columns: 1fr;
+        max-height: 85vh;
+    }
+}
+.property-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(15, 23, 42, 0.7);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20; /* Ensure it's above all content */
+    transition: all 0.2s ease;
+}
+.property-modal-close:hover {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    border-color: var(--primary-color);
+}
+.property-modal-hero {
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+@media (max-width: 768px) {
+    .property-modal-hero {
+        height: 200px; /* Give it a fixed height on mobile */
+    }
+}
+.property-modal-body {
+    padding: 2rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    overflow-y: auto; /* This makes the right side scrollable */
+}
+.property-modal-reviews-container {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.property-modal-reviews-scroll {
+    overflow-y: auto;
+    max-height: 200px;
+    padding-right: 0.75rem;
+}
+.property-modal-reviews-scroll::-webkit-scrollbar { width: 6px; }
+.property-modal-reviews-scroll::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+.review-card {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+.justify-end { justify-content: flex-end; }
+.flex-align-center { display: flex; align-items: center; }
+
+/* Guest Stepper for Forms */
+.stepper-input-group {
+    display: flex;
+    align-items: center;
+}
+.stepper-input-group .form-control {
+    text-align: center;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    z-index: 1;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    cursor: default;
+}
+.stepper-input-group .form-control:focus {
+    z-index: 2;
+}
+.stepper-btn-form {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.75rem;
+    width: 45px;
+    z-index: 2;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+.stepper-btn-form:hover {
+    background: var(--surface-color);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.stepper-btn-form[data-step="down"] { border-radius: 8px 0 0 8px; }
+.stepper-btn-form[data-step="up"] { border-radius: 0 8px 8px 0; }
+
+/* Custom Calendar Picker */
+.custom-calendar-wrapper { position: relative; }
+.custom-date-trigger {
+    color: var(--text-primary);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-family);
+    font-size: 1rem;
+    min-height: 2.5rem;
+    user-select: none;
+}
+.calendar-popup {
+    position: absolute; top: calc(100% + 0.5rem); left: 0;
+    width: 320px; z-index: 2000; padding: 1.25rem;
+    background-color: var(--secondary-color);
+    backdrop-filter: none;
+    box-shadow: var(--shadow-lg);
+    border-radius: 16px;
+    cursor: default;
+}
+.grid-7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-day {
+    padding: 0.5rem 0; border-radius: 6px; cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.cal-day:hover:not(.disabled) { background: rgba(255,255,255,0.1); }
+.cal-day.disabled { color: var(--text-secondary); opacity: 0.3; cursor: not-allowed; }
+.cal-day.selected { background: var(--primary-color); color: var(--secondary-color); font-weight: bold; }
+.cal-day.in-range { background: rgba(245, 176, 65, 0.2); border-radius: 0; }
+.cal-nav {
+    padding: 0.25rem 0.75rem; border-radius: 8px; border: 1px solid var(--border-color);
+    background: rgba(255,255,255,0.05); color: var(--text-primary); cursor: pointer;
+    transition: all 0.2s ease;
+}
+.cal-nav:hover { background: var(--primary-color); color: var(--secondary-color); border-color: var(--primary-color); }
+@media (max-width: 768px) {
+    .calendar-popup { width: 100%; min-width: 280px; }
+}
+
+/* Date Warning Styles */
+.date-warnings-container {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: left;
+}
+.date-warnings-container ul { list-style-type: none; padding-left: 0; margin-top: 0.5rem; }
+.date-warnings-container li {
+    background: rgba(251, 113, 133, 0.05);
+    border-left: 3px solid var(--accent-crimson);
+    padding: 0.35rem 0.75rem;
+    margin-bottom: 0.35rem;
+    border-radius: 0 4px 4px 0;
+    font-size: 0.85rem;
 }
