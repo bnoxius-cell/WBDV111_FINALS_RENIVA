@@ -1663,8 +1663,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         saveBooking(newBooking);
                         sessionStorage.removeItem('pendingBooking');
 
-                        alert('Booking confirmed successfully! Redirecting you to your dashboard.');
-                        if (window.redirectToDashboard) window.redirectToDashboard();
+                        // Trigger Custom UI Modal instead of browser alert
+                        const successModal = document.getElementById('booking-success-modal');
+                        if (successModal) {
+                            successModal.classList.remove('hidden');
+                            const doRedirect = () => {
+                                if (window.redirectToDashboard) window.redirectToDashboard();
+                                else window.location.href = '../user/dashboard.html';
+                            };
+                            
+                            document.getElementById('success-redirect-btn').addEventListener('click', doRedirect);
+                            setTimeout(doRedirect, 3500); // Auto-redirect after 3.5 seconds
+                        }
                     }, 1500);
                 });
             }

@@ -165,12 +165,20 @@
                         <!-- Add-ons Section (Real-time responsive based on existing app.js Logic) -->
                         <div class="addons-section mt-3 pt-3 border-t">
                             <h5 class="mb-2">Optional Add-ons</h5>
-                            <label class="flex-between mb-1 align-center">
-                                <span><input type="checkbox" class="addon-checkbox mr-2" value="500"> Airport Transfer</span>
+                            <label class="flex-between mb-2 align-center custom-checkbox-wrapper">
+                                <span class="flex-align-center">
+                                    <input type="checkbox" class="addon-checkbox" value="500">
+                                    <div class="custom-checkmark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                                    Airport Transfer
+                                </span>
                                 <span class="text-muted">₱500</span>
                             </label>
-                            <label class="flex-between mb-1 align-center">
-                                <span><input type="checkbox" class="addon-checkbox mr-2" value="300"> Early Check-in</span>
+                            <label class="flex-between mb-1 align-center custom-checkbox-wrapper">
+                                <span class="flex-align-center">
+                                    <input type="checkbox" class="addon-checkbox" value="300">
+                                    <div class="custom-checkmark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                                    Early Check-in
+                                </span>
                                 <span class="text-muted">₱300</span>
                             </label>
                         </div>
@@ -199,6 +207,18 @@
             </div>
         </div>
     </main>
+
+    <!-- Booking Success Modal -->
+    <div id="booking-success-modal" class="modal-overlay hidden">
+        <div class="card text-center m-0 mx-1 max-w-400 glass-panel glass-panel-glow-green" style="border-top: 4px solid var(--accent-green);">
+            <div class="icon-box green mx-auto mb-3" style="width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <h2 class="text-green mb-2">Booking Confirmed!</h2>
+            <p class="text-muted mb-4">Your getaway is officially secured. We are redirecting you to your dashboard...</p>
+            <button id="success-redirect-btn" class="btn btn-primary btn-glow w-100">Go to Dashboard Now</button>
+        </div>
+    </div>
 
     <div id="footer-placeholder"></div>
 
