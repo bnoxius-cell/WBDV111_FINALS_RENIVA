@@ -127,8 +127,9 @@ const performSearch = () => {
     const guestsInput = parseInt(document.getElementById('guests')?.value) || 0;
     const maxPriceVal = document.getElementById('max-price')?.value;
     const maxPriceInput = maxPriceVal ? parseFloat(maxPriceVal) : Infinity;
+    const typeInput = document.getElementById('property-type')?.value.toLowerCase().trim() || document.getElementById('hero-type')?.value.toLowerCase().trim() || '';
 
-    const isSearchActive = locationInput || checkinInput || checkoutInput || guestsInput > 0 || (maxPriceVal && maxPriceVal !== '');
+    const isSearchActive = locationInput || checkinInput || checkoutInput || guestsInput > 1 || (maxPriceVal && maxPriceVal !== '') || typeInput !== '';
 
     const listingCards = document.querySelectorAll('.listing-card');
     let visibleCount = 0;
@@ -155,6 +156,8 @@ const performSearch = () => {
         let matchLocation = !locationInput || cardLocation.includes(locationInput);
         let matchGuests = !guestsInput || cardGuests >= guestsInput;
         let matchPrice = cardRate <= maxPriceInput;
+        let cardType = card.dataset.type || 'studio';
+        let matchType = !typeInput || cardType === typeInput;
         let matchDates = true;
         let isInvalidInput = false;
         let isFullyBooked = false;
@@ -222,9 +225,9 @@ const performSearch = () => {
         // 4. Display Logic (Reorder instead of hiding)
         card.style.display = 'flex'; 
         
-        const isDateConflict = matchLocation && matchGuests && matchPrice && isFullyBooked;
+        const isDateConflict = matchLocation && matchGuests && matchPrice && matchType && isFullyBooked;
 
-        if (matchLocation && matchGuests && matchDates && matchPrice) {
+        if (matchLocation && matchGuests && matchDates && matchPrice && matchType) {
             card.style.order = '-3';
             visibleCount++;
         } else if (isDateConflict) {
@@ -344,10 +347,10 @@ const saveBooking = (booking) => {
 const initProperties = () => {
     if (!localStorage.getItem('properties')) {
         const initialProps = [
-            { id: 'p1', name: 'Monumento City Loft', location: 'Caloocan City, Metro Manila', price: 3500, rating: 0, reviews: 0, imageClass: 'img-neon', images: ['img-neon', 'img-room1', 'img-kitchen', 'img-bathroom'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 2, beds: '1 Studio' },
-            { id: 'p2', name: 'Malabon Cozy Cabin', location: 'Malabon City, Metro Manila', price: 4200, rating: 0, reviews: 0, imageClass: 'img-crimson', images: ['img-crimson', 'img-room2', 'img-view', 'img-pool'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 4, beds: '2 Bedrooms' },
-            { id: 'p3', name: 'Valenzuela Resort', location: 'Valenzuela City, Metro Manila', price: 5000, rating: 0, reviews: 0, imageClass: 'img-azure', images: ['img-azure', 'img-pool', 'img-room1', 'img-view'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 6, beds: '3 Bedrooms' },
-            { id: 'p4', name: 'Marilao Nature Retreat', location: 'Marilao, Bulacan', price: 4800, rating: 0, reviews: 0, imageClass: 'img-emerald', images: ['img-emerald', 'img-view', 'img-room2', 'img-kitchen'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 2, beds: '1 Bedroom' }
+            { id: 'p1', name: 'Monumento City Loft', location: 'Caloocan City, Metro Manila', price: 3500, type: 'studio', rating: 0, reviews: 0, imageClass: 'img-neon', images: ['img-neon', 'img-room1', 'img-kitchen', 'img-bathroom'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 2, beds: '1 Studio' },
+            { id: 'p2', name: 'Malabon Cozy Cabin', location: 'Malabon City, Metro Manila', price: 4200, type: 'family', rating: 0, reviews: 0, imageClass: 'img-crimson', images: ['img-crimson', 'img-room2', 'img-view', 'img-pool'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 4, beds: '2 Bedrooms' },
+            { id: 'p3', name: 'Valenzuela Resort', location: 'Valenzuela City, Metro Manila', price: 5000, type: 'deluxe', rating: 0, reviews: 0, imageClass: 'img-azure', images: ['img-azure', 'img-pool', 'img-room1', 'img-view'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 6, beds: '3 Bedrooms' },
+            { id: 'p4', name: 'Marilao Nature Retreat', location: 'Marilao, Bulacan', price: 4800, type: 'suite', rating: 0, reviews: 0, imageClass: 'img-emerald', images: ['img-emerald', 'img-view', 'img-room2', 'img-kitchen'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 2, beds: '1 Bedroom' }
         ];
         localStorage.setItem('properties', JSON.stringify(initialProps));
     }
@@ -384,6 +387,7 @@ const syncProperties = () => {
                 name: name,
                 location: locationText,
                 price: price,
+                type: card.dataset.type || 'studio',
                 rating: 0,
                 reviews: 0,
                 imageClass: baseImg,
@@ -439,6 +443,38 @@ const initSteppers = () => {
                 input.dispatchEvent(new Event('input', { bubbles: true }));
             }
         });
+    });
+};
+
+// Custom Select Dropdown Logic
+const initCustomSelects = () => {
+    document.querySelectorAll('.custom-select-container').forEach(container => {
+        const trigger = container.querySelector('.custom-select-trigger');
+        const dropdown = container.querySelector('.custom-select-dropdown');
+        const hiddenInput = container.querySelector('input[type="hidden"]');
+        const triggerSpan = trigger.querySelector('span');
+        const options = container.querySelectorAll('.custom-select-option');
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.calendar-popup, .time-picker-popup, .custom-select-dropdown').forEach(p => { if(p !== dropdown) p.classList.add('hidden'); });
+            dropdown.classList.toggle('hidden');
+        });
+
+        options.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                hiddenInput.value = option.dataset.value;
+                triggerSpan.textContent = option.textContent;
+                options.forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                dropdown.classList.add('hidden');
+                
+                if (container.id === 'res-type-wrapper' && typeof performSearch === 'function') performSearch();
+            });
+        });
+
+        dropdown.addEventListener('click', e => e.stopPropagation());
     });
 };
 
@@ -577,7 +613,7 @@ const initCustomCalendars = () => {
         
         trigger.addEventListener('click', (e) => {
             e.stopPropagation();
-            document.querySelectorAll('.calendar-popup, .time-picker-popup').forEach(p => { if(p !== popup) p.classList.add('hidden'); });
+            document.querySelectorAll('.calendar-popup, .time-picker-popup, .custom-select-dropdown').forEach(p => { if(p !== popup) p.classList.add('hidden'); });
             popup.classList.toggle('hidden');
             renderCalendar();
         });
@@ -592,7 +628,7 @@ const initCustomCalendars = () => {
         popup.addEventListener('click', (e) => e.stopPropagation());
     });
 
-    document.addEventListener('click', () => document.querySelectorAll('.calendar-popup, .time-picker-popup').forEach(p => p.classList.add('hidden')));
+    document.addEventListener('click', () => document.querySelectorAll('.calendar-popup, .time-picker-popup, .custom-select-dropdown').forEach(p => p.classList.add('hidden')));
 };
 
 // Register
@@ -708,7 +744,7 @@ const initPropertyModalUI = () => {
                 <div class="flex-between flex-wrap gap-1">
                     <div>
                         <h2 id="property-modal-title" class="text-primary mb-0" style="font-size: 1.75rem;">Property Name</h2>
-                        <p id="property-modal-location" class="text-muted text-lg">Location</p>
+                        <p id="property-modal-location" class="text-muted text-lg">Location &nbsp;|&nbsp; <span style="text-transform: capitalize; color: var(--primary-color); font-weight: 500;">Type</span></p>
                     </div>
                     <div class="text-right" style="text-align: right;">
                         <h3 id="property-modal-price" class="text-primary mb-0" style="font-size: 1.5rem;">₱0 / night</h3>
@@ -768,7 +804,7 @@ const openPropertyModal = (card) => {
     const propData = props.find(p => p.name === name);
 
     document.getElementById('property-modal-title').textContent = name;
-    document.getElementById('property-modal-location').textContent = location;
+    document.getElementById('property-modal-location').innerHTML = `${location} &nbsp;|&nbsp; <span style="text-transform: capitalize; color: var(--primary-color); font-weight: 500;">${propData?.type || card.dataset.type || 'Studio'}</span>`;
     document.getElementById('property-modal-price').textContent = price;
     document.getElementById('property-modal-guests').textContent = propData?.guests || guests || '2';
     document.getElementById('property-modal-beds').textContent = propData?.beds || '1 Bedroom';
@@ -1133,11 +1169,12 @@ const renderTrendingDestinations = () => {
         const topProps = props.slice(0, 3);
 
         grid.innerHTML = topProps.map(p => `
-            <div class="listing-card" data-location="${p.location.toLowerCase()}" data-guests="${p.guests}" data-available-start="${p.availableStart}" data-available-end="${p.availableEnd}" data-rate="${p.price}">
+            <div class="listing-card" data-location="${p.location.toLowerCase()}" data-guests="${p.guests}" data-type="${p.type || 'studio'}" data-available-start="${p.availableStart}" data-available-end="${p.availableEnd}" data-rate="${p.price}">
                 <div class="card-image ${p.imageClass}"></div>
                 <div class="card-content">
                     <h3>${p.name}</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">${p.location}</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: ${p.type || 'Studio'}</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: ${p.guests} person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">${p.beds || '1 Bedroom'}</p>
                     <p class="price">₱${p.price.toLocaleString()} / night</p>
@@ -1215,6 +1252,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initPropertyModalUI();
     initSteppers();
     initCustomCalendars();
+    initCustomSelects();
     loadComponent('header-placeholder', '../components/header.html');
     loadComponent('footer-placeholder', '../components/footer.html');
     checkAuthStatus();
@@ -1709,13 +1747,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         let hasParams = false;
 
-        // Handle standard text/number inputs
-        ['location', 'guests', 'max-price'].forEach(param => {
+        // Handle standard text/number/select inputs
+        ['location', 'guests', 'max-price', 'property-type'].forEach(param => {
             if (urlParams.has(param) && urlParams.get(param)) {
                 const inputElement = document.getElementById(param);
                 if (inputElement) {
                     inputElement.value = urlParams.get(param);
                     hasParams = true;
+                    
+                    // If it's the custom select, visually update it
+                    if (param === 'property-type') {
+                        const wrapper = document.getElementById('res-type-wrapper');
+                        if (wrapper) {
+                            const option = wrapper.querySelector(`.custom-select-option[data-value="${urlParams.get(param)}"]`);
+                            if (option) {
+                                wrapper.querySelector('.custom-select-trigger span').textContent = option.textContent;
+                                wrapper.querySelectorAll('.custom-select-option').forEach(o => o.classList.remove('selected'));
+                                option.classList.add('selected');
+                            }
+                        }
+                    }
                 }
             }
         });

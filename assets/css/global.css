@@ -187,6 +187,35 @@ main {
     box-shadow: 0 0 0 3px rgba(245, 176, 65, 0.15);
 }
 
+/* Input Group with Prefix (e.g. ₱ symbol) */
+.input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.input-prefix {
+    position: absolute;
+    left: 1rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    z-index: 10;
+    pointer-events: none;
+}
+.input-group .pl-prefix {
+    padding-left: 2.25rem;
+}
+
+/* Hide arrows on number input for Max Price */
+#max-price::-webkit-outer-spin-button,
+#max-price::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+#max-price {
+    -moz-appearance: textfield;
+}
+
 .error {
     color: #ef4444;
     font-size: 0.875rem;
@@ -900,6 +929,36 @@ details.faq-item .faq-content {
 .cal-nav:hover { background: var(--primary-color); color: var(--secondary-color); border-color: var(--primary-color); }
 @media (max-width: 768px) {
     .calendar-popup { width: 100%; min-width: 280px; }
+}
+
+/* Custom Select Dropdown UI */
+.custom-select-container { position: relative; user-select: none; }
+.custom-select-trigger {
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--text-primary); cursor: pointer;
+}
+.search-field .custom-select-trigger {
+    min-height: 2.5rem;
+    font-family: var(--font-family);
+    font-size: 1rem;
+}
+.custom-select-dropdown {
+    position: absolute; top: calc(100% + 0.5rem); left: 0;
+    width: 100%; min-width: 180px; z-index: 2000; padding: 0.5rem;
+    background-color: var(--secondary-color);
+    box-shadow: var(--shadow-lg); border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.custom-select-option {
+    padding: 0.75rem 1rem; border-radius: 8px; cursor: pointer;
+    transition: background 0.2s, color 0.2s; color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+.custom-select-option:hover {
+    background: rgba(255,255,255,0.05); color: var(--text-primary);
+}
+.custom-select-option.selected {
+    background: rgba(245, 176, 65, 0.1); color: var(--primary-color); font-weight: 600;
 }
 
 /* Custom iOS-Style Time Picker */

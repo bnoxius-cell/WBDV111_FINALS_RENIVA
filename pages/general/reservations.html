@@ -21,6 +21,21 @@
                 <h3 class="mb-0">Filter Stays</h3>
                 <div class="filter-controls">
                     <input type="text" id="location" class="form-control" placeholder="Location">
+                    <div class="form-group mb-0 custom-select-container" id="res-type-wrapper">
+                        <label class="form-label">Property Type</label>
+                        <div class="custom-select-trigger form-control" id="res-type-trigger" style="cursor: pointer; height: auto;">
+                            <span>All Types</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                        <div class="custom-select-dropdown hidden">
+                            <div class="custom-select-option selected" data-value="">All Types</div>
+                            <div class="custom-select-option" data-value="suite">Suite</div>
+                            <div class="custom-select-option" data-value="studio">Studio</div>
+                            <div class="custom-select-option" data-value="family">Family</div>
+                            <div class="custom-select-option" data-value="deluxe">Deluxe</div>
+                        </div>
+                        <input type="hidden" id="property-type" name="property-type" value="">
+                    </div>
                     <div class="form-group mb-0 custom-calendar-wrapper" id="res-dates-wrapper">
                         <label class="form-label">Dates</label>
                         <div class="custom-date-trigger form-control" id="res-date-trigger" style="cursor: pointer; height: auto;">Select dates</div>
@@ -35,17 +50,24 @@
                             <button type="button" class="stepper-btn-form" data-step="up" aria-label="Add one guest">+</button>
                         </div>
                     </div>
-                    <input type="number" id="max-price" class="form-control" placeholder="Max Price (₱)" min="1">
+                    <div class="form-group mb-0">
+                        <label for="max-price" class="form-label">Max Price</label>
+                        <div class="input-group">
+                            <span class="input-prefix">₱</span>
+                            <input type="number" id="max-price" name="max-price" class="form-control pl-prefix" placeholder="Any Range" min="1">
+                        </div>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary btn-glow w-100 mt-3">Search</button>
             </form>
 
             <div class="listings-grid featured-listings">
-            <div class="listing-card" data-location="caloocan city" data-guests="2" data-rate="3500" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="caloocan city" data-guests="2" data-type="studio" data-rate="3500" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-neon"></div>
                 <div class="card-content">
                     <h3>Monumento City Loft</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Caloocan City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Studio</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 2 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">1 Studio</p>
                     <p class="price">₱3,500 / night</p>
@@ -57,11 +79,12 @@
                 </div>
             </div>
             
-            <div class="listing-card" data-location="malabon city" data-guests="4" data-rate="4200" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="malabon city" data-guests="4" data-type="family" data-rate="4200" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-crimson"></div>
                 <div class="card-content">
                     <h3>Malabon Cozy Cabin</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Malabon City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Family</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 4 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">2 Bedrooms</p>
                     <p class="price">₱4,200 / night</p>
@@ -73,11 +96,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="valenzuela city" data-guests="6" data-rate="5000" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="valenzuela city" data-guests="6" data-type="deluxe" data-rate="5000" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-azure"></div>
                 <div class="card-content">
                     <h3>Valenzuela Resort</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Valenzuela City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Deluxe</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 6 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">3 Bedrooms</p>
                     <p class="price">₱5,000 / night</p>
@@ -89,11 +113,12 @@
                 </div>
             </div>
             
-            <div class="listing-card" data-location="marilao bulacan" data-guests="2" data-rate="4800" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="marilao bulacan" data-guests="2" data-type="suite" data-rate="4800" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-emerald"></div>
                 <div class="card-content">
                     <h3>Marilao Nature Retreat</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Marilao, Bulacan</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Suite</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 2 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">1 Bedroom</p>
                     <p class="price">₱4,800 / night</p>
@@ -105,11 +130,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="caloocan city" data-guests="4" data-rate="3000" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="caloocan city" data-guests="4" data-type="family" data-rate="3000" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-neon"></div>
                 <div class="card-content">
                     <h3>SM Grand Central Condo</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Caloocan City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Family</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 4 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">2 Bedrooms</p>
                     <p class="price">₱3,000 / night</p>
@@ -121,11 +147,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="meycauayan bulacan" data-guests="6" data-rate="2800" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="meycauayan bulacan" data-guests="6" data-type="deluxe" data-rate="2800" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-crimson"></div>
                 <div class="card-content">
                     <h3>Meycauayan Pine Villa</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Meycauayan, Bulacan</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Deluxe</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 6 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">3 Bedrooms</p>
                     <p class="price">₱2,800 / night</p>
@@ -137,11 +164,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="obando bulacan" data-guests="2" data-rate="4500" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="obando bulacan" data-guests="2" data-type="studio" data-rate="4500" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-azure"></div>
                 <div class="card-content">
                     <h3>Obando Riverside Shack</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Obando, Bulacan</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Studio</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 2 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">1 Bedroom</p>
                     <p class="price">₱4,500 / night</p>
@@ -153,11 +181,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="valenzuela city" data-guests="4" data-rate="3200" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="valenzuela city" data-guests="4" data-type="suite" data-rate="3200" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-emerald"></div>
                 <div class="card-content">
                     <h3>Fatima Ave View</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Valenzuela City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Suite</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 4 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">2 Bedrooms</p>
                     <p class="price">₱3,200 / night</p>
@@ -169,11 +198,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="malabon city" data-guests="2" data-rate="4600" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="malabon city" data-guests="2" data-type="studio" data-rate="4600" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-azure"></div>
                 <div class="card-content">
                     <h3>Malabon Bay Retreat</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Malabon City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Studio</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 2 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">1 Bedroom</p>
                     <p class="price">₱4,600 / night</p>
@@ -185,11 +215,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="valenzuela city" data-guests="4" data-rate="2500" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="valenzuela city" data-guests="4" data-type="family" data-rate="2500" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-crimson"></div>
                 <div class="card-content">
                     <h3>Poblacion Heritage Inn</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Valenzuela City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Family</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 4 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">2 Bedrooms</p>
                     <p class="price">₱2,500 / night</p>
@@ -201,11 +232,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="caloocan city" data-guests="2" data-rate="4000" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="caloocan city" data-guests="2" data-type="studio" data-rate="4000" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-neon"></div>
                 <div class="card-content">
                     <h3>Grace Park Studio</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Caloocan City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Studio</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 2 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">1 Studio</p>
                     <p class="price">₱4,000 / night</p>
@@ -217,11 +249,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="marilao bulacan" data-guests="6" data-rate="3800" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="marilao bulacan" data-guests="6" data-type="deluxe" data-rate="3800" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-azure"></div>
                 <div class="card-content">
                     <h3>Marilao Riverside Villa</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Marilao, Bulacan</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Deluxe</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 6 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">3 Bedrooms</p>
                     <p class="price">₱3,800 / night</p>
@@ -233,11 +266,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="valenzuela city" data-guests="2" data-rate="2600" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="valenzuela city" data-guests="2" data-type="studio" data-rate="2600" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-neon"></div>
                 <div class="card-content">
                     <h3>Valenzuela Townwalk Pad</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Valenzuela City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Studio</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 2 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">1 Studio</p>
                     <p class="price">₱2,600 / night</p>
@@ -249,11 +283,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="meycauayan bulacan" data-guests="4" data-rate="2700" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="meycauayan bulacan" data-guests="4" data-type="family" data-rate="2700" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-crimson"></div>
                 <div class="card-content">
                     <h3>Meycauayan Skyline View</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Meycauayan, Bulacan</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Family</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 4 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">2 Bedrooms</p>
                     <p class="price">₱2,700 / night</p>
@@ -265,11 +300,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="caloocan city" data-guests="4" data-rate="3100" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="caloocan city" data-guests="4" data-type="suite" data-rate="3100" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-emerald"></div>
                 <div class="card-content">
                     <h3>North Caloocan Hideaway</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Caloocan City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Suite</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 4 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">2 Bedrooms</p>
                     <p class="price">₱3,100 / night</p>
@@ -281,11 +317,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="malabon city" data-guests="2" data-rate="3300" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="malabon city" data-guests="2" data-type="studio" data-rate="3300" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-azure"></div>
                 <div class="card-content">
                     <h3>Malabon Heritage Lodge</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Malabon City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Studio</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 2 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">1 Bedroom</p>
                     <p class="price">₱3,300 / night</p>
@@ -297,11 +334,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="obando bulacan" data-guests="6" data-rate="3400" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="obando bulacan" data-guests="6" data-type="deluxe" data-rate="3400" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-azure"></div>
                 <div class="card-content">
                     <h3>Obando Nature Resort</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Obando, Bulacan</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Deluxe</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 6 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">3 Bedrooms</p>
                     <p class="price">₱3,400 / night</p>
@@ -313,11 +351,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="valenzuela city" data-guests="4" data-rate="2900" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="valenzuela city" data-guests="4" data-type="family" data-rate="2900" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-azure"></div>
                 <div class="card-content">
                     <h3>Polo Historic House</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Valenzuela City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Family</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 4 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">2 Bedrooms</p>
                     <p class="price">₱2,900 / night</p>
@@ -329,11 +368,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="caloocan city" data-guests="6" data-rate="3000" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="caloocan city" data-guests="6" data-type="family" data-rate="3000" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-azure"></div>
                 <div class="card-content">
                     <h3>La Mesa Dam View Camping</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Caloocan City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Family</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 6 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">3 Tents</p>
                     <p class="price">₱3,000 / night</p>
@@ -345,11 +385,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="valenzuela city" data-guests="2" data-rate="5500" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="valenzuela city" data-guests="2" data-type="suite" data-rate="5500" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-crimson"></div>
                 <div class="card-content">
                     <h3>Malinta Stone House</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Valenzuela City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Suite</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 2 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">1 Bedroom</p>
                     <p class="price">₱5,500 / night</p>
@@ -361,11 +402,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="marilao bulacan" data-guests="4" data-rate="2400" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="marilao bulacan" data-guests="4" data-type="family" data-rate="2400" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-crimson"></div>
                 <div class="card-content">
                     <h3>Marilao Log Cabin</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Marilao, Bulacan</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Family</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 4 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">2 Bedrooms</p>
                     <p class="price">₱2,400 / night</p>
@@ -377,11 +419,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="meycauayan bulacan" data-guests="2" data-rate="2800" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="meycauayan bulacan" data-guests="2" data-type="studio" data-rate="2800" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-emerald"></div>
                 <div class="card-content">
                     <h3>Meycauayan View Deck</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Meycauayan, Bulacan</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Studio</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 2 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">1 Bedroom</p>
                     <p class="price">₱2,800 / night</p>
@@ -393,11 +436,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="malabon city" data-guests="4" data-rate="2700" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="malabon city" data-guests="4" data-type="family" data-rate="2700" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-emerald"></div>
                 <div class="card-content">
                     <h3>Malabon Mystic Cottage</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Malabon City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Family</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 4 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">2 Bedrooms</p>
                     <p class="price">₱2,700 / night</p>
@@ -409,11 +453,12 @@
                 </div>
             </div>
 
-            <div class="listing-card" data-location="valenzuela city" data-guests="2" data-rate="2500" data-available-start="2024-01-01" data-available-end="2099-12-31">
+            <div class="listing-card" data-location="valenzuela city" data-guests="2" data-type="studio" data-rate="2500" data-available-start="2024-01-01" data-available-end="2099-12-31">
                 <div class="card-image img-neon"></div>
                 <div class="card-content">
                     <h3>MacArthur Highway Flat</h3>
                     <p class="location" style="margin-bottom: 0.25rem;">Valenzuela City, Metro Manila</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem; text-transform: capitalize;">Type: Studio</p>
                     <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: 2 person(s)</p>
                     <p class="text-muted mb-2" style="font-size: 0.85rem;">1 Bedroom</p>
                     <p class="price">₱2,500 / night</p>

@@ -24,6 +24,21 @@
                         <label for="hero-location">Location</label>
                         <input type="text" id="hero-location" name="location" placeholder="Where are you going?">
                     </div>
+                    <div class="search-field custom-select-container" id="hero-type-wrapper">
+                        <label>Type</label>
+                        <div class="custom-select-trigger" id="hero-type-trigger">
+                            <span>All Types</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                        <div class="custom-select-dropdown hidden">
+                            <div class="custom-select-option selected" data-value="">All Types</div>
+                            <div class="custom-select-option" data-value="suite">Suite</div>
+                            <div class="custom-select-option" data-value="studio">Studio</div>
+                            <div class="custom-select-option" data-value="family">Family</div>
+                            <div class="custom-select-option" data-value="deluxe">Deluxe</div>
+                        </div>
+                        <input type="hidden" id="hero-type" name="property-type" value="">
+                    </div>
                     <div class="search-field custom-calendar-wrapper" id="hero-dates-wrapper">
                         <label>Dates</label>
                         <div class="custom-date-trigger" id="hero-date-trigger">Add dates</div>
