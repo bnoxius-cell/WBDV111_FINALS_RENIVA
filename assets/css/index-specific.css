@@ -1,0 +1,13 @@
+/* Index Page Specific Styles (RBAC Test Panel) */
+.btn-rbac-user {
+    color: #00ffff;
+    border-color: #00ffff;
+}
+.btn-rbac-admin {
+    color: #39ff14;
+    border-color: #39ff14;
+}
+.btn-rbac-superadmin {
+    color: #ff003c;
+    border-color: #ff003c;
+}

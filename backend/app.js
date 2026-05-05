@@ -70,6 +70,16 @@ const initializeHeaderLogic = () => {
         } else {
             mainHeader?.classList.remove('scrolled');
         }
+
+        // Scroll to Top Button Logic
+        const scrollTopBtn = document.getElementById('scroll-top-btn');
+        if (scrollTopBtn) {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add('show');
+            } else {
+                scrollTopBtn.classList.remove('show');
+            }
+        }
     });
 
     if (navLoginBtn) {
@@ -109,54 +119,91 @@ if (showLoginBtn) {
     });
 }
 
+const performSearch = () => {
+    const locationInput = document.getElementById('location').value.toLowerCase().trim();
+    const checkinInput = document.getElementById('checkin').value;
+    const checkoutInput = document.getElementById('checkout').value;
+    const guestsInput = parseInt(document.getElementById('guests').value) || 0;
+    const maxPriceVal = document.getElementById('max-price')?.value;
+    const maxPriceInput = maxPriceVal ? parseFloat(maxPriceVal) : Infinity;
+
+    const isSearchActive = locationInput || checkinInput || checkoutInput || guestsInput > 0 || (maxPriceVal && maxPriceVal !== '');
+
+    const listingCards = document.querySelectorAll('.featured-listings .listing-card');
+    let visibleCount = 0;
+    let nonMatchCount = 0;
+
+    listingCards.forEach(card => {
+        const cardLocation = card.dataset.location || '';
+        const cardGuests = parseInt(card.dataset.guests) || 0;
+        const availableStart = card.dataset.availableStart;
+        const availableEnd = card.dataset.availableEnd;
+        const cardRate = parseFloat(card.dataset.rate) || 0;
+
+        // Check criteria
+        let matchLocation = !locationInput || cardLocation.includes(locationInput);
+        let matchGuests = !guestsInput || cardGuests >= guestsInput;
+        let matchDates = true;
+        let matchPrice = cardRate <= maxPriceInput;
+
+        // Date range validation
+        if (checkinInput && checkoutInput) {
+            if (checkinInput >= checkoutInput || checkinInput < availableStart || checkoutInput > availableEnd) {
+                matchDates = false;
+            }
+        } else if (checkinInput && (checkinInput < availableStart || checkinInput > availableEnd)) {
+            matchDates = false;
+        } else if (checkoutInput && (checkoutInput < availableStart || checkoutInput > availableEnd)) {
+            matchDates = false;
+        }
+
+        // Reorder instead of hiding: move matches to the top
+        card.style.display = 'flex'; // Ensure all cards remain visible
+        if (matchLocation && matchGuests && matchDates && matchPrice) {
+            card.style.order = '-2';
+            visibleCount++;
+        } else {
+            card.style.order = '0';
+            nonMatchCount++;
+        }
+    });
+
+    // Add and manage a line separator dynamically
+    if (listingCards.length > 0) {
+        const container = listingCards[0].parentElement;
+
+        let notFoundMsg = document.getElementById('not-found-msg');
+        if (!notFoundMsg) {
+            notFoundMsg = document.createElement('div');
+            notFoundMsg.id = 'not-found-msg';
+            notFoundMsg.className = 'search-not-found-msg';
+            notFoundMsg.innerHTML = `
+                <h3 class="text-primary mb-1">No Exact Matches Found</h3>
+                <p class="text-muted mb-0">We couldn't find properties matching all your specific criteria, but here are some other incredible places you might love.</p>
+            `;
+            container.appendChild(notFoundMsg);
+        }
+        notFoundMsg.style.display = (isSearchActive && visibleCount === 0) ? 'block' : 'none';
+
+        let separator = document.getElementById('search-separator');
+        
+        if (!separator) {
+            separator = document.createElement('div');
+            separator.id = 'search-separator';
+            separator.className = 'search-separator';
+            separator.textContent = 'Other Available Properties';
+            container.appendChild(separator);
+        }
+        
+        separator.style.display = (isSearchActive && visibleCount > 0 && nonMatchCount > 0) ? 'block' : 'none';
+    }
+};
+
 // Search Bar Logic
 if (searchForm) {
     searchForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        
-        const locationInput = document.getElementById('location').value.toLowerCase().trim();
-        const checkinInput = document.getElementById('checkin').value;
-        const checkoutInput = document.getElementById('checkout').value;
-        const guestsInput = parseInt(document.getElementById('guests').value) || 0;
-        const maxPriceInput = parseFloat(document.getElementById('max-price').value) || Infinity;
-
-        const listingCards = document.querySelectorAll('.featured-listings .listing-card');
-        let visibleCount = 0;
-
-        listingCards.forEach(card => {
-            const cardLocation = card.dataset.location || '';
-            const cardGuests = parseInt(card.dataset.guests) || 0;
-            const availableStart = card.dataset.availableStart;
-            const availableEnd = card.dataset.availableEnd;
-            const cardRate = parseFloat(card.dataset.rate) || 0;
-
-            // Check criteria
-            let matchLocation = !locationInput || cardLocation.includes(locationInput);
-            let matchGuests = !guestsInput || cardGuests >= guestsInput;
-            let matchDates = true;
-            let matchPrice = cardRate <= maxPriceInput;
-
-            // Date range validation
-            if (checkinInput && checkoutInput) {
-                if (checkinInput >= checkoutInput || checkinInput < availableStart || checkoutInput > availableEnd) {
-                    matchDates = false;
-                }
-            } else if (checkinInput && (checkinInput < availableStart || checkinInput > availableEnd)) {
-                matchDates = false;
-            } else if (checkoutInput && (checkoutInput < availableStart || checkoutInput > availableEnd)) {
-                matchDates = false;
-            }
-
-            // Show/Hide Card
-            if (matchLocation && matchGuests && matchDates && matchPrice) {
-                card.style.display = 'flex';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-
-        // Optional: you could add an alert here if visibleCount === 0 to say "No properties found"
+        performSearch();
     });
 }
 
@@ -174,6 +221,28 @@ const saveUser = (user) => {
     users.push(user);
     localStorage.setItem('users', JSON.stringify(users));
 };
+
+// Bookings Database Logic using LocalStorage
+const getBookings = () => JSON.parse(localStorage.getItem('bookings')) || [];
+const saveBooking = (booking) => {
+    const bookings = getBookings();
+    bookings.push(booking);
+    localStorage.setItem('bookings', JSON.stringify(bookings));
+};
+
+// Properties Database Logic using LocalStorage
+const initProperties = () => {
+    if (!localStorage.getItem('properties')) {
+        const initialProps = [
+            { id: 'p1', name: 'Makati City Loft', location: 'Makati, Metro Manila', price: 3500, rating: 0, reviews: 0, imageClass: 'img-neon', availableStart: '2024-01-01', availableEnd: '2024-12-31', guests: 2 },
+            { id: 'p2', name: 'Tagaytay Cozy Cabin', location: 'Tagaytay City, Cavite', price: 4200, rating: 0, reviews: 0, imageClass: 'img-crimson', availableStart: '2024-01-01', availableEnd: '2024-12-31', guests: 4 },
+            { id: 'p3', name: 'Boracay Beach Resort', location: 'Boracay Island, Aklan', price: 5000, rating: 0, reviews: 0, imageClass: 'img-azure', availableStart: '2024-01-01', availableEnd: '2024-12-31', guests: 4 },
+            { id: 'p4', name: 'Palawan Forest Retreat', location: 'El Nido, Palawan', price: 4800, rating: 0, reviews: 0, imageClass: 'img-emerald', availableStart: '2024-01-01', availableEnd: '2024-12-31', guests: 3 }
+        ];
+        localStorage.setItem('properties', JSON.stringify(initialProps));
+    }
+};
+const getProperties = () => JSON.parse(localStorage.getItem('properties')) || [];
 
 // Register
 if (registerForm) {
@@ -343,8 +412,213 @@ const setupTabs = () => {
     });
 };
 
+// Render Bookings Logic
+const renderUserBookings = () => {
+    const currentUser = sessionStorage.getItem('currentUser');
+    if (!currentUser) return;
+
+    const allBookings = getBookings();
+    const userBookings = allBookings.filter(b => b.user === currentUser);
+
+    // 1. My Bookings Page
+    const upcomingContainer = document.getElementById('upcoming-container');
+    const pastContainer = document.getElementById('past-container');
+    const canceledContainer = document.getElementById('canceled-container');
+
+    if (upcomingContainer && pastContainer && canceledContainer) {
+        const upcoming = userBookings.filter(b => b.status === 'upcoming');
+        const past = userBookings.filter(b => b.status === 'past');
+        const canceled = userBookings.filter(b => b.status === 'canceled');
+
+        const createBookingHTML = (b, colorClass, glowClass) => {
+            let actionBtn = '';
+            if (b.status === 'upcoming') {
+                actionBtn = `<button class="btn btn-outline btn-glow mt-3 w-fit complete-stay-btn" data-id="${b.id}" data-property="${b.property}">Complete Stay & Review</button>`;
+            } else if (b.status === 'past' && b.userRating) {
+                actionBtn = `<p class="text-muted mt-2" style="font-size: 0.9rem;">Your Rating: <span class="text-primary font-bold">★ ${b.userRating}/5</span><br>"${b.userReview}"</p>`;
+            }
+            
+            return `
+                <div class="glass-panel ${glowClass} p-4 flex-col">
+                    <h3>${b.property}</h3>
+                    <p class="text-muted">Location: ${b.location} | Price: ${b.price}</p>
+                    <p class="${colorClass} mt-3 font-bold mb-0">Status: ${b.status.charAt(0).toUpperCase() + b.status.slice(1)} (Booked on ${b.dateBooked})</p>
+                    ${actionBtn}
+                </div>
+            `;
+        };
+
+        upcomingContainer.innerHTML = upcoming.length > 0 
+            ? upcoming.map(b => createBookingHTML(b, 'text-green', 'glass-panel-glow-green')).join('')
+            : '<p class="text-muted">No upcoming adventures yet.</p>';
+            
+        pastContainer.innerHTML = past.length > 0 
+            ? past.map(b => createBookingHTML(b, 'text-gold', 'glass-panel-glow-gold')).join('')
+            : '<p class="text-muted">No past memories found.</p>';
+            
+        canceledContainer.innerHTML = canceled.length > 0 
+            ? canceled.map(b => createBookingHTML(b, 'text-crimson', 'glass-panel-glow-crimson')).join('')
+            : '<p class="text-muted">No canceled trips.</p>';
+            
+        // Bind complete stay buttons
+        document.querySelectorAll('.complete-stay-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const bookingId = e.target.getAttribute('data-id');
+                const propertyName = e.target.getAttribute('data-property');
+                const modal = document.getElementById('review-modal');
+                if (modal) {
+                    document.getElementById('review-booking-id').value = bookingId;
+                    document.getElementById('review-property-name').textContent = propertyName;
+                    modal.classList.remove('hidden');
+                }
+            });
+        });
+    }
+
+    // 2. User Dashboard Page
+    const dashboardContainer = document.getElementById('dashboard-recent-bookings');
+    if (dashboardContainer) {
+        if (userBookings.length > 0) {
+            const recent = userBookings.slice(-3).reverse(); // Get latest 3
+            dashboardContainer.innerHTML = recent.map(b => `
+                <div class="glass-panel p-3">
+                    <h4 class="text-primary">${b.property}</h4>
+                    <p class="text-muted mb-0" style="font-size: 0.9rem;">${b.location} - <span style="text-transform: capitalize;">${b.status}</span></p>
+                </div>
+            `).join('');
+        } else {
+            dashboardContainer.innerHTML = '<p class="text-center text-muted">You have no recent bookings.</p>';
+        }
+    }
+};
+
+// Update Recent Booking Ticker (Home Page)
+const updateRecentTicker = () => {
+    const ticker = document.getElementById('recent-booking-ticker');
+    const tickerText = document.getElementById('ticker-text');
+    if (ticker && tickerText) {
+        const currentUser = sessionStorage.getItem('currentUser');
+        
+        if (!currentUser) {
+            ticker.classList.add('hidden');
+            return;
+        }
+
+        const allBookings = getBookings();
+        const userBookings = allBookings.filter(b => b.user === currentUser);
+
+        if (userBookings.length > 0) {
+            const recent = userBookings.slice(-3).reverse(); // Get latest 3 specific to the user
+            const propertyNames = recent.map(b => b.property);
+            
+            let displayText = '';
+            if (propertyNames.length === 1) {
+                displayText = propertyNames[0];
+            } else if (propertyNames.length === 2) {
+                displayText = `${propertyNames[0]} and ${propertyNames[1]}`;
+            } else {
+                displayText = `${propertyNames[0]}, ${propertyNames[1]}, and ${propertyNames[2]}`;
+            }
+
+            tickerText.innerHTML = `<span class="text-primary font-bold">Your Recent Bookings:</span> ${displayText}`;
+            ticker.classList.remove('hidden');
+        } else {
+            ticker.classList.add('hidden');
+        }
+    }
+};
+
+// Render Trending Destinations (Home Page)
+const renderTrendingDestinations = () => {
+    const grid = document.getElementById('trending-destinations-grid');
+    if (grid) {
+        let props = getProperties();
+        
+        // Sort by rating descending. If tied (like all being 0), randomize order.
+        props.sort((a, b) => {
+            if (b.rating === a.rating) return Math.random() - 0.5;
+            return b.rating - a.rating;
+        });
+
+        // Limit to 4 properties for the homepage layout
+        const topProps = props.slice(0, 4);
+
+        grid.innerHTML = topProps.map(p => `
+            <div class="listing-card" data-location="${p.location.toLowerCase()}" data-guests="${p.guests}" data-available-start="${p.availableStart}" data-available-end="${p.availableEnd}" data-rate="${p.price}">
+                <div class="card-image ${p.imageClass}"></div>
+                <div class="card-content">
+                    <h3>${p.name}</h3>
+                    <p class="location">${p.location}</p>
+                    <p class="price">₱${p.price.toLocaleString()} / night</p>
+                    <div class="card-rating mb-3">
+                        <span class="text-primary">★ ${p.rating > 0 ? p.rating.toFixed(1) : 'New'}</span>
+                        <span class="text-muted">(${p.reviews} reviews)</span>
+                    </div>
+                    <button class="btn btn-outline w-100 book-btn">Book Now</button>
+                </div>
+            </div>
+        `).join('');
+        
+        setupBookingButtons(); // Re-bind the checkout events to these newly injected buttons
+    }
+};
+
+// Review and Completion Logic
+const initReviewLogic = () => {
+    const reviewForm = document.getElementById('review-form');
+    const cancelBtn = document.getElementById('cancel-review-btn');
+    const modal = document.getElementById('review-modal');
+
+    if (cancelBtn && modal) {
+        cancelBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            reviewForm.reset();
+        });
+    }
+
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const bookingId = document.getElementById('review-booking-id').value;
+            const rating = parseInt(document.getElementById('review-rating').value);
+            const reviewText = document.getElementById('review-text').value;
+
+            // Update Booking Status
+            const bookings = getBookings();
+            const bookingIndex = bookings.findIndex(b => b.id === bookingId);
+            
+            if (bookingIndex > -1) {
+                const b = bookings[bookingIndex];
+                b.status = 'past'; // Moves it to the Past Bookings tab
+                b.userRating = rating;
+                b.userReview = reviewText;
+                
+                // Update Property Rating dynamically
+                const props = getProperties();
+                const propIndex = props.findIndex(p => p.name === b.property);
+                if (propIndex > -1) {
+                    const p = props[propIndex];
+                    const totalScore = (p.rating * p.reviews) + rating;
+                    p.reviews += 1;
+                    p.rating = totalScore / p.reviews;
+                    localStorage.setItem('properties', JSON.stringify(props));
+                }
+
+                localStorage.setItem('bookings', JSON.stringify(bookings));
+
+                modal.classList.add('hidden');
+                reviewForm.reset();
+                renderUserBookings(); // Instantly visually refresh the tabs
+                
+                alert('Thank you for your review! Your stay has been marked as completed.');
+            }
+        });
+    }
+};
+
 // Initialize App
 document.addEventListener('DOMContentLoaded', () => {
+    initProperties();
     loadComponent('header-placeholder', '../components/header.html');
     loadComponent('footer-placeholder', '../components/footer.html');
     checkAuthStatus();
@@ -400,6 +674,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (checkoutForm) {
                 checkoutForm.addEventListener('submit', (e) => {
                     e.preventDefault();
+                    
+                    // Save to local storage database
+                    const currentUser = sessionStorage.getItem('currentUser');
+                    const newBooking = {
+                        id: 'BKG-' + Date.now().toString(),
+                        user: currentUser,
+                        property: pendingBooking.property,
+                        location: pendingBooking.location,
+                        price: pendingBooking.price,
+                        status: 'upcoming',
+                        dateBooked: new Date().toLocaleDateString()
+                    };
+                    saveBooking(newBooking);
+                    sessionStorage.removeItem('pendingBooking');
+
                     alert('Booking confirmed successfully! Redirecting you to your dashboard.');
                     if (window.redirectToDashboard) window.redirectToDashboard();
                 });
@@ -414,4 +703,38 @@ document.addEventListener('DOMContentLoaded', () => {
         if (username) displayDash.textContent = username;
     }
     setupTabs();
+    initReviewLogic();
+    renderUserBookings();
+    renderTrendingDestinations();
+    updateRecentTicker();
+
+    // Scroll to top button click event
+    const scrollTopBtn = document.getElementById('scroll-top-btn');
+    if (scrollTopBtn) {
+        scrollTopBtn.addEventListener('click', () => {
+            document.documentElement.style.scrollBehavior = 'auto'; // Temporarily force instant scroll
+            window.scrollTo(0, 0); // Jump to top
+            document.documentElement.style.scrollBehavior = ''; // Restore CSS smooth scroll
+        });
+    }
+
+    // Auto-fill and perform search if URL parameters are present (from index page)
+    if (searchForm) {
+        const urlParams = new URLSearchParams(window.location.search);
+        let hasParams = false;
+        
+        ['location', 'checkin', 'checkout', 'guests'].forEach(param => {
+            if (urlParams.has(param) && urlParams.get(param)) {
+                const inputElement = document.getElementById(param);
+                if (inputElement) {
+                    inputElement.value = urlParams.get(param);
+                    hasParams = true;
+                }
+            }
+        });
+
+        if (hasParams) {
+            performSearch();
+        }
+    }
 });

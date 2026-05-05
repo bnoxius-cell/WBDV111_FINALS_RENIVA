@@ -37,36 +37,53 @@
             <!-- Upcoming Bookings View -->
             <div id="upcoming" class="tab-content active">
                 <h2 class="text-green mb-2">Upcoming Adventures</h2>
-                <div class="glass-panel glass-panel-glow-green p-4">
-                    <h3>Neon City Loft</h3>
-                    <p class="text-muted">Check-in: Oct 24, 2024 | Guests: 2</p>
-                    <p class="text-cyan mt-3 font-bold">Status: Confirmed</p>
-                </div>
+                <div id="upcoming-container" class="flex-col gap-1"></div>
             </div>
 
             <!-- Past Bookings View -->
             <div id="past" class="tab-content">
                 <h2 class="text-gold mb-2">Past Memories</h2>
-                <div class="glass-panel glass-panel-glow-gold p-4">
-                    <h3>Crimson Peak Cabin</h3>
-                    <p class="text-muted">Check-out: Jan 12, 2024 | Guests: 4</p>
-                    <p class="text-gold mt-3 font-bold">Status: Completed</p>
-                </div>
+                <div id="past-container" class="flex-col gap-1"></div>
             </div>
 
             <!-- Canceled Bookings View -->
             <div id="canceled" class="tab-content">
                 <h2 class="text-crimson mb-2">Canceled Trips</h2>
-                <div class="glass-panel glass-panel-glow-crimson p-4">
-                    <h3>Azure Beach Resort</h3>
-                    <p class="text-muted">Original Dates: Mar 01 - Mar 05, 2024</p>
-                    <p class="text-crimson mt-3 font-bold">Status: Refunded</p>
-                </div>
+                <div id="canceled-container" class="flex-col gap-1"></div>
             </div>
                 </div>
             </section>
         </div>
     </main>
+
+    <!-- Review & Complete Stay Modal -->
+    <div id="review-modal" class="modal-overlay hidden">
+        <div class="card m-0 mx-1 max-w-400 w-100">
+            <h2 class="mb-1 text-primary">How was your stay?</h2>
+            <p id="review-property-name" class="text-muted mb-3">Property Name</p>
+            <form id="review-form">
+                <input type="hidden" id="review-booking-id">
+                <div class="form-group">
+                    <label class="form-label" for="review-rating">Rating (1-5 Stars)</label>
+                    <select id="review-rating" class="form-control" required>
+                        <option value="5">5 - Excellent (★ 5.0)</option>
+                        <option value="4">4 - Very Good (★ 4.0)</option>
+                        <option value="3">3 - Good (★ 3.0)</option>
+                        <option value="2">2 - Fair (★ 2.0)</option>
+                        <option value="1">1 - Poor (★ 1.0)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="review-text">Comments</label>
+                    <textarea id="review-text" class="form-control resize-y" rows="4" placeholder="Tell us about your experience..." required></textarea>
+                </div>
+                <div class="flex-col gap-1 mt-3">
+                    <button type="submit" class="btn btn-primary btn-glow w-100">Submit Review & Complete</button>
+                    <button type="button" id="cancel-review-btn" class="btn btn-outline w-100">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Footer Component Loader -->
     <div id="footer-placeholder"></div>

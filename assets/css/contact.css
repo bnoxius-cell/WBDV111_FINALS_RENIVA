@@ -1,0 +1,32 @@
+/* Contact Page Specific Styles */
+.contact-card-cyan {
+    align-items: center;
+    border-top: 4px solid var(--accent-cyan);
+}
+.contact-card-green {
+    align-items: center;
+    border-top: 4px solid var(--accent-green);
+}
+.contact-card-gold {
+    align-items: center;
+    border-top: 4px solid var(--accent-gold);
+}
+.contact-card-crimson {
+    align-items: center;
+    border-top: 4px solid var(--accent-crimson);
+}
+.contact-icon-lg {
+    padding: 1rem;
+    border-radius: 50%;
+}
+.phone-link-primary {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+.phone-link-secondary {
+    display: block;
+}
+.btn-contact-submit {
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+}

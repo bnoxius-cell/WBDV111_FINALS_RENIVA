@@ -6,6 +6,7 @@
     <title>Home | CozyCorner</title>
     <link rel="stylesheet" href="../../assets/css/global.css">
     <link rel="stylesheet" href="../../assets/css/home.css">
+    <link rel="stylesheet" href="../../assets/css/index-specific.css">
 </head>
 <body>
     <div id="header-placeholder"></div>
@@ -42,7 +43,7 @@
                         </button>
                     </div>
                 </form>
-                
+
                 <!-- Quick Categories -->
                 <div class="categories-row mt-4 pt-4">
                     <button class="category-btn">
@@ -70,6 +71,14 @@
                         <span>Mountain Views</span>
                     </button>
                 </div>
+
+                <!-- Recently Booked Ticker -->
+                <div id="recent-booking-ticker" class="recent-booking-ticker mt-4 mx-auto w-fit glass-panel-soft flex-center hidden">
+                    <div class="pulse-dot"></div>
+                    <span id="ticker-text" class="text-muted">
+                        <!-- Dynamically populated from LocalStorage -->
+                    </span>
+                </div>
             </div>
         </section>
 
@@ -78,66 +87,8 @@
             <h2>Trending Destinations</h2>
             <p class="text-muted text-center mb-3">Handpicked properties for your next adventure.</p>
 
-            <div class="listings-grid">
-                <!-- Card 1 -->
-                <div class="listing-card">
-                    <div class="card-image img-neon"></div>
-                    <div class="card-content">
-                        <h3>Makati City Loft</h3>
-                        <p class="location">Makati, Metro Manila</p>
-                        <p class="price">₱3,500 / night</p>
-                        <div class="card-rating mb-3">
-                            <span class="text-primary">★ 4.9</span>
-                            <span class="text-muted">(128 reviews)</span>
-                        </div>
-                        <button class="btn btn-outline w-100 book-btn">Book Now</button>
-                    </div>
-                </div>
-                
-                <!-- Card 2 -->
-                <div class="listing-card">
-                    <div class="card-image img-crimson"></div>
-                    <div class="card-content">
-                        <h3>Tagaytay Cozy Cabin</h3>
-                        <p class="location">Tagaytay City, Cavite</p>
-                        <p class="price">₱4,200 / night</p>
-                        <div class="card-rating mb-3">
-                            <span class="text-primary">★ 4.8</span>
-                            <span class="text-muted">(95 reviews)</span>
-                        </div>
-                        <button class="btn btn-outline w-100 book-btn">Book Now</button>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="listing-card">
-                    <div class="card-image img-azure"></div>
-                    <div class="card-content">
-                        <h3>Boracay Beach Resort</h3>
-                        <p class="location">Boracay Island, Aklan</p>
-                        <p class="price">₱5,000 / night</p>
-                        <div class="card-rating mb-3">
-                            <span class="text-primary">★ 5.0</span>
-                            <span class="text-muted">(210 reviews)</span>
-                        </div>
-                        <button class="btn btn-outline w-100 book-btn">Book Now</button>
-                    </div>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="listing-card">
-                    <div class="card-image img-emerald"></div>
-                    <div class="card-content">
-                        <h3>Palawan Forest Retreat</h3>
-                        <p class="location">El Nido, Palawan</p>
-                        <p class="price">₱4,800 / night</p>
-                        <div class="card-rating mb-3">
-                            <span class="text-primary">★ 4.7</span>
-                            <span class="text-muted">(64 reviews)</span>
-                        </div>
-                        <button class="btn btn-outline w-100 book-btn">Book Now</button>
-                    </div>
-                </div>
+            <div class="listings-grid" id="trending-destinations-grid">
+                <!-- Dynamically populated from LocalStorage -->
             </div>
         </section>
 
@@ -182,14 +133,19 @@
                     <p class="text-muted mb-3">These buttons will automatically appear or disappear based on your current role level.</p>
                     <div class="flex-center flex-wrap gap-1">
                         <button class="btn btn-outline" data-require-role="guest">Guest / Everyone</button>
-                        <button class="btn btn-outline" data-require-role="user" style="color: #00ffff; border-color: #00ffff;">User Only</button>
-                        <button class="btn btn-outline" data-require-role="admin" style="color: #39ff14; border-color: #39ff14;">Admin Only</button>
-                        <button class="btn btn-outline" data-require-role="superadmin" style="color: #ff003c; border-color: #ff003c;">Super Admin Only</button>
+                        <button class="btn btn-outline btn-rbac-user" data-require-role="user">User Only</button>
+                        <button class="btn btn-outline btn-rbac-admin" data-require-role="admin">Admin Only</button>
+                        <button class="btn btn-outline btn-rbac-superadmin" data-require-role="superadmin">Super Admin Only</button>
                     </div>
                 </div>
             </div>
         </section>
     </main>
+
+    <!-- Scroll to Top Button -->
+    <button id="scroll-top-btn" class="scroll-top-btn" aria-label="Scroll to top">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+    </button>
 
     <div id="footer-placeholder"></div>
 

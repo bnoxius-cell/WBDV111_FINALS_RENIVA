@@ -1,6 +1,6 @@
 /* Hero Section */
 .hero {
-    padding: 5rem 0;
+    padding: 5rem 0 2rem;
     text-align: center;
     background-color: var(--secondary-color);
 }
@@ -67,6 +67,32 @@
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
     border-radius: var(--border-radius);
+}
+
+/* Recently Booked Ticker */
+.recent-booking-ticker {
+    padding: 0.5rem 1.25rem;
+    border-radius: 50px;
+    gap: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+    cursor: default;
+}
+.recent-booking-ticker:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent-green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
 }
 
 /* Categories Row */
@@ -205,4 +231,37 @@
     .categories-row {
         justify-content: flex-start;
     }
+}
+
+/* Scroll to Top Button */
+.scroll-top-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(245, 176, 65, 0.4);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s, background-color 0.2s ease;
+}
+.scroll-top-btn.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.scroll-top-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(245, 176, 65, 0.6);
 }
