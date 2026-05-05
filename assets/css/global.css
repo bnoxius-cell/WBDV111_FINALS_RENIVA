@@ -352,6 +352,12 @@ main {
 .img-crimson { background-image: url('https://images.unsplash.com/photo-1449844908441-8829872d2607?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); }
 .img-azure { background-image: url('https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); }
 .img-emerald { background-image: url('https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); }
+.img-room1 { background-image: url('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); }
+.img-room2 { background-image: url('https://images.unsplash.com/photo-1502672260266-1c1de24220e3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); }
+.img-pool { background-image: url('https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); }
+.img-view { background-image: url('https://images.unsplash.com/photo-1510798831971-661eb04b3739?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); }
+.img-bathroom { background-image: url('https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); }
+.img-kitchen { background-image: url('https://images.unsplash.com/photo-1556910103-1c02745a872e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'); }
 
 /* Tabs UI */
 .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
@@ -713,17 +719,37 @@ main {
     color: var(--secondary-color);
     border-color: var(--primary-color);
 }
+.property-modal-carousel {
+    position: relative; 
+    height: 100%; 
+    overflow: hidden;
+}
 .property-modal-hero {
     height: 100%;
     background-size: cover;
     background-position: center;
     position: relative;
+    flex-shrink: 0;
 }
 @media (max-width: 768px) {
+    .property-modal-carousel {
+        height: 200px; /* Give it a fixed height on mobile */
+    }
     .property-modal-hero {
         height: 200px; /* Give it a fixed height on mobile */
     }
 }
+.carousel-nav-btn {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    border-radius: 50%; z-index: 10;
+    background: rgba(15, 23, 42, 0.6); color: var(--text-primary);
+    border: 1px solid rgba(255,255,255,0.2); width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s ease;
+}
+.carousel-nav-btn:hover { background: var(--primary-color); color: var(--secondary-color); border-color: var(--primary-color); }
+.carousel-nav-btn.left { left: 10px; }
+.carousel-nav-btn.right { right: 10px; }
 .property-modal-body {
     padding: 2rem 2.5rem;
     display: flex;
@@ -831,6 +857,44 @@ main {
 .cal-nav:hover { background: var(--primary-color); color: var(--secondary-color); border-color: var(--primary-color); }
 @media (max-width: 768px) {
     .calendar-popup { width: 100%; min-width: 280px; }
+}
+
+/* Custom iOS-Style Time Picker */
+.custom-time-wrapper { position: relative; }
+.time-picker-popup {
+    position: absolute; top: calc(100% + 0.5rem); left: 0;
+    width: 320px; z-index: 2000; padding: 1.25rem;
+    background-color: var(--secondary-color);
+    backdrop-filter: none;
+    box-shadow: var(--shadow-lg);
+    border-radius: 16px;
+    cursor: default;
+}
+.time-wheels {
+    display: flex; justify-content: space-between; position: relative;
+    height: 150px; overflow: hidden; background: rgba(0,0,0,0.15);
+    border-radius: 12px; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.05);
+}
+.time-selection-band {
+    position: absolute; top: 50%; left: 0; width: 100%; height: 40px;
+    transform: translateY(-50%); background: rgba(245, 176, 65, 0.1);
+    border-top: 1px solid rgba(245, 176, 65, 0.3); border-bottom: 1px solid rgba(245, 176, 65, 0.3);
+    pointer-events: none; border-radius: 4px;
+}
+.time-wheel {
+    flex: 1; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory;
+    scrollbar-width: none; -ms-overflow-style: none;
+    padding: 55px 0; /* Padding centers the first/last items (150-40)/2 = 55 */
+    scroll-behavior: smooth;
+}
+.time-wheel::-webkit-scrollbar { display: none; }
+.time-wheel-item {
+    height: 40px; display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; font-weight: 500; color: var(--text-secondary);
+    scroll-snap-align: center; transition: color 0.2s, font-size 0.2s, transform 0.2s;
+}
+.time-wheel-item.active {
+    color: var(--primary-color); font-size: 1.35rem; font-weight: 700;
 }
 
 /* Date Warning Styles */

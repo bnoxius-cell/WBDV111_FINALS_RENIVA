@@ -174,36 +174,40 @@ const performSearch = () => {
         }
 
         // 3. OVERLAP CHECK: Check against existing upcoming bookings for this specific property
+        let conflictingDatesStr = '';
         if (matchDates && (checkinInput || checkoutInput)) {
             const propertyBookings = allBookings.filter(b => b.property === propertyName && b.status === 'upcoming');
+            const formatF = (dateStr) => new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             
             for (let b of propertyBookings) {
                 if (b.checkin && b.checkout) {
+                    let hasOverlap = false;
                     if (checkinInput && checkoutInput) {
                         // Overlap condition: requested check-in is before booked check-out AND requested check-out is after booked check-in
                         if (checkinInput < b.checkout && checkoutInput > b.checkin) {
-                            matchDates = false;
-                            isFullyBooked = true;
-                            break;
+                            hasOverlap = true;
                         }
                     } else if (checkinInput) {
                         // Only check-in provided: does it fall inside a booked period?
                         if (checkinInput >= b.checkin && checkinInput < b.checkout) {
-                            matchDates = false;
-                            isFullyBooked = true;
-                            break;
+                            hasOverlap = true;
                         }
                     } else if (checkoutInput) {
                         // Only check-out provided: does it fall inside a booked period?
                         if (checkoutInput > b.checkin && checkoutInput <= b.checkout) {
-                            matchDates = false;
-                            isFullyBooked = true;
-                            break;
+                            hasOverlap = true;
                         }
+                    }
+                    
+                    if (hasOverlap) {
+                        matchDates = false;
+                        isFullyBooked = true;
+                        conflictingDatesStr += `${formatF(b.checkin)} - ${formatF(b.checkout)}, `;
                     }
                 }
             }
         }
+        if (conflictingDatesStr) conflictingDatesStr = conflictingDatesStr.slice(0, -2);
 
         // Cleanup previous state (if search changes)
         const existingWarning = card.querySelector('.date-conflict-warning');
@@ -230,7 +234,9 @@ const performSearch = () => {
             const warning = document.createElement('div');
             warning.className = 'date-conflict-warning text-crimson font-bold mb-2';
             warning.style.fontSize = '0.85rem';
-            warning.innerHTML = '⚠️ Fully booked for selected dates';
+            warning.innerHTML = conflictingDatesStr 
+                ? `⚠️ Booked on: <span style="font-weight:normal;">${conflictingDatesStr}</span>`
+                : '⚠️ Fully booked for selected dates';
             
             const cardContent = card.querySelector('.card-content');
             cardContent.insertBefore(warning, cardContent.querySelector('.price'));
@@ -338,10 +344,10 @@ const saveBooking = (booking) => {
 const initProperties = () => {
     if (!localStorage.getItem('properties')) {
         const initialProps = [
-            { id: 'p1', name: 'Monumento City Loft', location: 'Caloocan City, Metro Manila', price: 3500, rating: 0, reviews: 0, imageClass: 'img-neon', availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 2, beds: '1 Studio' },
-            { id: 'p2', name: 'Malabon Cozy Cabin', location: 'Malabon City, Metro Manila', price: 4200, rating: 0, reviews: 0, imageClass: 'img-crimson', availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 4, beds: '2 Bedrooms' },
-            { id: 'p3', name: 'Valenzuela Resort', location: 'Valenzuela City, Metro Manila', price: 5000, rating: 0, reviews: 0, imageClass: 'img-azure', availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 6, beds: '3 Bedrooms' },
-            { id: 'p4', name: 'Marilao Nature Retreat', location: 'Marilao, Bulacan', price: 4800, rating: 0, reviews: 0, imageClass: 'img-emerald', availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 2, beds: '1 Bedroom' }
+            { id: 'p1', name: 'Monumento City Loft', location: 'Caloocan City, Metro Manila', price: 3500, rating: 0, reviews: 0, imageClass: 'img-neon', images: ['img-neon', 'img-room1', 'img-kitchen', 'img-bathroom'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 2, beds: '1 Studio' },
+            { id: 'p2', name: 'Malabon Cozy Cabin', location: 'Malabon City, Metro Manila', price: 4200, rating: 0, reviews: 0, imageClass: 'img-crimson', images: ['img-crimson', 'img-room2', 'img-view', 'img-pool'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 4, beds: '2 Bedrooms' },
+            { id: 'p3', name: 'Valenzuela Resort', location: 'Valenzuela City, Metro Manila', price: 5000, rating: 0, reviews: 0, imageClass: 'img-azure', images: ['img-azure', 'img-pool', 'img-room1', 'img-view'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 6, beds: '3 Bedrooms' },
+            { id: 'p4', name: 'Marilao Nature Retreat', location: 'Marilao, Bulacan', price: 4800, rating: 0, reviews: 0, imageClass: 'img-emerald', images: ['img-emerald', 'img-view', 'img-room2', 'img-kitchen'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 2, beds: '1 Bedroom' }
         ];
         localStorage.setItem('properties', JSON.stringify(initialProps));
     }
@@ -355,6 +361,7 @@ const syncProperties = () => {
     
     let props = getProperties();
     let updated = false;
+    const extraImages = ['img-room1', 'img-pool', 'img-view', 'img-room2', 'img-bathroom', 'img-kitchen'];
 
     cards.forEach((card, index) => {
         // Skip dynamically generated trending cards so we don't duplicate them
@@ -369,6 +376,9 @@ const syncProperties = () => {
             const priceText = card.querySelector('.price')?.textContent || '';
             const price = parseFloat(priceText.replace(/[^\d.]/g, '')) || 0;
             
+            const baseImg = Array.from(card.querySelector('.card-image')?.classList || []).find(c => c.startsWith('img-')) || 'img-neon';
+            const imgs = [baseImg, extraImages[index % extraImages.length], extraImages[(index + 1) % extraImages.length], extraImages[(index + 2) % extraImages.length]];
+            
             existingProp = {
                 id: 'p_sync_' + Date.now() + index,
                 name: name,
@@ -376,7 +386,8 @@ const syncProperties = () => {
                 price: price,
                 rating: 0,
                 reviews: 0,
-                imageClass: Array.from(card.querySelector('.card-image')?.classList || []).find(c => c.startsWith('img-')) || 'img-neon',
+                imageClass: baseImg,
+                images: imgs,
                 availableStart: card.dataset.availableStart || '2000-01-01',
                 availableEnd: card.dataset.availableEnd || '2099-12-31',
                 guests: parseInt(card.dataset.guests) || 2,
@@ -409,6 +420,7 @@ const initSteppers = () => {
         const btnDown = container.querySelector('[data-step="down"]');
         const btnUp = container.querySelector('[data-step="up"]');
         const min = parseInt(input.min) || 1;
+        const max = parseInt(input.max) || 20;
 
         if (!input || !btnDown || !btnUp) return;
 
@@ -416,12 +428,16 @@ const initSteppers = () => {
             let value = parseInt(input.value) || min;
             if (value > min) {
                 input.value = value - 1;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
             }
         });
 
         btnUp.addEventListener('click', () => {
             let value = parseInt(input.value) || min;
-            input.value = value + 1;
+            if (value < max) {
+                input.value = value + 1;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
         });
     });
 };
@@ -561,7 +577,7 @@ const initCustomCalendars = () => {
         
         trigger.addEventListener('click', (e) => {
             e.stopPropagation();
-            document.querySelectorAll('.calendar-popup').forEach(p => { if(p !== popup) p.classList.add('hidden'); });
+            document.querySelectorAll('.calendar-popup, .time-picker-popup').forEach(p => { if(p !== popup) p.classList.add('hidden'); });
             popup.classList.toggle('hidden');
             renderCalendar();
         });
@@ -576,7 +592,7 @@ const initCustomCalendars = () => {
         popup.addEventListener('click', (e) => e.stopPropagation());
     });
 
-    document.addEventListener('click', () => document.querySelectorAll('.calendar-popup').forEach(p => p.classList.add('hidden')));
+    document.addEventListener('click', () => document.querySelectorAll('.calendar-popup, .time-picker-popup').forEach(p => p.classList.add('hidden')));
 };
 
 // Register
@@ -667,6 +683,9 @@ const showLoginPromptModal = () => {
     modal.classList.remove('hidden');
 };
 
+// Global interval variable for the carousel auto-play
+window.modalCarouselInterval = null;
+
 // Property Details Modal Logic
 const initPropertyModalUI = () => {
     if (document.getElementById('property-details-modal')) return;
@@ -678,7 +697,12 @@ const initPropertyModalUI = () => {
             <button id="property-modal-close" class="property-modal-close" aria-label="Close">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
-            <div id="property-modal-image" class="property-modal-hero"></div>
+            <div class="property-modal-carousel">
+                <div id="property-modal-image-track" style="display: flex; height: 100%; transition: transform 0.3s ease; width: 100%;"></div>
+                <button id="modal-prev-img" class="carousel-nav-btn left">&lt;</button>
+                <button id="modal-next-img" class="carousel-nav-btn right">&gt;</button>
+                <div id="modal-img-indicators" style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index:10;"></div>
+            </div>
             <div class="property-modal-body">
                 <div class="flex-between flex-wrap gap-1">
                     <div>
@@ -718,12 +742,14 @@ const initPropertyModalUI = () => {
         if (e.target === modal) {
             modal.classList.add('hidden');
             document.body.classList.remove('modal-open');
+            clearInterval(window.modalCarouselInterval);
         }
     });
 
     document.getElementById('property-modal-close').addEventListener('click', () => {
         modal.classList.add('hidden');
         document.body.classList.remove('modal-open');
+        clearInterval(window.modalCarouselInterval);
     });
 };
 
@@ -746,11 +772,69 @@ const openPropertyModal = (card) => {
     document.getElementById('property-modal-guests').textContent = propData?.guests || guests || '2';
     document.getElementById('property-modal-beds').textContent = propData?.beds || '1 Bedroom';
     
-    // Setup image
-    const imgEl = document.getElementById('property-modal-image');
-    imgEl.className = 'property-modal-hero'; // reset
-    const imgClass = propData?.imageClass || Array.from(card.querySelector('.card-image').classList).find(c => c.startsWith('img-'));
-    if (imgClass) imgEl.classList.add(imgClass);
+    // Setup image carousel
+    const baseImgClass = propData?.imageClass || Array.from(card.querySelector('.card-image').classList).find(c => c.startsWith('img-')) || 'img-neon';
+    let images = propData?.images;
+    if (!images || images.length === 0) {
+        // Fallback for older properties saved before this update
+        images = [baseImgClass, 'img-room1', 'img-view', 'img-bathroom'];
+    }
+
+    const track = document.getElementById('property-modal-image-track');
+    const indicators = document.getElementById('modal-img-indicators');
+    
+    track.innerHTML = images.map(img => `<div class="property-modal-hero ${img}" style="min-width: 100%;"></div>`).join('');
+    indicators.innerHTML = images.map((_, i) => `<div class="img-indicator" style="width: 8px; height: 8px; border-radius: 50%; background: ${i===0?'var(--primary-color)':'rgba(255,255,255,0.5)'}; transition: background 0.3s; cursor: pointer;"></div>`).join('');
+    
+    let currentImgIdx = 0;
+    const updateCarousel = () => {
+        track.style.transform = `translateX(-${currentImgIdx * 100}%)`;
+        Array.from(indicators.children).forEach((dot, i) => {
+            dot.style.background = i === currentImgIdx ? 'var(--primary-color)' : 'rgba(255,255,255,0.5)';
+        });
+    };
+    
+    const startAutoSlide = () => {
+        clearInterval(window.modalCarouselInterval);
+        window.modalCarouselInterval = setInterval(() => {
+            currentImgIdx = (currentImgIdx < images.length - 1) ? currentImgIdx + 1 : 0;
+            updateCarousel();
+        }, 1750); // Flips every 1.75 seconds
+    };
+    
+    const prevBtn = document.getElementById('modal-prev-img');
+    const nextBtn = document.getElementById('modal-next-img');
+    
+    const newPrev = prevBtn.cloneNode(true);
+    const newNext = nextBtn.cloneNode(true);
+    prevBtn.parentNode.replaceChild(newPrev, prevBtn);
+    nextBtn.parentNode.replaceChild(newNext, nextBtn);
+    
+    newPrev.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentImgIdx = (currentImgIdx > 0) ? currentImgIdx - 1 : images.length - 1;
+        updateCarousel();
+        startAutoSlide(); // Reset timer on manual interaction
+    });
+    
+    newNext.addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentImgIdx = (currentImgIdx < images.length - 1) ? currentImgIdx + 1 : 0;
+        updateCarousel();
+        startAutoSlide(); // Reset timer on manual interaction
+    });
+
+    Array.from(indicators.children).forEach((dot, i) => {
+        dot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            currentImgIdx = i;
+            updateCarousel();
+            startAutoSlide(); // Reset timer on manual interaction
+        });
+    });
+
+    // Start auto-play immediately when modal opens
+    startAutoSlide();
 
     // Rating
     const ratingHtml = `
@@ -1206,6 +1290,200 @@ document.addEventListener('DOMContentLoaded', () => {
             checkoutInput.min = pendingBooking.checkin || formatDate(tomorrow);
             checkoutInput.value = pendingBooking.checkout || formatDate(tomorrow);
 
+            // Initialize the single Custom Calendars for Checkout
+            const initSingleCustomCalendars = () => {
+                const setups = [
+                    { wrapperId: 'checkout-checkin-wrapper', triggerId: 'checkout-checkin-trigger', inputId: 'checkin-date' },
+                    { wrapperId: 'checkout-checkout-wrapper', triggerId: 'checkout-checkout-trigger', inputId: 'checkout-date' }
+                ];
+                const propertyBookings = getBookings().filter(b => b.property === pendingBooking.property && b.status === 'upcoming');
+
+                setups.forEach(setup => {
+                    const wrapper = document.getElementById(setup.wrapperId);
+                    if (!wrapper) return;
+
+                    const trigger = document.getElementById(setup.triggerId);
+                    const inputField = document.getElementById(setup.inputId);
+                    
+                    const popup = document.createElement('div');
+                    popup.className = 'calendar-popup glass-panel hidden';
+                    popup.innerHTML = `
+                        <div class="flex-between mb-3 align-center">
+                            <button type="button" class="cal-nav" id="${setup.wrapperId}-prev">&lt;</button>
+                            <strong class="cal-month-year text-primary" id="${setup.wrapperId}-month"></strong>
+                            <button type="button" class="cal-nav" id="${setup.wrapperId}-next">&gt;</button>
+                        </div>
+                        <div class="grid-7 text-muted text-sm text-center mb-2 font-bold">
+                            <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+                        </div>
+                        <div class="grid-7 text-center" id="${setup.wrapperId}-days"></div>
+                        <div class="cal-warnings mt-3" id="${setup.wrapperId}-warnings"></div>
+                    `;
+                    wrapper.appendChild(popup);
+
+                    let currentMonth = new Date();
+                    if (inputField.value) currentMonth = new Date(inputField.value + 'T00:00:00');
+                    currentMonth.setDate(1);
+
+                    const formatDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+
+                    const renderCalendar = () => {
+                        const daysContainer = document.getElementById(`${setup.wrapperId}-days`);
+                        const monthLabel = document.getElementById(`${setup.wrapperId}-month`);
+                        
+                        daysContainer.innerHTML = '';
+                        monthLabel.textContent = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+                        const year = currentMonth.getFullYear();
+                        const month = currentMonth.getMonth();
+                        const firstDayIndex = new Date(year, month, 1).getDay();
+                        const daysInMonth = new Date(year, month + 1, 0).getDate();
+                        const today = new Date();
+                        today.setHours(0,0,0,0);
+                        
+                        let selectedDate = inputField.value ? new Date(inputField.value + 'T00:00:00') : null;
+
+                        for (let i = 0; i < firstDayIndex; i++) daysContainer.appendChild(document.createElement('div'));
+
+                        for (let i = 1; i <= daysInMonth; i++) {
+                            const dateObj = new Date(year, month, i);
+                            const dateStr = formatDateStr(dateObj);
+                            const dayEl = document.createElement('div');
+                            dayEl.className = 'cal-day';
+                            dayEl.textContent = i;
+
+                            // Visually disable fully booked days
+                            let isBooked = false;
+                            for (let b of propertyBookings) {
+                                if (b.checkin && b.checkout) {
+                                    const start = new Date(b.checkin + 'T00:00:00');
+                                    const end = new Date(b.checkout + 'T00:00:00');
+                                    if (setup.inputId === 'checkin-date' && dateObj >= start && dateObj < end) isBooked = true;
+                                    if (setup.inputId === 'checkout-date' && dateObj > start && dateObj <= end) isBooked = true;
+                                }
+                            }
+
+                            if (dateObj < today || isBooked) {
+                                dayEl.classList.add('disabled');
+                            } else {
+                                if (selectedDate && dateStr === formatDateStr(selectedDate)) dayEl.classList.add('selected');
+                                
+                                dayEl.addEventListener('click', () => {
+                                    inputField.value = dateStr;
+                                    trigger.innerHTML = `<span class="text-primary font-bold">${dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
+                                    popup.classList.add('hidden');
+                                    inputField.dispatchEvent(new Event('change')); // Trigger auto-calculate
+                                });
+                            }
+                            daysContainer.appendChild(dayEl);
+                        }
+                        
+                        const s = selectedDate ? selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Select date';
+                        trigger.innerHTML = `<span class="${selectedDate ? 'text-primary font-bold' : 'text-muted'}">${s}</span>
+                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
+
+                        // Display Warnings inside popup
+                        const warningsContainer = document.getElementById(`${setup.wrapperId}-warnings`);
+                        warningsContainer.innerHTML = '';
+                        if (propertyBookings.length > 0) {
+                            let warningHTML = '<div class="date-warnings-container m-0"><p class="text-gold mb-1" style="font-weight: 600; font-size:0.85rem;">Heads up! Booked dates:</p><ul style="margin-top: 0;">';
+                            const formatF = (dateStr) => new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            propertyBookings.forEach(b => {
+                                warningHTML += `<li style="font-size: 0.75rem;">${formatF(b.checkin)} - ${formatF(b.checkout)}</li>`;
+                            });
+                            warningHTML += '</ul></div>';
+                            warningsContainer.innerHTML = warningHTML;
+                        }
+                    };
+
+                    document.getElementById(`${setup.wrapperId}-prev`).addEventListener('click', (e) => { e.stopPropagation(); currentMonth.setMonth(currentMonth.getMonth() - 1); renderCalendar(); });
+                    document.getElementById(`${setup.wrapperId}-next`).addEventListener('click', (e) => { e.stopPropagation(); currentMonth.setMonth(currentMonth.getMonth() + 1); renderCalendar(); });
+                    
+                    trigger.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        document.querySelectorAll('.calendar-popup').forEach(p => { if(p !== popup) p.classList.add('hidden'); });
+                        popup.classList.toggle('hidden');
+                        renderCalendar();
+                    });
+                    
+                    popup.addEventListener('click', (e) => e.stopPropagation());
+                    renderCalendar(); // Render text immediately on page load
+                });
+            };
+            initSingleCustomCalendars();
+
+            // Initialize Custom iOS-Style Time Picker
+            const initCustomTimePicker = () => {
+                const wrapper = document.getElementById('checkout-time-wrapper');
+                if (!wrapper) return;
+
+                const trigger = document.getElementById('checkout-time-trigger');
+                const inputField = document.getElementById('arrival-time');
+                
+                const popup = document.createElement('div');
+                popup.className = 'time-picker-popup glass-panel hidden';
+                
+                let hHTML = '', mHTML = '';
+                for(let i=1; i<=12; i++) hHTML += `<div class="time-wheel-item" data-val="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</div>`;
+                for(let i=0; i<=59; i++) mHTML += `<div class="time-wheel-item" data-val="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</div>`;
+                let aHTML = `<div class="time-wheel-item" data-val="AM">AM</div><div class="time-wheel-item" data-val="PM">PM</div>`;
+
+                popup.innerHTML = `
+                    <div class="text-center mb-3 text-primary font-bold">Select Arrival Time</div>
+                    <div class="time-wheels">
+                        <div class="time-selection-band"></div>
+                        <div class="time-wheel" id="wheel-h">${hHTML}</div>
+                        <div class="time-wheel" id="wheel-m">${mHTML}</div>
+                        <div class="time-wheel" id="wheel-a">${aHTML}</div>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-glow w-100 mt-2" id="time-confirm-btn">Confirm Time</button>
+                `;
+                wrapper.appendChild(popup);
+
+                const updateActive = (wheel) => {
+                    const idx = Math.round(wheel.scrollTop / 40); // 40px is the item height
+                    wheel.querySelectorAll('.time-wheel-item').forEach((item, i) => {
+                        item.classList.toggle('active', i === idx);
+                    });
+                };
+
+                ['wheel-h', 'wheel-m', 'wheel-a'].forEach(id => {
+                    const w = document.getElementById(id);
+                    w.addEventListener('scroll', () => updateActive(w));
+                    
+                    // Add click-to-select functionality
+                    w.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('time-wheel-item')) {
+                            const index = Array.from(w.querySelectorAll('.time-wheel-item')).indexOf(e.target);
+                            w.scrollTop = index * 40; // 40 is the item height
+                        }
+                    });
+                    
+                    updateActive(w);
+                });
+                
+                // Default to 02:00 PM
+                document.getElementById('wheel-h').scrollTop = 40 * 1;
+                document.getElementById('wheel-a').scrollTop = 40 * 1;
+
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    document.querySelectorAll('.calendar-popup, .time-picker-popup').forEach(p => { if(p !== popup) p.classList.add('hidden'); });
+                    popup.classList.toggle('hidden');
+                });
+
+                document.getElementById('time-confirm-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const val = `${document.getElementById('wheel-h').querySelector('.active')?.dataset.val || '12'}:${document.getElementById('wheel-m').querySelector('.active')?.dataset.val || '00'} ${document.getElementById('wheel-a').querySelector('.active')?.dataset.val || 'PM'}`;
+                    trigger.innerHTML = `<span class="text-primary font-bold">${val}</span> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+                    inputField.value = val;
+                    popup.classList.add('hidden');
+                });
+                popup.addEventListener('click', (e) => e.stopPropagation());
+            };
+            initCustomTimePicker();
+
             // Real-time calculation logic
             const calculateTotals = () => {
                 const d1 = new Date(checkinInput.value);
@@ -1248,11 +1526,60 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 document.getElementById('receipt-grand-total').textContent = `₱${grandTotal.toLocaleString()}`;
+
+                // --- STRICT DATE CONFLICT VALIDATION ---
+                const submitBtn = document.getElementById('pay-now-btn');
+                const warningEl = document.getElementById('checkout-date-warning');
+                let isConflict = false;
+                let conflictReason = '';
+
+                const finalCheckin = checkinInput.value;
+                const finalCheckout = checkoutInput.value;
+
+                // 1. Property bounds validation
+                const props = getProperties();
+                const currentProp = props.find(p => p.name === pendingBooking.property);
+                if (currentProp) {
+                    let availStart = currentProp.availableStart;
+                    if (!availStart || !availStart.includes('-')) availStart = '2000-01-01';
+                    let availEnd = currentProp.availableEnd;
+                    if (!availEnd || !availEnd.includes('-')) availEnd = '2099-12-31';
+
+                    if (finalCheckin < availStart || finalCheckout > availEnd) {
+                        isConflict = true;
+                        conflictReason = `Property is unavailable for these dates.`;
+                    }
+                }
+
+                // 2. Existing booking overlaps validation
+                if (!isConflict) {
+                    const allBookings = getBookings().filter(b => b.property === pendingBooking.property && b.status === 'upcoming');
+                    const formatF = (dateStr) => new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    
+                    for (const b of allBookings) {
+                        if (b.checkin && b.checkout && finalCheckin < b.checkout && finalCheckout > b.checkin) {
+                            isConflict = true;
+                            conflictReason = `Fully booked on: ${formatF(b.checkin)} - ${formatF(b.checkout)}`;
+                            break;
+                        }
+                    }
+                }
+
+                // Enforce UI lock
+                if (isConflict) {
+                    if (warningEl) { warningEl.innerHTML = `⚠️ <span style="font-weight:normal;">${conflictReason}</span>`; warningEl.classList.remove('hidden'); }
+                    if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '0.5'; submitBtn.style.cursor = 'not-allowed'; submitBtn.textContent = 'Dates Unavailable'; }
+                } else {
+                    if (warningEl) { warningEl.classList.add('hidden'); warningEl.innerHTML = ''; }
+                    if (submitBtn) { submitBtn.disabled = false; submitBtn.style.opacity = '1'; submitBtn.style.cursor = 'pointer'; submitBtn.textContent = 'Confirm & Pay'; }
+                }
             };
 
             // Listeners
             checkinInput.addEventListener('change', calculateTotals);
             checkoutInput.addEventListener('change', calculateTotals);
+            checkinInput.addEventListener('input', calculateTotals);
+            checkoutInput.addEventListener('input', calculateTotals);
             document.querySelectorAll('.addon-checkbox').forEach(cb => cb.addEventListener('change', calculateTotals));
 
             // Guest Limit Warning Toggle
@@ -1276,11 +1603,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const cardDetails = document.getElementById('card-details-section');
                     const gcashDetails = document.getElementById('gcash-details-section');
                     if (e.target.value === 'card') {
-                        if (cardDetails) cardDetails.style.display = 'block';
-                        if (gcashDetails) gcashDetails.style.display = 'none';
+                    if (cardDetails) cardDetails.classList.remove('hidden');
+                    if (gcashDetails) gcashDetails.classList.add('hidden');
                     } else {
-                        if (cardDetails) cardDetails.style.display = 'none'; // Hide if GCash or Maya
-                        if (gcashDetails) gcashDetails.style.display = 'block';
+                    if (cardDetails) cardDetails.classList.add('hidden'); // Hide if GCash
+                    if (gcashDetails) gcashDetails.classList.remove('hidden');
                     }
                 });
             });
@@ -1311,6 +1638,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 checkoutForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     const submitBtn = document.getElementById('pay-now-btn');
+                    if (submitBtn.disabled) return; // Strict hard block against submission
+                    
                     submitBtn.innerHTML = '<span class="pulse-dot" style="display:inline-block; margin-right:8px; background-color:white;"></span> Processing...';
                     submitBtn.style.pointerEvents = 'none';
                     submitBtn.style.opacity = '0.8';
@@ -1368,8 +1697,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchForm) {
         const urlParams = new URLSearchParams(window.location.search);
         let hasParams = false;
-        
-        ['location', 'checkin', 'checkout', 'guests', 'max-price'].forEach(param => {
+
+        // Handle standard text/number inputs
+        ['location', 'guests', 'max-price'].forEach(param => {
             if (urlParams.has(param) && urlParams.get(param)) {
                 const inputElement = document.getElementById(param);
                 if (inputElement) {
@@ -1378,6 +1708,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+
+        // Handle custom date picker inputs
+        const checkinVal = urlParams.get('checkin');
+        const checkoutVal = urlParams.get('checkout');
+        if (checkinVal && checkoutVal) {
+            const checkinInput = document.getElementById('checkin');
+            const checkoutInput = document.getElementById('checkout');
+            const dateTrigger = document.getElementById('res-date-trigger');
+
+            if (checkinInput && checkoutInput && dateTrigger) {
+                checkinInput.value = checkinVal;
+                checkoutInput.value = checkoutVal;
+
+                const startDate = new Date(checkinVal + 'T00:00:00');
+                const endDate = new Date(checkoutVal + 'T00:00:00');
+                const s = startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const e = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                
+                dateTrigger.innerHTML = `<span class="text-primary font-bold">${s} - ${e}</span>
+                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-muted"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
+                hasParams = true;
+            }
+        }
 
         if (hasParams) {
             performSearch();

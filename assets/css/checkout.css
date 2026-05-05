@@ -75,3 +75,24 @@
 .text-sm { font-size: 0.85rem; }
 .align-center { align-items: center; }
 .mr-2 { margin-right: 0.5rem; }
+
+/* =========================================
+   Stacking Context Fixes for Dropdowns
+   ========================================= */
+#checkout-form .glass-panel:nth-child(1) {
+    position: relative;
+    z-index: 30;
+}
+#checkout-form .glass-panel:nth-child(2) {
+    position: relative;
+    z-index: 20;
+}
+#checkout-checkin-wrapper {
+    z-index: 20;
+}
+#checkout-checkout-wrapper {
+    z-index: 10;
+}
+#checkout-time-wrapper {
+    z-index: 15;
+}

@@ -23,21 +23,29 @@
                     <div class="glass-panel p-4">
                         <h3 class="text-cyan mb-3">1. Stay Details</h3>
                         <div class="grid-2-col">
-                            <div class="form-group">
-                                <label for="checkin-date" class="form-label">Check-in Date</label>
-                                <input type="date" id="checkin-date" class="form-control" required>
+                            <div class="form-group custom-calendar-wrapper" id="checkout-checkin-wrapper">
+                                <label class="form-label">Check-in Date</label>
+                                <div class="custom-date-trigger form-control" id="checkout-checkin-trigger" style="cursor: pointer; height: auto;">Select date</div>
+                                <input type="hidden" id="checkin-date" name="checkin-date" required>
+                            </div>
+                            <div class="form-group custom-calendar-wrapper" id="checkout-checkout-wrapper">
+                                <label class="form-label">Check-out Date</label>
+                                <div class="custom-date-trigger form-control" id="checkout-checkout-trigger" style="cursor: pointer; height: auto;">Select date</div>
+                                <input type="hidden" id="checkout-date" name="checkout-date" required>
+                            </div>
+                            <div id="checkout-date-warning" class="text-crimson text-sm font-bold hidden" style="grid-column: 1 / -1; margin-top: -0.5rem; margin-bottom: 0.5rem;"></div>
+                            <div class="form-group custom-time-wrapper" id="checkout-time-wrapper">
+                                <label class="form-label">Estimated Arrival Time</label>
+                                <div class="custom-date-trigger form-control" id="checkout-time-trigger" style="cursor: pointer; height: auto;">Select time</div>
+                                <input type="hidden" id="arrival-time" name="arrival-time">
                             </div>
                             <div class="form-group">
-                                <label for="checkout-date" class="form-label">Check-out Date</label>
-                                <input type="date" id="checkout-date" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="arrival-time" class="form-label">Estimated Arrival Time</label>
-                                <input type="time" id="arrival-time" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="guests-count" class="form-label">Number of Guests <span id="guest-limit-text" class="text-muted" style="font-weight: normal; font-size: 0.8rem;"></span></label>
-                                <input type="number" id="guests-count" class="form-control" min="1" value="1" required>
+                                <label class="form-label">Number of Guests <span id="guest-limit-text" class="text-muted" style="font-weight: normal; font-size: 0.8rem;"></span></label>
+                                <div class="stepper-input-group">
+                                    <button type="button" class="stepper-btn-form" data-step="down" aria-label="Remove one guest">-</button>
+                                    <input type="number" id="guests-count" class="form-control" min="1" max="20" value="1" readonly required>
+                                    <button type="button" class="stepper-btn-form" data-step="up" aria-label="Add one guest">+</button>
+                                </div>
                                 <div id="guest-warning" class="text-gold mt-1 hidden" style="font-size: 0.8rem; line-height: 1.3;">Note: Exceeding recommended capacity means extra guests may not have dedicated beds.</div>
                             </div>
                         </div>
@@ -107,7 +115,7 @@
                         <div id="gcash-details-section" class="payment-section hidden">
                             <div class="qr-placeholder mb-3 text-center">
                                 <!-- A Placeholder QR code graphic is provided below -->
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" alt="GCash QR Code" style="width:150px; height:150px; border-radius:12px; border:2px solid var(--accent-cyan); padding:5px; background:white;">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" alt="GCash QR Code" style="width:150px; height:150px; border-radius:12px; border:2px solid #007DFC; box-shadow: 0 0 15px rgba(0, 125, 252, 0.4); padding:5px; background:white;">
                                 <p class="text-muted mt-2 text-sm">Scan to Pay via GCash</p>
                             </div>
                             <div class="form-group">
