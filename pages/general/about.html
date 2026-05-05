@@ -5,68 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us | CozyCorner</title>
     <link rel="stylesheet" href="../../assets/css/global.css">
-    <link rel="stylesheet" href="../../assets/css/dashboard.css">
 </head>
 <body>
     <div id="header-placeholder"></div>
 
     <main class="container py-section">
-        <div class="text-center mb-4">
-            <h1 class="text-primary">About CozyCorner</h1>
-            <p class="text-muted text-lg">Redefining the way you travel.</p>
+        <div class="text-center mb-5">
+            <h1 class="text-primary mb-2">Our Story</h1>
+            <p class="text-muted text-lg max-w-800 mx-auto">From a single spare room to a curated collection of premium stays, discover how GilMars Airbnb became your ultimate home away from home.</p>
         </div>
-        
-        <div class="flex-col gap-5 max-w-1000 mx-auto">
-            <!-- Our Story Card -->
-            <div class="card m-0 max-w-100 p-lg">
-                <h2 class="text-cyan mb-3 text-center">Our Genesis: The GilMars Airbnb Story</h2>
-                <p class="text-muted text-center text-lg max-w-800 mx-auto mb-0">GilMars Airbnb was founded on a simple yet profound idea: to transform the often-stressful process of finding the perfect short-term rental into an experience as delightful as the stay itself. Our founders, a small team of hospitality enthusiasts and tech innovators, noticed a gap in the market for a platform that not only offered exceptional properties but also delivered an intuitive, visually stunning user experience. We envisioned a digital space where every click felt seamless, every search yielded inspiring results, and every booking brought a sense of calm and excitement. From humble beginnings, fueled by late-night coding sessions and a shared passion for connecting travelers with unique homes, GilMars Airbnb emerged as a testament to our belief that technology can truly enhance the joy of travel and the warmth of a temporary home.</p>
+
+        <!-- Main Story Section -->
+        <div class="card glass-panel w-100 max-w-100 m-0 mb-5 p-lg">
+            <div class="grid-2-col gap-4 align-center">
+                <div>
+                    <h2 class="text-cyan mb-3">How It All Started</h2>
+                    <p class="text-muted mb-3">Back in 2020, Gilmar opened the doors of a humble spare room in Marilao, Bulacan, to a tired traveler. What started as a simple way to earn extra income quickly blossomed into a profound passion for hospitality. The realization was simple: travelers aren't just looking for a place to sleep; they are looking for an experience, a sanctuary, and a place to create lasting memories.</p>
+                    <p class="text-muted">Today, GilMars Airbnb (lovingly known as CozyCorner) has grown into a premier network of beachfront resorts, city lofts, and mountain cabins. Every property is handpicked, rigorously verified, and uniquely designed to offer a flawless blend of contemporary minimalism and undeniable warmth.</p>
+                </div>
+                <!-- Reusing one of your beautifully mapped image classes -->
+                <div class="card-image img-room1" style="height: 100%; min-height: 350px; border-radius: 12px; box-shadow: var(--shadow-lg);"></div>
             </div>
-            
-            <!-- Mission & Vision Grid -->
-            <div class="dashboard-grid m-0">
-                <div class="dashboard-widget flex-col p-4">
-                    <div class="icon-box gold mb-3 w-fit">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                    </div>
-                    <h3 class="text-gold mb-1">Our Mission</h3>
-                    <p class="text-muted mb-0">To provide a stress-free, aesthetically pleasing platform that connects travelers with unforgettable, verified properties worldwide.</p>
+        </div>
+
+        <!-- Core Values -->
+        <h2 class="text-center mb-4 text-primary mt-5">The GilMars Vision</h2>
+        <div class="grid-auto-250 mb-5">
+            <div class="card glass-panel glass-panel-glow-gold m-0 p-4 text-center">
+                <div class="icon-box gold mx-auto mb-3 w-fit" style="border-radius: 50%;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 </div>
-                
-                <div class="dashboard-widget flex-col p-4">
-                    <div class="icon-box green mb-3 w-fit">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                    </div>
-                    <h3 class="text-green mb-1">Our Vision</h3>
-                    <p class="text-muted mb-0">To become the global standard for intuitive, user-centric travel accommodations, setting new benchmarks in UI/UX design.</p>
-                </div>
+                <h3 class="text-gold mb-2">A True Home</h3>
+                <p class="text-muted text-sm">We believe that a rental should feel like your own home the moment you walk through the door. Cozy, fully equipped, and impeccably clean.</p>
             </div>
 
-            <!-- The CozyCorner Difference Card -->
-            <div class="card m-0 max-w-100 p-lg">
-                <h2 class="text-crimson mb-3 text-center">The CozyCorner Difference</h2>
-                <p class="text-muted mb-4 text-center max-w-800 mx-auto">Our glassmorphic interfaces and seamless user experience are crafted to take the stress out of planning your next getaway. Whether you're looking for a vibrant city loft or a secluded mountain cabin, CozyCorner is your trusted companion.</p>
-                
-                <div class="grid-auto-250">
-                    <div class="glass-panel glass-panel-soft p-4">
-                        <h3 class="text-primary mb-2">Curated Selection</h3>
-                        <p class="text-muted mb-0">Every listing is handpicked for quality and comfort.</p>
-                    </div>
-                    <div class="glass-panel glass-panel-soft p-4">
-                        <h3 class="text-primary mb-2">Immersive Design</h3>
-                        <p class="text-muted mb-0">A beautiful dark mode interface that's easy on the eyes.</p>
-                    </div>
-                    <div class="glass-panel glass-panel-soft p-4">
-                        <h3 class="text-primary mb-2">Secure Bookings</h3>
-                        <p class="text-muted mb-0">State-of-the-art data protection for your peace of mind.</p>
-                    </div>
+            <div class="card glass-panel glass-panel-glow-green m-0 p-4 text-center">
+                <div class="icon-box green mx-auto mb-3 w-fit" style="border-radius: 50%;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                 </div>
+                <h3 class="text-green mb-2">Modern Minimalism</h3>
+                <p class="text-muted text-sm">Our spaces are designed to declutter your mind. We embrace clean lines, open spaces, and warm lighting to help you truly relax.</p>
+            </div>
+
+            <div class="card glass-panel glass-panel-glow-cyan m-0 p-4 text-center">
+                <div class="icon-box cyan mx-auto mb-3 w-fit" style="border-radius: 50%;">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                </div>
+                <h3 class="text-cyan mb-2">24/7 Dedication</h3>
+                <p class="text-muted text-sm">Hospitality never sleeps. Whether you need an extra towel or recommendations for a late-night dinner, our support team is just a message away.</p>
             </div>
         </div>
+
+        <!-- Call to Action -->
+        <div class="card glass-panel max-w-800 mx-auto w-100 m-0 p-lg text-center mt-5" style="border-top: 4px solid var(--primary-color);">
+            <h2 class="mb-2 text-primary">Ready to experience CozyCorner?</h2>
+            <p class="text-muted mb-4 text-lg">Join thousands of happy guests who have made memories in our spaces.</p>
+            <a href="reservations.html" class="btn btn-primary btn-glow text-lg" style="padding: 1rem 2rem;">Browse Properties</a>
+        </div>
+
     </main>
 
     <div id="footer-placeholder"></div>
 
+    <!-- Load core scripts -->
     <script src="../../backend/app.js"></script>
     <script src="../../backend/auth.js"></script>
 </body>
