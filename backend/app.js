@@ -120,35 +120,51 @@ if (showLoginBtn) {
 }
 
 const performSearch = () => {
-    const locationInput = document.getElementById('location').value.toLowerCase().trim();
-    const checkinInput = document.getElementById('checkin').value;
-    const checkoutInput = document.getElementById('checkout').value;
-    const guestsInput = parseInt(document.getElementById('guests').value) || 0;
+    // Safely grab values (using optional chaining ? in case they are missing)
+    const locationInput = document.getElementById('location')?.value.toLowerCase().trim() || '';
+    const checkinInput = document.getElementById('checkin')?.value || '';
+    const checkoutInput = document.getElementById('checkout')?.value || '';
+    const guestsInput = parseInt(document.getElementById('guests')?.value) || 0;
     const maxPriceVal = document.getElementById('max-price')?.value;
     const maxPriceInput = maxPriceVal ? parseFloat(maxPriceVal) : Infinity;
 
     const isSearchActive = locationInput || checkinInput || checkoutInput || guestsInput > 0 || (maxPriceVal && maxPriceVal !== '');
 
-    const listingCards = document.querySelectorAll('.featured-listings .listing-card');
+    const listingCards = document.querySelectorAll('.listing-card');
     let visibleCount = 0;
     let nonMatchCount = 0;
+    let dateConflictCount = 0;
+    
+    // Retrieve all saved bookings from LocalStorage to check for date overlaps
+    const allBookings = getBookings(); 
 
     listingCards.forEach(card => {
+        const propertyName = card.querySelector('h3')?.textContent.trim() || '';
         const cardLocation = card.dataset.location || '';
         const cardGuests = parseInt(card.dataset.guests) || 0;
-        const availableStart = card.dataset.availableStart;
-        const availableEnd = card.dataset.availableEnd;
         const cardRate = parseFloat(card.dataset.rate) || 0;
+        
+        // Safely handle missing dates, "undefined", "null", or weird strings from old local storage data
+        let availableStart = card.dataset.availableStart;
+        if (!availableStart || !availableStart.includes('-')) availableStart = '2000-01-01';
+        
+        let availableEnd = card.dataset.availableEnd;
+        if (!availableEnd || !availableEnd.includes('-')) availableEnd = '2099-12-31';
 
-        // Check criteria
+        // 1. Basic Criteria Matches
         let matchLocation = !locationInput || cardLocation.includes(locationInput);
         let matchGuests = !guestsInput || cardGuests >= guestsInput;
-        let matchDates = true;
         let matchPrice = cardRate <= maxPriceInput;
+        let matchDates = true;
+        let isInvalidInput = false;
+        let isFullyBooked = false;
 
-        // Date range validation
+        // 2. Global Date Range Validation against property availability
         if (checkinInput && checkoutInput) {
-            if (checkinInput >= checkoutInput || checkinInput < availableStart || checkoutInput > availableEnd) {
+            if (checkinInput >= checkoutInput) {
+                matchDates = false;
+                isInvalidInput = true; // Don't flag as fully booked if dates are just backwards
+            } else if (checkinInput < availableStart || checkoutInput > availableEnd) {
                 matchDates = false;
             }
         } else if (checkinInput && (checkinInput < availableStart || checkinInput > availableEnd)) {
@@ -157,18 +173,77 @@ const performSearch = () => {
             matchDates = false;
         }
 
-        // Reorder instead of hiding: move matches to the top
-        card.style.display = 'flex'; // Ensure all cards remain visible
+        // 3. OVERLAP CHECK: Check against existing upcoming bookings for this specific property
+        if (matchDates && (checkinInput || checkoutInput)) {
+            const propertyBookings = allBookings.filter(b => b.property === propertyName && b.status === 'upcoming');
+            
+            for (let b of propertyBookings) {
+                if (b.checkin && b.checkout) {
+                    if (checkinInput && checkoutInput) {
+                        // Overlap condition: requested check-in is before booked check-out AND requested check-out is after booked check-in
+                        if (checkinInput < b.checkout && checkoutInput > b.checkin) {
+                            matchDates = false;
+                            isFullyBooked = true;
+                            break;
+                        }
+                    } else if (checkinInput) {
+                        // Only check-in provided: does it fall inside a booked period?
+                        if (checkinInput >= b.checkin && checkinInput < b.checkout) {
+                            matchDates = false;
+                            isFullyBooked = true;
+                            break;
+                        }
+                    } else if (checkoutInput) {
+                        // Only check-out provided: does it fall inside a booked period?
+                        if (checkoutInput > b.checkin && checkoutInput <= b.checkout) {
+                            matchDates = false;
+                            isFullyBooked = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Cleanup previous state (if search changes)
+        const existingWarning = card.querySelector('.date-conflict-warning');
+        if (existingWarning) existingWarning.remove();
+        card.style.opacity = '1';
+        const bookBtn = card.querySelector('.book-btn');
+        if (bookBtn) {
+            bookBtn.disabled = false;
+            bookBtn.textContent = 'Book Now';
+        }
+
+        // 4. Display Logic (Reorder instead of hiding)
+        card.style.display = 'flex'; 
+        
+        const isDateConflict = matchLocation && matchGuests && matchPrice && isFullyBooked;
+
         if (matchLocation && matchGuests && matchDates && matchPrice) {
-            card.style.order = '-2';
+            card.style.order = '-3';
             visibleCount++;
+        } else if (isDateConflict) {
+            card.style.order = '-1';
+            dateConflictCount++;
+            
+            const warning = document.createElement('div');
+            warning.className = 'date-conflict-warning text-crimson font-bold mb-2';
+            warning.style.fontSize = '0.85rem';
+            warning.innerHTML = '⚠️ Fully booked for selected dates';
+            
+            const cardContent = card.querySelector('.card-content');
+            cardContent.insertBefore(warning, cardContent.querySelector('.price'));
+            
+            if (bookBtn) { bookBtn.disabled = true; bookBtn.textContent = 'Unavailable'; }
+            card.style.opacity = '0.65';
         } else {
-            card.style.order = '0';
+            card.style.order = '1';
             nonMatchCount++;
         }
     });
 
-    // Add and manage a line separator dynamically
+    // Separator and Not Found Message Logic
     if (listingCards.length > 0) {
         const container = listingCards[0].parentElement;
 
@@ -177,16 +252,45 @@ const performSearch = () => {
             notFoundMsg = document.createElement('div');
             notFoundMsg.id = 'not-found-msg';
             notFoundMsg.className = 'search-not-found-msg';
+            notFoundMsg.style.order = '-4';
             notFoundMsg.innerHTML = `
                 <h3 class="text-primary mb-1">No Exact Matches Found</h3>
                 <p class="text-muted mb-0">We couldn't find properties matching all your specific criteria, but here are some other incredible places you might love.</p>
             `;
             container.appendChild(notFoundMsg);
         }
-        notFoundMsg.style.display = (isSearchActive && visibleCount === 0) ? 'block' : 'none';
+        notFoundMsg.style.display = (isSearchActive && visibleCount === 0 && dateConflictCount === 0) ? 'block' : 'none';
+
+        // Date Conflict Dynamic Message
+        let conflictMsg = document.getElementById('date-conflict-msg');
+        if (!conflictMsg) {
+            conflictMsg = document.createElement('div');
+            conflictMsg.id = 'date-conflict-msg';
+            container.appendChild(conflictMsg);
+        }
+        if (isSearchActive && dateConflictCount > 0) {
+            conflictMsg.style.display = 'block';
+            conflictMsg.style.order = '-2';
+            if (visibleCount > 0) {
+                conflictMsg.className = 'search-separator text-crimson';
+                conflictMsg.innerHTML = 'Also matching your criteria (Fully Booked)';
+                conflictMsg.style.border = 'none';
+                conflictMsg.style.borderTop = '1px solid var(--border-color)';
+                conflictMsg.style.backgroundColor = 'transparent';
+            } else {
+                conflictMsg.className = 'search-not-found-msg';
+                conflictMsg.style.border = '1px dashed var(--accent-crimson)';
+                conflictMsg.style.backgroundColor = 'rgba(251, 113, 133, 0.05)';
+                conflictMsg.innerHTML = `
+                    <h3 class="text-crimson mb-1">Your Top Picks Are Fully Booked</h3>
+                    <p class="text-muted mb-0">These properties match your criteria, but are already booked for your selected dates. Check out other available places below!</p>
+                `;
+            }
+        } else {
+            conflictMsg.style.display = 'none';
+        }
 
         let separator = document.getElementById('search-separator');
-        
         if (!separator) {
             separator = document.createElement('div');
             separator.id = 'search-separator';
@@ -194,8 +298,8 @@ const performSearch = () => {
             separator.textContent = 'Other Available Properties';
             container.appendChild(separator);
         }
-        
-        separator.style.display = (isSearchActive && visibleCount > 0 && nonMatchCount > 0) ? 'block' : 'none';
+        separator.style.order = '0';
+        separator.style.display = (isSearchActive && (visibleCount > 0 || dateConflictCount > 0) && nonMatchCount > 0) ? 'block' : 'none';
     }
 };
 
@@ -234,10 +338,10 @@ const saveBooking = (booking) => {
 const initProperties = () => {
     if (!localStorage.getItem('properties')) {
         const initialProps = [
-            { id: 'p1', name: 'Makati City Loft', location: 'Makati, Metro Manila', price: 3500, rating: 0, reviews: 0, imageClass: 'img-neon', availableStart: '2024-01-01', availableEnd: '2024-12-31', guests: 2 },
-            { id: 'p2', name: 'Tagaytay Cozy Cabin', location: 'Tagaytay City, Cavite', price: 4200, rating: 0, reviews: 0, imageClass: 'img-crimson', availableStart: '2024-01-01', availableEnd: '2024-12-31', guests: 4 },
-            { id: 'p3', name: 'Boracay Beach Resort', location: 'Boracay Island, Aklan', price: 5000, rating: 0, reviews: 0, imageClass: 'img-azure', availableStart: '2024-01-01', availableEnd: '2024-12-31', guests: 4 },
-            { id: 'p4', name: 'Palawan Forest Retreat', location: 'El Nido, Palawan', price: 4800, rating: 0, reviews: 0, imageClass: 'img-emerald', availableStart: '2024-01-01', availableEnd: '2024-12-31', guests: 3 }
+            { id: 'p1', name: 'Monumento City Loft', location: 'Caloocan City, Metro Manila', price: 3500, rating: 0, reviews: 0, imageClass: 'img-neon', availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 2, beds: '1 Studio' },
+            { id: 'p2', name: 'Malabon Cozy Cabin', location: 'Malabon City, Metro Manila', price: 4200, rating: 0, reviews: 0, imageClass: 'img-crimson', availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 4, beds: '2 Bedrooms' },
+            { id: 'p3', name: 'Valenzuela Resort', location: 'Valenzuela City, Metro Manila', price: 5000, rating: 0, reviews: 0, imageClass: 'img-azure', availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 6, beds: '3 Bedrooms' },
+            { id: 'p4', name: 'Marilao Nature Retreat', location: 'Marilao, Bulacan', price: 4800, rating: 0, reviews: 0, imageClass: 'img-emerald', availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 2, beds: '1 Bedroom' }
         ];
         localStorage.setItem('properties', JSON.stringify(initialProps));
     }
@@ -352,11 +456,13 @@ const setupBookingButtons = () => {
                 const propertyName = card.querySelector('h3').textContent;
                 const location = card.querySelector('.location').textContent;
                 const price = card.querySelector('.price').textContent;
+                const guests = card.dataset.guests;
                 
                 sessionStorage.setItem('pendingBooking', JSON.stringify({
                     property: propertyName,
                     location: location,
-                    price: price
+                    price: price,
+                    guests: guests
                 }));
                 
                 window.location.href = '../general/checkout.html';
@@ -429,6 +535,7 @@ const renderUserBookings = () => {
         const upcoming = userBookings.filter(b => b.status === 'upcoming');
         const past = userBookings.filter(b => b.status === 'past');
         const canceled = userBookings.filter(b => b.status === 'canceled');
+        const props = getProperties();
 
         const createBookingHTML = (b, colorClass, glowClass) => {
             let actionBtn = '';
@@ -438,10 +545,14 @@ const renderUserBookings = () => {
                 actionBtn = `<p class="text-muted mt-2" style="font-size: 0.9rem;">Your Rating: <span class="text-primary font-bold">★ ${b.userRating}/5</span><br>"${b.userReview}"</p>`;
             }
             
+            const propertyInfo = props.find(p => p.name === b.property);
+            const guestText = propertyInfo ? ` | Recommended: ${propertyInfo.guests} person(s)` : '';
+            const bedText = propertyInfo && propertyInfo.beds ? ` | ${propertyInfo.beds}` : '';
+
             return `
                 <div class="glass-panel ${glowClass} p-4 flex-col">
                     <h3>${b.property}</h3>
-                    <p class="text-muted">Location: ${b.location} | Price: ${b.price}</p>
+                    <p class="text-muted">Location: ${b.location} | Price: ${b.price}${guestText}${bedText}</p>
                     <p class="${colorClass} mt-3 font-bold mb-0">Status: ${b.status.charAt(0).toUpperCase() + b.status.slice(1)} (Booked on ${b.dateBooked})</p>
                     ${actionBtn}
                 </div>
@@ -479,13 +590,18 @@ const renderUserBookings = () => {
     const dashboardContainer = document.getElementById('dashboard-recent-bookings');
     if (dashboardContainer) {
         if (userBookings.length > 0) {
+            const props = getProperties();
             const recent = userBookings.slice(-3).reverse(); // Get latest 3
-            dashboardContainer.innerHTML = recent.map(b => `
-                <div class="glass-panel p-3">
-                    <h4 class="text-primary">${b.property}</h4>
-                    <p class="text-muted mb-0" style="font-size: 0.9rem;">${b.location} - <span style="text-transform: capitalize;">${b.status}</span></p>
-                </div>
-            `).join('');
+            dashboardContainer.innerHTML = recent.map(b => {
+                const propertyInfo = props.find(p => p.name === b.property);
+                const guestText = propertyInfo ? ` | Recommended: ${propertyInfo.guests} person(s)` : '';
+                return `
+                    <div class="glass-panel p-3">
+                        <h4 class="text-primary">${b.property}</h4>
+                        <p class="text-muted mb-0" style="font-size: 0.85rem;">${b.location}${guestText} - <span style="text-transform: capitalize;">${b.status}</span></p>
+                    </div>
+                `;
+            }).join('');
         } else {
             dashboardContainer.innerHTML = '<p class="text-center text-muted">You have no recent bookings.</p>';
         }
@@ -548,7 +664,9 @@ const renderTrendingDestinations = () => {
                 <div class="card-image ${p.imageClass}"></div>
                 <div class="card-content">
                     <h3>${p.name}</h3>
-                    <p class="location">${p.location}</p>
+                    <p class="location" style="margin-bottom: 0.25rem;">${p.location}</p>
+                    <p class="text-muted mb-1" style="font-size: 0.85rem;">Recommended: ${p.guests} person(s)</p>
+                    <p class="text-muted mb-2" style="font-size: 0.85rem;">${p.beds || '1 Bedroom'}</p>
                     <p class="price">₱${p.price.toLocaleString()} / night</p>
                     <div class="card-rating mb-3">
                         <span class="text-primary">★ ${p.rating > 0 ? p.rating.toFixed(1) : 'New'}</span>
@@ -656,8 +774,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Checkout Logic
     const initCheckout = () => {
-        const bookingPropertyName = document.getElementById('booking-property-name');
-        if (bookingPropertyName) {
+        const checkinInput = document.getElementById('checkin-date');
+        const checkoutInput = document.getElementById('checkout-date');
+        const guestsInput = document.getElementById('guests-count');
+        
+        if (checkinInput && checkoutInput) {
             const pendingBooking = JSON.parse(sessionStorage.getItem('pendingBooking'));
             
             if (!pendingBooking) {
@@ -666,31 +787,163 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            bookingPropertyName.textContent = pendingBooking.property;
-            document.getElementById('booking-location').textContent = pendingBooking.location;
-            document.getElementById('booking-price').textContent = pendingBooking.price;
+            // Set Initial Receipt Values
+            document.getElementById('receipt-property').textContent = pendingBooking.property;
+            document.getElementById('receipt-location').textContent = pendingBooking.location;
+            
+            // Setup Guest Limit Logic
+            const recGuests = parseInt(pendingBooking.guests) || 1;
+            if (document.getElementById('guest-limit-text')) {
+                document.getElementById('guest-limit-text').textContent = `(Recommended: ${recGuests})`;
+            }
+
+            // Extract raw number from string like "₱3,500 / night"
+            const basePricePerNight = parseFloat(pendingBooking.price.replace(/[^\d.]/g, '')) || 0;
+
+            // Initialize Dates (Default to today and tomorrow)
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            const formatDate = (date) => date.toISOString().split('T')[0];
+            
+            checkinInput.min = formatDate(today);
+            checkinInput.value = formatDate(today);
+            
+            checkoutInput.min = formatDate(tomorrow);
+            checkoutInput.value = formatDate(tomorrow);
+
+            // Real-time calculation logic
+            const calculateTotals = () => {
+                const d1 = new Date(checkinInput.value);
+                const d2 = new Date(checkoutInput.value);
+                
+                // Prevent impossible dates
+                if (d2 <= d1) {
+                    const nextDay = new Date(d1);
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    checkoutInput.value = formatDate(nextDay);
+                }
+                
+                const finalD2 = new Date(checkoutInput.value);
+                const diffTime = Math.abs(finalD2 - d1);
+                const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+                
+                document.getElementById('nights-display').textContent = `Total Nights: ${nights}`;
+
+                // Add-ons
+                let addonsTotal = 0;
+                document.querySelectorAll('.addon-checkbox:checked').forEach(cb => {
+                    addonsTotal += parseFloat(cb.value);
+                });
+
+                const baseTotal = basePricePerNight * nights;
+                const serviceFee = baseTotal * 0.10; // 10% fee
+                const grandTotal = baseTotal + serviceFee + addonsTotal;
+
+                // Update Receipt UI
+                document.getElementById('receipt-rate').textContent = `₱${basePricePerNight.toLocaleString()} x ${nights} night${nights > 1 ? 's' : ''}`;
+                document.getElementById('receipt-base-total').textContent = `₱${baseTotal.toLocaleString()}`;
+                document.getElementById('receipt-service').textContent = `₱${serviceFee.toLocaleString()}`;
+                
+                const addonsRow = document.getElementById('receipt-addons-row');
+                if (addonsTotal > 0) {
+                    addonsRow.style.display = 'flex';
+                    document.getElementById('receipt-addons-total').textContent = `₱${addonsTotal.toLocaleString()}`;
+                } else {
+                    addonsRow.style.display = 'none';
+                }
+
+                document.getElementById('receipt-grand-total').textContent = `₱${grandTotal.toLocaleString()}`;
+            };
+
+            // Listeners
+            checkinInput.addEventListener('change', calculateTotals);
+            checkoutInput.addEventListener('change', calculateTotals);
+            document.querySelectorAll('.addon-checkbox').forEach(cb => cb.addEventListener('change', calculateTotals));
+
+            // Guest Limit Warning Toggle
+            if (guestsInput) {
+                guestsInput.addEventListener('input', (e) => {
+                    const val = parseInt(e.target.value) || 1;
+                    const warning = document.getElementById('guest-warning');
+                    if (warning) {
+                        if (val > recGuests) warning.classList.remove('hidden');
+                        else warning.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Initial Calculation
+            calculateTotals();
+
+            // Payment Method Toggle Logic
+            document.querySelectorAll('.payment-method-input').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const cardDetails = document.getElementById('card-details-section');
+                    const gcashDetails = document.getElementById('gcash-details-section');
+                    if (e.target.value === 'card') {
+                        if (cardDetails) cardDetails.style.display = 'block';
+                        if (gcashDetails) gcashDetails.style.display = 'none';
+                    } else {
+                        if (cardDetails) cardDetails.style.display = 'none'; // Hide if GCash or Maya
+                        if (gcashDetails) gcashDetails.style.display = 'block';
+                    }
+                });
+            });
+
+            // Card Number Auto-format (Spaces every 4 digits)
+            const cardInput = document.getElementById('card-number');
+            if(cardInput) {
+                cardInput.addEventListener('input', (e) => {
+                    let val = e.target.value.replace(/\D/g, '');
+                    e.target.value = val.replace(/(.{4})/g, '$1 ').trim();
+                });
+            }
+            
+            // Expiry Date Auto-format (MM/YY)
+            const expiryInput = document.getElementById('card-expiry');
+            if(expiryInput) {
+                expiryInput.addEventListener('input', (e) => {
+                    let val = e.target.value.replace(/\D/g, '');
+                    if (val.length >= 2) {
+                        val = val.substring(0, 2) + '/' + val.substring(2, 4);
+                    }
+                    e.target.value = val;
+                });
+            }
             
             const checkoutForm = document.getElementById('checkout-form');
             if (checkoutForm) {
                 checkoutForm.addEventListener('submit', (e) => {
                     e.preventDefault();
+                    const submitBtn = document.getElementById('pay-now-btn');
+                    submitBtn.innerHTML = '<span class="pulse-dot" style="display:inline-block; margin-right:8px; background-color:white;"></span> Processing...';
+                    submitBtn.style.pointerEvents = 'none';
+                    submitBtn.style.opacity = '0.8';
                     
-                    // Save to local storage database
-                    const currentUser = sessionStorage.getItem('currentUser');
-                    const newBooking = {
-                        id: 'BKG-' + Date.now().toString(),
-                        user: currentUser,
-                        property: pendingBooking.property,
-                        location: pendingBooking.location,
-                        price: pendingBooking.price,
-                        status: 'upcoming',
-                        dateBooked: new Date().toLocaleDateString()
-                    };
-                    saveBooking(newBooking);
-                    sessionStorage.removeItem('pendingBooking');
+                    // Simulate a network request delay
+                    setTimeout(() => {
+                        const currentUser = sessionStorage.getItem('currentUser');
+                        const grandTotalStr = document.getElementById('receipt-grand-total').textContent;
+                        
+                        const newBooking = {
+                            id: 'BKG-' + Date.now().toString(),
+                            user: currentUser,
+                            property: pendingBooking.property,
+                            location: pendingBooking.location,
+                            checkin: checkinInput.value,
+                            checkout: checkoutInput.value,
+                            price: grandTotalStr,
+                            status: 'upcoming',
+                            dateBooked: new Date().toLocaleDateString()
+                        };
+                        saveBooking(newBooking);
+                        sessionStorage.removeItem('pendingBooking');
 
-                    alert('Booking confirmed successfully! Redirecting you to your dashboard.');
-                    if (window.redirectToDashboard) window.redirectToDashboard();
+                        alert('Booking confirmed successfully! Redirecting you to your dashboard.');
+                        if (window.redirectToDashboard) window.redirectToDashboard();
+                    }, 1500);
                 });
             }
         }
@@ -723,7 +976,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         let hasParams = false;
         
-        ['location', 'checkin', 'checkout', 'guests'].forEach(param => {
+        ['location', 'checkin', 'checkout', 'guests', 'max-price'].forEach(param => {
             if (urlParams.has(param) && urlParams.get(param)) {
                 const inputElement = document.getElementById(param);
                 if (inputElement) {

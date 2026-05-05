@@ -5,44 +5,195 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout | CozyCorner</title>
     <link rel="stylesheet" href="../../assets/css/global.css">
+    <link rel="stylesheet" href="../../assets/css/checkout.css">
 </head>
 <body>
     <div id="header-placeholder"></div>
 
     <main class="container py-section">
-        <div class="card card-lg">
-            <h2>Complete Your Booking</h2>
-            <p class="subtitle" id="booking-property-name">Property Name</p>
-            
-            <div id="booking-details" class="mb-3 text-center text-muted">
-                <p id="booking-location">Location</p>
-                <p id="booking-price" class="text-primary price-text">Price</p>
+        <div class="checkout-layout">
+            <!-- Left Side: Checkout Form -->
+            <div class="checkout-form-container">
+                <h1 class="text-primary mb-1">Complete Your Booking</h1>
+                <p class="text-muted mb-4">Almost there! Just a few details before your getaway.</p>
+
+                <form id="checkout-form" class="flex-col gap-4">
+                    
+                    <!-- 1. Stay Details -->
+                    <div class="glass-panel p-4">
+                        <h3 class="text-cyan mb-3">1. Stay Details</h3>
+                        <div class="grid-2-col">
+                            <div class="form-group">
+                                <label for="checkin-date" class="form-label">Check-in Date</label>
+                                <input type="date" id="checkin-date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="checkout-date" class="form-label">Check-out Date</label>
+                                <input type="date" id="checkout-date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="arrival-time" class="form-label">Estimated Arrival Time</label>
+                                <input type="time" id="arrival-time" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="guests-count" class="form-label">Number of Guests <span id="guest-limit-text" class="text-muted" style="font-weight: normal; font-size: 0.8rem;"></span></label>
+                                <input type="number" id="guests-count" class="form-control" min="1" value="1" required>
+                                <div id="guest-warning" class="text-gold mt-1 hidden" style="font-size: 0.8rem; line-height: 1.3;">Note: Exceeding recommended capacity means extra guests may not have dedicated beds.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Billing Information -->
+                    <div class="glass-panel p-4">
+                        <h3 class="text-green mb-3">2. Billing Information</h3>
+                        <div class="grid-2-col">
+                            <div class="form-group">
+                                <label for="billing-fname" class="form-label">First Name</label>
+                                <input type="text" id="billing-fname" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="billing-lname" class="form-label">Last Name</label>
+                                <input type="text" id="billing-lname" class="form-control" required>
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label for="billing-email" class="form-label">Email Address (for receipt)</label>
+                                <input type="email" id="billing-email" class="form-control" required>
+                            </div>
+                            <div class="form-group" style="grid-column: 1 / -1;">
+                                <label for="billing-address" class="form-label">Billing Address</label>
+                                <input type="text" id="billing-address" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Payment Method -->
+                    <div class="glass-panel p-4">
+                        <h3 class="text-gold mb-3">3. Payment Method</h3>
+                        
+                        <div class="payment-tabs mb-3">
+                            <label class="payment-tab">
+                                <input type="radio" name="payment_method" value="card" class="payment-method-input" checked>
+                                <div class="tab-content-box">Credit/Debit Card</div>
+                            </label>
+                            <label class="payment-tab">
+                                <input type="radio" name="payment_method" value="gcash" class="payment-method-input">
+                                <div class="tab-content-box">GCash</div>
+                            </label>
+                        </div>
+
+                        <!-- Card Details Section -->
+                        <div id="card-details-section" class="payment-section">
+                            <div class="form-group">
+                                <label for="card-name" class="form-label">Name on Card</label>
+                                <input type="text" id="card-name" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="card-number" class="form-label">Card Number</label>
+                                <input type="text" id="card-number" class="form-control" placeholder="0000 0000 0000 0000" maxlength="19">
+                            </div>
+                            <div class="grid-2-col">
+                                <div class="form-group">
+                                    <label for="card-expiry" class="form-label">Expiry (MM/YY)</label>
+                                    <input type="text" id="card-expiry" class="form-control" placeholder="MM/YY" maxlength="5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="card-cvv" class="form-label">CVV</label>
+                                    <input type="text" id="card-cvv" class="form-control" placeholder="123" maxlength="4">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- GCash Details Section -->
+                        <div id="gcash-details-section" class="payment-section hidden">
+                            <div class="qr-placeholder mb-3 text-center">
+                                <!-- A Placeholder QR code graphic is provided below -->
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" alt="GCash QR Code" style="width:150px; height:150px; border-radius:12px; border:2px solid var(--accent-cyan); padding:5px; background:white;">
+                                <p class="text-muted mt-2 text-sm">Scan to Pay via GCash</p>
+                            </div>
+                            <div class="form-group">
+                                <label for="gcash-name" class="form-label">GCash Account Name</label>
+                                <input type="text" id="gcash-name" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="gcash-number" class="form-label">GCash Mobile Number</label>
+                                <input type="text" id="gcash-number" class="form-control" placeholder="09XX XXX XXXX">
+                            </div>
+                            <div class="form-group">
+                                <label for="gcash-ref" class="form-label">Reference Number</label>
+                                <input type="text" id="gcash-ref" class="form-control" placeholder="Enter Ref. No. after payment">
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
             </div>
 
-            <form id="checkout-form">
-                <div class="form-group">
-                    <label class="form-label" for="guest-name">Full Name</label>
-                    <input type="text" id="guest-name" class="form-control" required>
+            <!-- Right Side: Order Summary / Calculator Component -->
+            <div class="checkout-summary-container">
+                <div class="glass-panel glass-panel-glow-gold p-4 sticky-summary">
+                    <h3 class="mb-3">Order Summary</h3>
+                    
+                    <div class="summary-property mb-3 border-b pb-3">
+                        <h4 id="receipt-property" class="text-primary">Property Name</h4>
+                        <p id="receipt-location" class="text-muted text-sm">Location</p>
+                    </div>
+
+                    <div class="summary-details mb-3">
+                        <p id="nights-display" class="font-bold text-lg mb-2 text-gold">Total Nights: 1</p>
+                        
+                        <div class="flex-between mb-1">
+                            <span class="text-muted">Rate per night</span>
+                            <span id="receipt-rate">₱0</span>
+                        </div>
+                        <div class="flex-between mb-1">
+                            <span class="text-muted">Base Total</span>
+                            <span id="receipt-base-total">₱0</span>
+                        </div>
+                        <div class="flex-between mb-1">
+                            <span class="text-muted">Service Fee (10%)</span>
+                            <span id="receipt-service">₱0</span>
+                        </div>
+                        
+                        <!-- Add-ons Section (Real-time responsive based on existing app.js Logic) -->
+                        <div class="addons-section mt-3 pt-3 border-t">
+                            <h5 class="mb-2">Optional Add-ons</h5>
+                            <label class="flex-between mb-1 align-center">
+                                <span><input type="checkbox" class="addon-checkbox mr-2" value="500"> Airport Transfer</span>
+                                <span class="text-muted">₱500</span>
+                            </label>
+                            <label class="flex-between mb-1 align-center">
+                                <span><input type="checkbox" class="addon-checkbox mr-2" value="300"> Early Check-in</span>
+                                <span class="text-muted">₱300</span>
+                            </label>
+                        </div>
+
+                        <div id="receipt-addons-row" class="flex-between mb-1 mt-2" style="display: none;">
+                            <span class="text-muted">Add-ons Total</span>
+                            <span id="receipt-addons-total">₱0</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-total border-t pt-3 mb-4">
+                        <div class="flex-between">
+                            <span class="font-bold text-lg">Grand Total</span>
+                            <span id="receipt-grand-total" class="font-bold text-lg text-primary">₱0</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" form="checkout-form" id="pay-now-btn" class="btn btn-primary btn-glow w-100 text-lg">
+                        Confirm & Pay
+                    </button>
+                    <p class="text-center text-muted mt-3 text-sm">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="align-middle"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        Secure Encrypted Checkout
+                    </p>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="guest-email">Email Address</label>
-                    <input type="email" id="guest-email" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="guest-phone">Phone Number</label>
-                    <input type="tel" id="guest-phone" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="special-requests">Special Requests (Optional)</label>
-                    <textarea id="special-requests" class="form-control resize-y" rows="4"></textarea>
-                </div>
-                
-                <button type="submit" class="btn btn-primary btn-glow w-100 mt-3">Confirm Booking</button>
-            </form>
+            </div>
         </div>
     </main>
 
     <div id="footer-placeholder"></div>
+
     <script src="../../backend/app.js"></script>
     <script src="../../backend/auth.js"></script>
 </body>
