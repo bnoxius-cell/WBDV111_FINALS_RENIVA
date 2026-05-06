@@ -1,7 +1,8 @@
 // Handles the entire booking process, from checkout to rendering user bookings
 
 import { getBookings, getProperties, saveBooking, saveProperty } from '../services/storage.js';
-import { showLoginPromptModal, showTermsModal, showCancelModal, openPropertyModal } from '../ui/modals.js';
+import { showLoginPromptModal, showTermsModal, showCancelModal, openPropertyModal, showCustomAlert } from '../ui/modals.js';
+import { redirectToDashboard } from '../ui/components.js';
 
 // Booking Logic
 export const setupBookingButtons = () => {
@@ -300,7 +301,7 @@ export const initReviewLogic = () => {
                 reviewForm.reset();
                 renderUserBookings(); // Instantly visually refresh the tabs
                 
-                alert('Thank you for your review! Your stay has been marked as completed.');
+                showCustomAlert('Review Submitted', 'Thank you for your review! Your stay has been marked as completed.', 'success');
             }
         });
     }
@@ -316,8 +317,9 @@ export const initCheckout = () => {
         const pendingBooking = JSON.parse(sessionStorage.getItem('pendingBooking'));
         
         if (!pendingBooking) {
-            alert('No pending booking found. Redirecting to home.');
-            window.location.href = 'index.html';
+            showCustomAlert('Error', 'No pending booking found. Redirecting to home.', 'error').then(() => {
+                window.location.href = 'index.html';
+            });
             return;
         }
         
@@ -722,7 +724,7 @@ export const initCheckout = () => {
                 submitBtn.style.opacity = '0.8';
                 
                 // Simulate a network request delay
-                setTimeout(() => {
+                setTimeout(async () => {
                     const currentUser = sessionStorage.getItem('currentUser');
                     const grandTotalStr = document.getElementById('receipt-grand-total').textContent;
                     
@@ -737,7 +739,18 @@ export const initCheckout = () => {
                         status: 'upcoming',
                         dateBooked: new Date().toLocaleDateString()
                     };
-                    saveBooking(newBooking);
+                    
+                    const result = await saveBooking(newBooking);
+                    
+                    if (result && !result.success) {
+                        await showCustomAlert('Checkout Failed', 'Failed to confirm booking: ' + result.error, 'error');
+                        submitBtn.innerHTML = 'Confirm & Pay';
+                        submitBtn.style.pointerEvents = 'auto';
+                        submitBtn.style.opacity = '1';
+                        submitBtn.disabled = false;
+                        return;
+                    }
+
                     sessionStorage.removeItem('pendingBooking');
 
                     // Trigger Custom UI Modal instead of browser alert
@@ -745,8 +758,7 @@ export const initCheckout = () => {
                     if (successModal) {
                         successModal.classList.remove('hidden');
                         const doRedirect = () => {
-                            if (window.redirectToDashboard) window.redirectToDashboard();
-                            else window.location.href = '../user/dashboard.html';
+                            redirectToDashboard();
                         };
                         
                         document.getElementById('success-redirect-btn').addEventListener('click', doRedirect);

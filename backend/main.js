@@ -2,10 +2,10 @@ import { fetchInitialData, getBookings, saveBooking, initProperties, getProperti
 import { performSearch } from './features/search.js';
 import { loginUser, registerUser, logoutUser, getCurrentUser } from './services/auth-service.js';
 import { initSteppers, initCustomSelects, initCustomCalendars } from './ui/forms.js';
-import { showLoginPromptModal, showTermsModal, showCancelModal, initPropertyModalUI, openPropertyModal } from './ui/modals.js';
+import { showLoginPromptModal, showTermsModal, showCancelModal, initPropertyModalUI, openPropertyModal, showCustomAlert, showCustomConfirm } from './ui/modals.js';
 import { setupBookingButtons, renderUserBookings, renderAdminBookings, initReviewLogic, initCheckout } from './features/booking.js';
 import { showView, clearErrors, loadComponent, checkAuthStatus, setupTabs, enforceRouteAccess, redirectToDashboard } from './ui/components.js';
-import { updateRecentTicker, renderTrendingDestinations, renderAllProperties } from './features/listings.js';
+import { updateRecentTicker, renderTrendingDestinations, renderAllProperties, renderAdminProperties } from './features/listings.js';
 
 enforceRouteAccess(); // Run route protection immediately
 
@@ -138,12 +138,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                 beds: document.getElementById('prop-beds').value.trim() || '1 Bedroom'
             };
 
-            await saveProperty(newProp);
+            const result = await saveProperty(newProp);
 
-            alert('Property published successfully! It is now live for users.');
+            if (result && !result.success) {
+                await showCustomAlert('Publish Failed', 'Failed to publish property: ' + result.error, 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                return;
+            }
+
+            await showCustomAlert('Property Published', 'Property published successfully! It is now live for users.', 'success');
             addPropertyForm.reset();
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
+            renderAdminProperties(); // Instantly refresh the admin list
         });
     }
 
@@ -202,6 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderAdminBookings();
     renderTrendingDestinations();
     renderAllProperties();
+    renderAdminProperties();
     updateRecentTicker();
 
     // Scroll to top button click event
@@ -213,6 +222,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.documentElement.style.scrollBehavior = ''; // Restore CSS smooth scroll
         });
     }
+
+    // Admin Delete Property Logic
+    document.body.addEventListener('click', async (e) => {
+        if (e.target.classList.contains('delete-property-btn')) {
+            const confirmed = await showCustomConfirm("Delete Property", "Are you sure you want to permanently delete this property?");
+            if (confirmed) {
+                const propId = e.target.getAttribute('data-id');
+                const { deleteProperty } = await import('./services/storage.js');
+                await deleteProperty(propId);
+                renderAdminProperties();
+            }
+        }
+    });
 
     // Auto-fill and perform search if URL parameters are present (from index page)
     if (searchForm) {

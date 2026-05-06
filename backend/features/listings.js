@@ -101,3 +101,32 @@ export const renderAllProperties = () => {
         setupBookingButtons(); // Bind the checkout events to these buttons
     }
 };
+
+export const renderAdminProperties = () => {
+    const grid = document.getElementById('admin-properties-grid');
+    if (grid) {
+        let props = getProperties();
+        
+        if (props.length === 0) {
+            grid.innerHTML = '<p class="text-center text-muted" style="grid-column: 1 / -1;">No properties published yet.</p>';
+            return;
+        }
+
+        grid.innerHTML = props.map(p => `
+            <div class="listing-card glass-panel" style="box-shadow: none;">
+                <div class="card-image ${p.imageClass}" style="height: 150px;"></div>
+                <div class="card-content p-3">
+                    <div class="flex-between mb-1">
+                        <h3 class="m-0" style="font-size: 1.1rem;">${p.name}</h3>
+                        <span class="text-gold">₱${p.price.toLocaleString()}</span>
+                    </div>
+                    <p class="text-muted mb-2 text-sm">${p.location} | ${p.type}</p>
+                    
+                    <button class="btn btn-outline btn-danger w-100 delete-property-btn mt-auto" data-id="${p.id}">
+                        Delete Property
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+};

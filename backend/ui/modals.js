@@ -3,6 +3,95 @@
 import { getProperties, getBookings, saveBooking } from '../services/storage.js';
 import { renderUserBookings } from '../features/booking.js';
 
+// Reusable Custom Alert Modal
+export const showCustomAlert = (title, message, type = 'info') => {
+    return new Promise((resolve) => {
+        let modal = document.getElementById('custom-alert-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'custom-alert-modal';
+            modal.className = 'modal-overlay hidden';
+            modal.innerHTML = `
+                <div class="card text-center m-0 mx-1 max-w-400 glass-panel">
+                    <div id="custom-alert-icon" class="icon-box mx-auto mb-3" style="width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center;"></div>
+                    <h2 id="custom-alert-title" class="mb-2"></h2>
+                    <p id="custom-alert-message" class="text-muted mb-4"></p>
+                    <button id="custom-alert-btn" class="btn btn-primary btn-glow w-100">OK</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        // Setup content and styling based on type
+        document.getElementById('custom-alert-title').textContent = title;
+        document.getElementById('custom-alert-title').className = type === 'error' ? 'text-crimson mb-2' : type === 'success' ? 'text-green mb-2' : 'text-primary mb-2';
+        document.getElementById('custom-alert-message').textContent = message;
+        
+        const iconBox = document.getElementById('custom-alert-icon');
+        if (type === 'error') {
+            iconBox.className = 'icon-box crimson mx-auto mb-3';
+            iconBox.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+        } else if (type === 'success') {
+            iconBox.className = 'icon-box green mx-auto mb-3';
+            iconBox.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        } else {
+            iconBox.className = 'icon-box cyan mx-auto mb-3';
+            iconBox.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+        }
+
+        modal.classList.remove('hidden');
+        
+        const btn = document.getElementById('custom-alert-btn');
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        newBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            resolve();
+        });
+    });
+};
+
+// Reusable Custom Confirm Modal
+export const showCustomConfirm = (title, message) => {
+    return new Promise((resolve) => {
+        let modal = document.getElementById('custom-confirm-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'custom-confirm-modal';
+            modal.className = 'modal-overlay hidden';
+            modal.innerHTML = `
+                <div class="card text-center m-0 mx-1 max-w-400 glass-panel">
+                    <div class="icon-box gold mx-auto mb-3" style="width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    </div>
+                    <h2 id="custom-confirm-title" class="mb-2 text-gold"></h2>
+                    <p id="custom-confirm-message" class="text-muted mb-4"></p>
+                    <div class="flex-col gap-1">
+                        <button id="custom-confirm-yes" class="btn btn-danger btn-glow w-100">Confirm</button>
+                        <button id="custom-confirm-no" class="btn btn-outline w-100">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        document.getElementById('custom-confirm-title').textContent = title;
+        document.getElementById('custom-confirm-message').textContent = message;
+        modal.classList.remove('hidden');
+        
+        const btnYes = document.getElementById('custom-confirm-yes');
+        const btnNo = document.getElementById('custom-confirm-no');
+        const newBtnYes = btnYes.cloneNode(true);
+        const newBtnNo = btnNo.cloneNode(true);
+        btnYes.parentNode.replaceChild(newBtnYes, btnYes);
+        btnNo.parentNode.replaceChild(newBtnNo, btnNo);
+        
+        newBtnYes.addEventListener('click', () => { modal.classList.add('hidden'); resolve(true); });
+        newBtnNo.addEventListener('click', () => { modal.classList.add('hidden'); resolve(false); });
+    });
+};
+
 // Login Prompt Modal Logic
 export const showLoginPromptModal = () => {
     let modal = document.getElementById('login-prompt-modal');
@@ -124,7 +213,7 @@ export const showCancelModal = (booking) => {
             renderUserBookings();
             modal.classList.add('hidden');
             
-            setTimeout(() => alert('Booking canceled successfully. Your refund is being processed.'), 100);
+            setTimeout(() => showCustomAlert('Booking Canceled', 'Booking canceled successfully. Your refund is being processed.', 'success'), 100);
         }
     };
 };
@@ -321,7 +410,7 @@ export const openPropertyModal = (card) => {
     
     bookBtn.onclick = () => {
         if (cardBookBtn && cardBookBtn.disabled) {
-            alert('This property is fully booked for your selected dates.');
+            showCustomAlert('Fully Booked', 'This property is fully booked for your selected dates.', 'error');
         } else if (cardBookBtn) {
             cardBookBtn.click();
         } else {

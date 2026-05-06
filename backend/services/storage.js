@@ -19,25 +19,25 @@ export const getBookings = () => bookingsCache; // Keep synchronous for UI speed
 export const saveBooking = async (booking) => {
     const existingIndex = bookingsCache.findIndex(b => b.id === booking.id);
     if (existingIndex > -1) {
-        bookingsCache[existingIndex] = booking; // Update local cache
-        await supabase.from('reservations').update(booking).eq('id', booking.id); // Sync to DB
+        const { error } = await supabase.from('reservations').update(booking).eq('id', booking.id);
+        if (error) {
+            console.error("Error updating booking in Supabase:", error);
+            return { success: false, error: error.message };
+        }
+        bookingsCache[existingIndex] = booking;
     } else {
-        bookingsCache.push(booking); // Insert local cache
-        await supabase.from('reservations').insert([booking]); // Sync to DB
+        const { error } = await supabase.from('reservations').insert([booking]);
+        if (error) {
+            console.error("Error inserting booking into Supabase:", error);
+            return { success: false, error: error.message };
+        }
+        bookingsCache.push(booking);
     }
+    return { success: true };
 };
 
 export const initProperties = async () => {
-    if (propertiesCache.length === 0) {
-        const initialProps = [
-            { id: 'p1', name: 'Monumento City Loft', location: 'Caloocan City, Metro Manila', price: 3500, type: 'studio', rating: 0, reviews: 0, imageClass: 'img-neon', images: ['img-neon', 'img-room1', 'img-kitchen', 'img-bathroom'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 2, beds: '1 Studio' },
-            { id: 'p2', name: 'Malabon Cozy Cabin', location: 'Malabon City, Metro Manila', price: 4200, type: 'family', rating: 0, reviews: 0, imageClass: 'img-crimson', images: ['img-crimson', 'img-room2', 'img-view', 'img-pool'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 4, beds: '2 Bedrooms' },
-            { id: 'p3', name: 'Valenzuela Resort', location: 'Valenzuela City, Metro Manila', price: 5000, type: 'deluxe', rating: 0, reviews: 0, imageClass: 'img-azure', images: ['img-azure', 'img-pool', 'img-room1', 'img-view'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 6, beds: '3 Bedrooms' },
-            { id: 'p4', name: 'Marilao Nature Retreat', location: 'Marilao, Bulacan', price: 4800, type: 'suite', rating: 0, reviews: 0, imageClass: 'img-emerald', images: ['img-emerald', 'img-view', 'img-room2', 'img-kitchen'], availableStart: '2024-01-01', availableEnd: '2099-12-31', guests: 2, beds: '1 Bedroom' }
-        ];
-        propertiesCache = initialProps;
-        await supabase.from('properties').insert(initialProps);
-    }
+    // Auto-seeding removed. Properties are now exclusively managed via the Admin Dashboard.
 };
 
 export const getProperties = () => propertiesCache;
@@ -46,10 +46,27 @@ export const saveProperty = async (property) => {
     const existingIndex = propertiesCache.findIndex(p => p.id === property.id);
     if (existingIndex > -1) {
         propertiesCache[existingIndex] = property;
-        await supabase.from('properties').update(property).eq('id', property.id);
+        const { error } = await supabase.from('properties').update(property).eq('id', property.id);
+        if (error) {
+            console.error("Error updating property in Supabase:", error);
+            return { success: false, error: error.message };
+        }
     } else {
-        propertiesCache.push(property);
-        await supabase.from('properties').insert([property]);
+        const { error } = await supabase.from('properties').insert([property]);
+        if (error) {
+            console.error("Error inserting property into Supabase:", error);
+            return { success: false, error: error.message };
+        }
+        propertiesCache.push(property); // Only add to cache if database insert succeeds!
+    }
+    return { success: true };
+};
+
+export const deleteProperty = async (propertyId) => {
+    propertiesCache = propertiesCache.filter(p => p.id !== propertyId);
+    const { error } = await supabase.from('properties').delete().eq('id', propertyId);
+    if (error) {
+        console.error("Error deleting property:", error);
     }
 };
 
