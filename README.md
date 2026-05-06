@@ -15,9 +15,9 @@ To explore the different role-based views and features, use the following demo a
 
 | Role | Username | Password | Access Level |
 | :--- | :--- | :--- | :--- |
-| **User** | `user` | `user` | Can view 'My Bookings' (Upcoming, Past, Canceled) & Profile. |
-| **Admin** | `admin` | `admin` | Can access Admin Dashboard, manage reservations, rooms, and support. |
-| **Super Admin**| `superadmin` | `superadmin` | Full system access, including Super Admin Dashboard and Admin management. |
+| **User** | `user` | `password` | Can view 'My Bookings' (Upcoming, Past, Canceled) & Profile. |
+| **Admin** | `admin` | `password` | Can access Admin Dashboard, manage reservations, rooms, and support. |
+| **Super Admin**| `superadmin` | `password` | Full system access, including Super Admin Dashboard and Admin management. |
 
 > **Note:** Because this project uses `localStorage`, authentication state is saved in your browser. To switch accounts, simply use the "Logout" button in the navigation menu before logging in with a new role.
 

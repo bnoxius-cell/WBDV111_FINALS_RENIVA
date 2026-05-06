@@ -1,11 +1,13 @@
-import { getUsers, saveUser, getBookings, saveBooking, initProperties, getProperties, syncProperties } from './services/storage.js';
+import { fetchInitialData, getBookings, saveBooking, initProperties, getProperties, syncProperties } from './services/storage.js';
 import { performSearch } from './features/search.js';
-import { loginUser, registerUser, logoutUser, getCurrentUser, hardcodedUsers } from './services/auth-service.js';
+import { loginUser, registerUser, logoutUser, getCurrentUser } from './services/auth-service.js';
 import { initSteppers, initCustomSelects, initCustomCalendars } from './ui/forms.js';
 import { showLoginPromptModal, showTermsModal, showCancelModal, initPropertyModalUI, openPropertyModal } from './ui/modals.js';
-import { setupBookingButtons, renderUserBookings, initReviewLogic, initCheckout } from './features/booking.js';
-import { showView, clearErrors, loadComponent, checkAuthStatus, setupTabs } from './ui/components.js';
-import { updateRecentTicker, renderTrendingDestinations } from './features/listings.js';
+import { setupBookingButtons, renderUserBookings, renderAdminBookings, initReviewLogic, initCheckout } from './features/booking.js';
+import { showView, clearErrors, loadComponent, checkAuthStatus, setupTabs, enforceRouteAccess, redirectToDashboard } from './ui/components.js';
+import { updateRecentTicker, renderTrendingDestinations, renderAllProperties } from './features/listings.js';
+
+enforceRouteAccess(); // Run route protection immediately
 
 // DOM Elements
 const showRegisterBtn = document.getElementById('show-register');
@@ -80,7 +82,7 @@ if (loginForm) {
             loginForm.reset();
             clearErrors();
             
-            if (window.redirectToDashboard) window.redirectToDashboard();
+            redirectToDashboard();
         } else {
             errorElement.textContent = result.error;
         }
@@ -92,13 +94,14 @@ document.querySelectorAll('#logout-btn, .sidebar-logout-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
         e.preventDefault();
         await logoutUser();
-        if (window.logout) window.logout();
+        window.location.href = '../general/auth.html';
     });
 });
 
 // Initialize App
-document.addEventListener('DOMContentLoaded', () => {
-    initProperties();
+document.addEventListener('DOMContentLoaded', async () => {
+    await fetchInitialData();
+    await initProperties();
     syncProperties();
     initPropertyModalUI();
     initSteppers();
@@ -108,10 +111,51 @@ document.addEventListener('DOMContentLoaded', () => {
     loadComponent('footer-placeholder', '../components/footer.html');
     checkAuthStatus();
 
+    // Admin: Add Property Form Logic
+    const addPropertyForm = document.getElementById('add-property-form');
+    if (addPropertyForm) {
+        addPropertyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = addPropertyForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publishing...';
+
+            const { saveProperty } = await import('./services/storage.js');
+            const newProp = {
+                id: 'PROP-' + Date.now().toString(),
+                name: document.getElementById('prop-name').value.trim(),
+                location: document.getElementById('prop-location').value.trim(),
+                price: parseFloat(document.getElementById('prop-price').value),
+                type: document.getElementById('prop-type').value,
+                rating: 0,
+                reviews: 0,
+                imageClass: document.getElementById('prop-image').value,
+                images: [document.getElementById('prop-image').value, 'img-room1', 'img-view', 'img-bathroom'],
+                availableStart: '2024-01-01',
+                availableEnd: '2099-12-31',
+                guests: parseInt(document.getElementById('prop-guests').value),
+                beds: document.getElementById('prop-beds').value.trim() || '1 Bedroom'
+            };
+
+            await saveProperty(newProp);
+
+            alert('Property published successfully! It is now live for users.');
+            addPropertyForm.reset();
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        });
+    }
+
     // Populate Demo Users
     const demoUsersList = document.getElementById('demo-users-list');
     if (demoUsersList) {
-        demoUsersList.innerHTML = hardcodedUsers.map(u => `
+        const demoAccounts = [
+            { role: 'superadmin', username: 'superadmin', password: 'password' },
+            { role: 'admin', username: 'admin', password: 'password' },
+            { role: 'user', username: 'user', password: 'password' }
+        ];
+        demoUsersList.innerHTML = demoAccounts.map(u => `
             <div class="demo-user-card">
                 <div class="demo-user-card-header">${u.role} Role</div>
                 <div class="demo-user-card-body">
@@ -155,7 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupTabs();
     initReviewLogic();
     renderUserBookings();
+    renderAdminBookings();
     renderTrendingDestinations();
+    renderAllProperties();
     updateRecentTicker();
 
     // Scroll to top button click event

@@ -1,6 +1,6 @@
 // Manages all modal dialogs (property details, login prompts, reviews, etc.)
 
-import { getProperties, getBookings } from '../services/storage.js';
+import { getProperties, getBookings, saveBooking } from '../services/storage.js';
 import { renderUserBookings } from '../features/booking.js';
 
 // Login Prompt Modal Logic
@@ -115,12 +115,12 @@ export const showCancelModal = (booking) => {
     modal.classList.remove('hidden');
 
     document.getElementById('abort-cancel-btn').onclick = () => modal.classList.add('hidden');
-    document.getElementById('confirm-cancel-btn').onclick = () => {
+    document.getElementById('confirm-cancel-btn').onclick = async () => {
         const bookings = getBookings();
         const bIdx = bookings.findIndex(b => b.id === booking.id);
         if (bIdx > -1) {
             bookings[bIdx].status = 'canceled';
-            localStorage.setItem('bookings', JSON.stringify(bookings));
+            await saveBooking(bookings[bIdx]);
             renderUserBookings();
             modal.classList.add('hidden');
             

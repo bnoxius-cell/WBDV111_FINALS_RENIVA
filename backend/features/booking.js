@@ -1,6 +1,6 @@
 // Handles the entire booking process, from checkout to rendering user bookings
 
-import { getBookings, getProperties, saveBooking } from '../services/storage.js';
+import { getBookings, getProperties, saveBooking, saveProperty } from '../services/storage.js';
 import { showLoginPromptModal, showTermsModal, showCancelModal, openPropertyModal } from '../ui/modals.js';
 
 // Booking Logic
@@ -227,6 +227,31 @@ export const renderUserBookings = () => {
     });
 };
 
+// Admin Render Bookings Logic
+export const renderAdminBookings = () => {
+    const adminContainer = document.getElementById('admin-reservations-list');
+    if (!adminContainer) return;
+
+    const allBookings = getBookings(); // Gets data from Supabase cache
+    
+    if (allBookings.length === 0) {
+        adminContainer.innerHTML = '<p class="text-center text-muted">No reservations found in the system.</p>';
+        return;
+    }
+
+    adminContainer.innerHTML = allBookings.slice().reverse().map(b => `
+        <div class="glass-panel p-4 property-summary-card">
+            <div class="flex-between mb-1">
+                <h3 class="text-primary m-0">${b.property}</h3>
+                <span class="text-capitalize font-bold ${b.status === 'upcoming' ? 'text-green' : b.status === 'canceled' ? 'text-crimson' : 'text-gold'}">${b.status}</span>
+            </div>
+            <p class="text-muted mb-1"><strong>Guest:</strong> <span class="text-capitalize">${b.user}</span></p>
+            <p class="text-muted mb-1"><strong>Dates:</strong> ${b.checkin} to ${b.checkout}</p>
+            <p class="text-muted mb-0" style="font-size: 0.85rem;"><strong>ID:</strong> ${b.id} &nbsp;|&nbsp; <strong>Total:</strong> ${b.price}</p>
+        </div>
+    `).join('');
+};
+
 // Review and Completion Logic
 export const initReviewLogic = () => {
     const reviewForm = document.getElementById('review-form');
@@ -241,7 +266,7 @@ export const initReviewLogic = () => {
     }
 
     if (reviewForm) {
-        reviewForm.addEventListener('submit', (e) => {
+        reviewForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const bookingId = document.getElementById('review-booking-id').value;
             const rating = parseInt(document.getElementById('review-rating').value);
@@ -266,10 +291,10 @@ export const initReviewLogic = () => {
                     const totalScore = (p.rating * p.reviews) + rating;
                     p.reviews += 1;
                     p.rating = totalScore / p.reviews;
-                    localStorage.setItem('properties', JSON.stringify(props));
+                    await saveProperty(p);
                 }
 
-                localStorage.setItem('bookings', JSON.stringify(bookings));
+                await saveBooking(b);
 
                 modal.classList.add('hidden');
                 reviewForm.reset();
