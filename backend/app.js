@@ -720,6 +720,107 @@ const showLoginPromptModal = () => {
     modal.classList.remove('hidden');
 };
 
+// Terms & Conditions Modal Logic
+const showTermsModal = () => {
+    let modal = document.getElementById('terms-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'terms-modal';
+        modal.className = 'modal-overlay hidden';
+        document.body.appendChild(modal);
+    }
+    modal.innerHTML = `
+        <div class="card m-0 mx-1 max-w-800 w-100" style="max-height: 90vh; display: flex; flex-direction: column;">
+            <h2 class="mb-2 text-primary">Terms & Cancellation Policy</h2>
+            <div class="glass-panel-soft p-4 mb-3" style="overflow-y: auto; border-radius: 8px; flex: 1; text-align: left;">
+                <h4 class="text-gold mb-2">Cancellation Policy</h4>
+                <p class="text-muted mb-3" style="font-size: 0.95rem;">You can cancel your booking for a full refund up to 7 days before your check-in date. Cancellations made within 7 days of the check-in date are subject to a 50% cancellation fee. Same-day cancellations or no-shows are non-refundable.</p>
+                
+                <h4 class="text-gold mb-2">Damages & Breakages</h4>
+                <p class="text-muted mb-0" style="font-size: 0.95rem;">We understand accidents happen! Please report any damages to our Support Queue immediately. Minor breakages (like a shattered glass) are usually covered, but significant damage to furniture or appliances will be billed to the payment method on file.</p>
+            </div>
+            <button id="close-terms-btn" class="btn btn-primary w-100">I Understand</button>
+        </div>
+    `;
+    modal.classList.remove('hidden');
+    document.getElementById('close-terms-btn').onclick = () => modal.classList.add('hidden');
+};
+
+// Cancellation Calculation & Modal Logic
+const showCancelModal = (booking) => {
+    let modal = document.getElementById('cancel-booking-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'cancel-booking-modal';
+        modal.className = 'modal-overlay hidden';
+        document.body.appendChild(modal);
+    }
+
+    const totalPaid = parseFloat(booking.price.replace(/[^\d.]/g, '')) || 0;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const checkinDate = new Date(booking.checkin + 'T00:00:00');
+    const diffTime = checkinDate - today;
+    const daysUntil = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    let feePercentage = 0;
+    if (daysUntil <= 0) feePercentage = 1;
+    else if (daysUntil <= 7) feePercentage = 0.5;
+
+    const feeAmount = totalPaid * feePercentage;
+    const refundAmount = totalPaid - feeAmount;
+
+    let policyText = '';
+    if (daysUntil > 7) policyText = 'You are canceling more than 7 days before check-in. You are eligible for a <strong class="text-green">full refund</strong>.';
+    else if (daysUntil > 0) policyText = 'You are canceling within 7 days of check-in. A <strong class="text-crimson">50% cancellation fee</strong> applies.';
+    else policyText = '<strong class="text-crimson">Same-day cancellations or no-shows are non-refundable.</strong>';
+
+    modal.innerHTML = `
+        <div class="card m-0 mx-1 max-w-400 w-100">
+            <h2 class="mb-1 text-crimson">Cancel Booking</h2>
+            <p class="text-primary font-bold mb-2">${booking.property}</p>
+            <p class="text-muted text-sm mb-3">Check-in: ${new Date(booking.checkin + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+
+            <div class="glass-panel-soft p-3 mb-3" style="border-radius: 8px;">
+                <p class="mb-3 text-sm text-muted" style="line-height: 1.4;">${policyText}</p>
+                <div class="mb-1" style="display: flex; justify-content: space-between;">
+                    <span class="text-muted">Total Paid:</span>
+                    <span class="font-bold">₱${totalPaid.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                </div>
+                <div class="mb-1 text-crimson" style="display: flex; justify-content: space-between;">
+                    <span>Cancellation Fee:</span>
+                    <span>- ₱${feeAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                </div>
+                <div class="border-t pt-2 mt-2 text-green font-bold" style="display: flex; justify-content: space-between; border-color: rgba(255,255,255,0.1);">
+                    <span>Refund Amount:</span>
+                    <span>₱${refundAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                </div>
+            </div>
+
+            <div class="flex-col gap-1 mt-3">
+                <button id="confirm-cancel-btn" class="btn btn-danger btn-glow w-100">Confirm Cancellation</button>
+                <button id="abort-cancel-btn" class="btn btn-outline w-100">Keep My Booking</button>
+            </div>
+        </div>
+    `;
+
+    modal.classList.remove('hidden');
+
+    document.getElementById('abort-cancel-btn').onclick = () => modal.classList.add('hidden');
+    document.getElementById('confirm-cancel-btn').onclick = () => {
+        const bookings = getBookings();
+        const bIdx = bookings.findIndex(b => b.id === booking.id);
+        if (bIdx > -1) {
+            bookings[bIdx].status = 'canceled';
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+            renderUserBookings();
+            modal.classList.add('hidden');
+            
+            setTimeout(() => alert('Booking canceled successfully. Your refund is being processed.'), 100);
+        }
+    };
+};
+
 // Global interval variable for the carousel auto-play
 window.modalCarouselInterval = null;
 
@@ -794,23 +895,31 @@ const openPropertyModal = (card) => {
     const modal = document.getElementById('property-details-modal');
     if (!modal) return;
 
-    const name = card.querySelector('h3').textContent.trim();
-    const location = card.querySelector('.location').textContent.trim();
-    const price = card.querySelector('.price').textContent.trim();
-    const guests = card.dataset.guests;
+    const nameNode = card.querySelector('h3') || card.querySelector('h4');
+    if (!nameNode) return;
+    const name = nameNode.textContent.trim();
     
     // Find property in local storage for full details
     const props = getProperties();
     const propData = props.find(p => p.name === name);
 
+    const locationNode = card.querySelector('.location');
+    const location = locationNode ? locationNode.textContent.trim() : (propData?.location || 'Unknown Location');
+    
+    const priceNode = card.querySelector('.price');
+    const price = priceNode ? priceNode.textContent.trim() : (propData ? `₱${propData.price.toLocaleString()} / night` : '₱0 / night');
+    
+    const guests = card.dataset?.guests || propData?.guests || '2';
+
     document.getElementById('property-modal-title').textContent = name;
-    document.getElementById('property-modal-location').innerHTML = `${location} &nbsp;|&nbsp; <span style="text-transform: capitalize; color: var(--primary-color); font-weight: 500;">${propData?.type || card.dataset.type || 'Studio'}</span>`;
+    document.getElementById('property-modal-location').innerHTML = `${location} &nbsp;|&nbsp; <span style="text-transform: capitalize; color: var(--primary-color); font-weight: 500;">${propData?.type || card.dataset?.type || 'Studio'}</span>`;
     document.getElementById('property-modal-price').textContent = price;
     document.getElementById('property-modal-guests').textContent = propData?.guests || guests || '2';
     document.getElementById('property-modal-beds').textContent = propData?.beds || '1 Bedroom';
     
     // Setup image carousel
-    const baseImgClass = propData?.imageClass || Array.from(card.querySelector('.card-image').classList).find(c => c.startsWith('img-')) || 'img-neon';
+    const cardImageNode = card.querySelector('.card-image');
+    const baseImgClass = propData?.imageClass || (cardImageNode ? Array.from(cardImageNode.classList).find(c => c.startsWith('img-')) : 'img-neon');
     let images = propData?.images;
     if (!images || images.length === 0) {
         // Fallback for older properties saved before this update
@@ -906,8 +1015,10 @@ const openPropertyModal = (card) => {
     bookBtn.onclick = () => {
         if (cardBookBtn && cardBookBtn.disabled) {
             alert('This property is fully booked for your selected dates.');
-        } else {
+        } else if (cardBookBtn) {
             cardBookBtn.click();
+        } else {
+            window.location.href = '../general/reservations.html';
         }
     };
     
@@ -1047,10 +1158,12 @@ const renderUserBookings = () => {
 
         const createBookingHTML = (b, colorClass, glowClass) => {
             let actionBtn = '';
+            let ratingHTML = '';
             if (b.status === 'upcoming') {
-                actionBtn = `<button class="btn btn-outline btn-glow mt-3 w-fit complete-stay-btn" data-id="${b.id}" data-property="${b.property}">Complete Stay & Review</button>`;
+                actionBtn = `<button class="btn btn-primary btn-glow w-fit complete-stay-btn" data-id="${b.id}" data-property="${b.property}">Complete Stay</button>
+                             <button class="btn btn-outline btn-danger w-fit cancel-booking-btn" data-id="${b.id}">Cancel Booking</button>`;
             } else if (b.status === 'past' && b.userRating) {
-                actionBtn = `<p class="text-muted mt-2" style="font-size: 0.9rem;">Your Rating: <span class="text-primary font-bold">★ ${b.userRating}/5</span><br>"${b.userReview}"</p>`;
+                ratingHTML = `<p class="text-muted mt-2 mb-0" style="font-size: 0.9rem;">Your Rating: <span class="text-primary font-bold">★ ${b.userRating}/5</span><br>"${b.userReview}"</p>`;
             }
             
             const propertyInfo = props.find(p => p.name === b.property);
@@ -1058,12 +1171,40 @@ const renderUserBookings = () => {
             const bedText = propertyInfo && propertyInfo.beds ? ` | ${propertyInfo.beds}` : '';
             const ratingText = propertyInfo ? ` | Avg Rating: ★ ${propertyInfo.rating > 0 ? propertyInfo.rating.toFixed(1) : 'New'}` : '';
 
+            let durationText = '';
+            if (b.checkin && b.checkout) {
+                const d1 = new Date(b.checkin);
+                const d2 = new Date(b.checkout);
+                const diffTime = Math.abs(d2 - d1);
+                const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+
+                const formatF = (dateStr) => new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const checkinFormatted = formatF(b.checkin);
+                const checkoutFormatted = formatF(b.checkout);
+
+                durationText = `<p class="text-gold font-bold mt-3 mb-0" style="border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 1rem;">${checkinFormatted} - ${checkoutFormatted} (${nights} night${nights > 1 ? 's' : ''})</p>`;
+            }
+
+            let displayStatus = b.status;
+            if (b.status === 'past') displayStatus = 'completed';
+
+            let dateInfo = `(Booked on ${b.dateBooked})`;
+            if (b.status === 'past') {
+                const completedDate = b.dateCompleted || (b.checkout ? new Date(b.checkout + 'T00:00:00').toLocaleDateString() : 'N/A');
+                dateInfo = `(Booked on ${b.dateBooked} | Completed on ${completedDate})`;
+            }
+
             return `
-                <div class="glass-panel ${glowClass} p-4 flex-col">
+                <div class="glass-panel ${glowClass} p-4 flex-col property-summary-card">
                     <h3>${b.property}</h3>
-                    <p class="text-muted">Location: ${b.location} | Price: ${b.price}${guestText}${bedText}${ratingText}</p>
-                    <p class="${colorClass} mt-3 font-bold mb-0">Status: ${b.status.charAt(0).toUpperCase() + b.status.slice(1)} (Booked on ${b.dateBooked})</p>
-                    ${actionBtn}
+                    <p class="text-muted mb-0">Location: ${b.location} | Price: ${b.price}${guestText}${bedText}${ratingText}</p>
+                    <p class="${colorClass} mt-2 font-bold mb-0">Status: <span style="text-transform: capitalize;">${displayStatus}</span> <span class="text-muted ml-1" style="font-size: 0.9em; font-weight: 500;">${dateInfo}</span></p>
+                    ${durationText}
+                    ${ratingHTML}
+                    <div class="flex-align-center flex-wrap gap-1 mt-3">
+                        <button class="btn btn-outline view-unit-btn w-fit">View Unit</button>
+                        ${actionBtn}
+                    </div>
                 </div>
             `;
         };
@@ -1093,6 +1234,15 @@ const renderUserBookings = () => {
                 }
             });
         });
+
+        // Bind cancel booking buttons
+        document.querySelectorAll('.cancel-booking-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const bookingId = e.target.getAttribute('data-id');
+                const booking = getBookings().find(b => b.id === bookingId);
+                if (booking && typeof showCancelModal === 'function') showCancelModal(booking);
+            });
+        });
     }
 
     // 2. User Dashboard Page
@@ -1100,14 +1250,46 @@ const renderUserBookings = () => {
     if (dashboardContainer) {
         if (userBookings.length > 0) {
             const props = getProperties();
-            const recent = userBookings.slice(-3).reverse(); // Get latest 3
+            const recent = userBookings.slice(-10).reverse(); // Show up to the 10 most recent bookings
             dashboardContainer.innerHTML = recent.map(b => {
                 const propertyInfo = props.find(p => p.name === b.property);
                 const guestText = propertyInfo ? ` | Recommended: ${propertyInfo.guests} person(s)` : '';
+
+                let durationText = '';
+                if (b.checkin && b.checkout) {
+                    const d1 = new Date(b.checkin);
+                    const d2 = new Date(b.checkout);
+                    const diffTime = Math.abs(d2 - d1);
+                    const nights = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+
+                    const formatF = (dateStr) => new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const checkinFormatted = formatF(b.checkin);
+                    const checkoutFormatted = formatF(b.checkout);
+
+                    durationText = `<p class="text-gold font-bold mt-3 mb-0" style="border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 1rem;">${checkinFormatted} - ${checkoutFormatted} (${nights} night${nights > 1 ? 's' : ''})</p>`;
+                }
+
+                let statusColor = 'text-muted';
+                let displayStatus = b.status.charAt(0).toUpperCase() + b.status.slice(1);
+                let dateInfo = `(Booked on ${b.dateBooked})`;
+
+                if (b.status === 'upcoming') { statusColor = 'text-green'; }
+                else if (b.status === 'past') { 
+                    statusColor = 'text-gold'; 
+                    displayStatus = 'Completed'; 
+                    const completedDate = b.dateCompleted || (b.checkout ? new Date(b.checkout + 'T00:00:00').toLocaleDateString() : 'N/A');
+                    dateInfo = `(Booked on ${b.dateBooked} | Completed on ${completedDate})`;
+                }
+                else if (b.status === 'canceled') { statusColor = 'text-crimson'; displayStatus = 'Canceled'; }
+
                 return `
-                    <div class="glass-panel p-3">
-                        <h4 class="text-primary">${b.property}</h4>
-                        <p class="text-muted mb-0" style="font-size: 0.85rem;">${b.location}${guestText} - <span style="text-transform: capitalize;">${b.status}</span></p>
+                    <div class="glass-panel p-4 property-summary-card">
+                        <h4 class="text-primary mb-1">${b.property}</h4>
+                        <p class="text-muted mb-2" style="font-size: 0.9rem;">${b.location}${guestText} - <span class="${statusColor}" style="font-weight: 600;">${displayStatus}</span> <span class="text-muted" style="font-weight: normal; font-size: 0.85rem; margin-left: 0.25rem;">${dateInfo}</span></p>
+                        ${durationText}
+                        <div class="mt-3">
+                            <button class="btn btn-outline view-unit-btn w-fit" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View Unit</button>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -1115,6 +1297,16 @@ const renderUserBookings = () => {
             dashboardContainer.innerHTML = '<p class="text-center text-muted">You have no recent bookings.</p>';
         }
     }
+
+    // Bind View Unit buttons
+    document.querySelectorAll('.view-unit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const card = e.target.closest('.property-summary-card');
+            if (card && typeof openPropertyModal === 'function') {
+                openPropertyModal(card);
+            }
+        });
+    });
 };
 
 // Update Recent Booking Ticker (Home Page)
@@ -1221,6 +1413,7 @@ const initReviewLogic = () => {
                 b.status = 'past'; // Moves it to the Past Bookings tab
                 b.userRating = rating;
                 b.userReview = reviewText;
+                b.dateCompleted = new Date().toLocaleDateString();
                 
                 // Update Property Rating dynamically
                 const props = getProperties();
@@ -1673,6 +1866,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             const checkoutForm = document.getElementById('checkout-form');
+            
+            // Inject Terms and Conditions Checkbox
+            const submitBtn = document.getElementById('pay-now-btn');
+            if (submitBtn && !document.getElementById('tc-checkbox')) {
+                const tcContainer = document.createElement('div');
+                tcContainer.className = 'form-group mt-4 mb-3';
+                tcContainer.innerHTML = `
+                    <label style="cursor: pointer; gap: 0.75rem; display: flex; align-items: start;">
+                        <input type="checkbox" id="tc-checkbox" required style="width: 1.25rem; height: 1.25rem; accent-color: var(--primary-color); margin-top: 0.2rem; flex-shrink: 0;">
+                        <span class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">I agree to the <a href="#" id="tc-link" class="text-primary font-bold">Terms of Service and Cancellation Policy</a>, including the rules on damages and breakages.</span>
+                    </label>
+                `;
+                submitBtn.parentNode.insertBefore(tcContainer, submitBtn);
+
+                document.getElementById('tc-link').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (typeof showTermsModal === 'function') showTermsModal();
+                });
+            }
+
             if (checkoutForm) {
                 checkoutForm.addEventListener('submit', (e) => {
                     e.preventDefault();
@@ -1726,6 +1939,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = sessionStorage.getItem('currentUser');
         if (username) displayDash.textContent = username;
     }
+    const profileUsername = document.getElementById('profile-username-display');
+    if (profileUsername) {
+        const username = sessionStorage.getItem('currentUser');
+        if (username) profileUsername.textContent = username;
+    }
+
     setupTabs();
     initReviewLogic();
     renderUserBookings();
