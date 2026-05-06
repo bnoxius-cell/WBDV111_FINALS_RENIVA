@@ -77,3 +77,18 @@ export const getCurrentUser = () => {
     const role = sessionStorage.getItem('currentRole');
     return username ? { username, role } : null;
 };
+
+export const updateUserRole = async (userId, newRole) => {
+    const { error } = await supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('id', userId);
+
+    if (error) {
+        console.error("Error updating user role:", error);
+        return { success: false, error: error.message };
+    }
+    // Manually update local cache to reflect change immediately without a full refetch
+    // This is an optimistic update. A full `fetchInitialData()` is more robust.
+    return { success: true };
+};

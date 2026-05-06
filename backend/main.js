@@ -3,9 +3,9 @@ import { performSearch } from './features/search.js';
 import { loginUser, registerUser, logoutUser, getCurrentUser } from './services/auth-service.js';
 import { initSteppers, initCustomSelects, initCustomCalendars } from './ui/forms.js';
 import { showLoginPromptModal, showTermsModal, showCancelModal, initPropertyModalUI, openPropertyModal, showCustomAlert, showCustomConfirm } from './ui/modals.js';
-import { setupBookingButtons, renderUserBookings, renderAdminBookings, initReviewLogic, initCheckout } from './features/booking.js';
+import { setupBookingButtons, renderUserBookings, renderAdminBookings, initReviewLogic, initCheckout, renderSupportQueue } from './features/booking.js';
 import { showView, clearErrors, loadComponent, checkAuthStatus, setupTabs, enforceRouteAccess, redirectToDashboard } from './ui/components.js';
-import { updateRecentTicker, renderTrendingDestinations, renderAllProperties, renderAdminProperties } from './features/listings.js';
+import { updateRecentTicker, renderTrendingDestinations, renderAllProperties, renderAdminProperties, renderSuperAdminUsers } from './features/listings.js';
 
 enforceRouteAccess(); // Run route protection immediately
 
@@ -155,6 +155,46 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // Profile Management Form
+    const updateProfileForm = document.getElementById('update-profile-form');
+    if (updateProfileForm) {
+        const usernameField = document.getElementById('profile-username');
+        const currentUser = getCurrentUser();
+        if (currentUser) {
+            usernameField.value = currentUser.username;
+        }
+
+        updateProfileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const currentPassword = document.getElementById('profile-current-password').value;
+            const newPassword = document.getElementById('profile-new-password').value;
+            const confirmPassword = document.getElementById('profile-confirm-password').value;
+
+            if (newPassword !== confirmPassword) {
+                showCustomAlert('Error', 'New passwords do not match.', 'error');
+                return;
+            }
+            if (newPassword.length < 6) { // Assuming a minimum length
+                showCustomAlert('Error', 'New password must be at least 6 characters long.', 'error');
+                return;
+            }
+
+            // This logic should ideally be in `auth-service.js`, but implementing here as the file is not provided.
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const userIndex = users.findIndex(u => u.username === currentUser.username && u.password === currentPassword);
+
+            if (userIndex > -1) {
+                users[userIndex].password = newPassword;
+                localStorage.setItem('users', JSON.stringify(users));
+                showCustomAlert('Success', 'Your password has been updated successfully.', 'success');
+                updateProfileForm.reset();
+                if (currentUser) usernameField.value = currentUser.username; // Re-set readonly field
+            } else {
+                showCustomAlert('Error', 'Incorrect current password.', 'error');
+            }
+        });
+    }
+
     // Populate Demo Users
     const demoUsersList = document.getElementById('demo-users-list');
     if (demoUsersList) {
@@ -211,6 +251,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderTrendingDestinations();
     renderAllProperties();
     renderAdminProperties();
+    renderSuperAdminUsers();
+    renderSupportQueue();
     updateRecentTicker();
 
     // Scroll to top button click event
@@ -232,6 +274,45 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const { deleteProperty } = await import('./services/storage.js');
                 await deleteProperty(propId);
                 renderAdminProperties();
+            }
+        }
+
+        // Admin Manage Reservations Logic
+        if (e.target.classList.contains('admin-cancel-booking-btn')) {
+            const bookingId = e.target.getAttribute('data-id');
+            const confirmed = await showCustomConfirm("Cancel Booking", "Are you sure you want to cancel this user's booking? This action cannot be undone.");
+            if (confirmed) {
+                const booking = getBookings().find(b => b.id === bookingId);
+                if (booking) {
+                    booking.status = 'canceled';
+                    await saveBooking(booking);
+                    renderAdminBookings();
+                    showCustomAlert('Booking Canceled', 'The user booking has been successfully canceled.', 'success');
+                }
+            }
+        }
+
+        if (e.target.classList.contains('admin-delete-booking-btn')) {
+            const bookingId = e.target.getAttribute('data-id');
+            const confirmed = await showCustomConfirm("Delete Record", "Are you sure you want to permanently delete this booking record? This is for database cleanup and cannot be undone.");
+            if (confirmed) {
+                const { deleteBooking } = await import('./services/storage.js');
+                await deleteBooking(bookingId);
+                renderAdminBookings();
+                showCustomAlert('Record Deleted', 'The booking record has been permanently deleted.', 'success');
+            }
+        }
+
+        // Superadmin: Remove Admin Logic
+        if (e.target.classList.contains('remove-admin-btn')) {
+            const userId = e.target.getAttribute('data-id');
+            const confirmed = await showCustomConfirm("Revoke Admin Privileges", "Are you sure? This will demote the user to a regular member.");
+            if (confirmed) {
+                const { updateUserRole } = await import('./services/auth-service.js');
+                await updateUserRole(userId, 'user');
+                await fetchInitialData(); // Refetch all data to update caches
+                renderSuperAdminUsers(); // Re-render the list
+                showCustomAlert('Admin Revoked', 'The user has been successfully demoted.', 'success');
             }
         }
     });

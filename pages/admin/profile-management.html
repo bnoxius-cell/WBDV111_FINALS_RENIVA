@@ -29,10 +29,26 @@
                 <div class="card card-lg m-0 max-w-100">
                     <h2 class="mb-2">Profile Management</h2>
                     <p class="subtitle text-center mb-4">Update your admin profile credentials.</p>
-                    
-                    <div class="text-center mt-4">
-                        <p class="text-muted">Profile form goes here...</p>
-                    </div>
+
+                    <form id="update-profile-form" class="flex-col gap-1 max-w-400 mx-auto mt-4">
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" id="profile-username" class="form-control" readonly style="background-color: var(--secondary-color); cursor: not-allowed;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Current Password</label>
+                            <input type="password" id="profile-current-password" class="form-control" required placeholder="Enter your current password">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">New Password</label>
+                            <input type="password" id="profile-new-password" class="form-control" required placeholder="Enter a new password">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" id="profile-confirm-password" class="form-control" required placeholder="Confirm your new password">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-glow mt-3 w-100">Update Password</button>
+                    </form>
                 </div>
             </section>
         </div>

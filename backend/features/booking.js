@@ -5,13 +5,16 @@ import { showLoginPromptModal, showTermsModal, showCancelModal, openPropertyModa
 import { redirectToDashboard } from '../ui/components.js';
 
 // Booking Logic
-export const setupBookingButtons = () => {
-    document.querySelectorAll('.book-btn').forEach(btn => {
-        // Remove existing listener to prevent duplicates if called multiple times
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newBtn, btn);
+let isBookingListenerAttached = false;
 
-        newBtn.addEventListener('click', (e) => {
+export const setupBookingButtons = () => {
+    if (isBookingListenerAttached) return;
+    isBookingListenerAttached = true;
+    
+    document.body.addEventListener('click', (e) => {
+        // 1. Book Button Logic
+        const bookBtn = e.target.closest('.book-btn');
+        if (bookBtn) {
             const currentUser = sessionStorage.getItem('currentUser');
             if (!currentUser) {
                 e.preventDefault();
@@ -19,7 +22,7 @@ export const setupBookingButtons = () => {
                 return;
             }
 
-            const card = e.target.closest('.listing-card');
+            const card = bookBtn.closest('.listing-card');
             if (card) {
                 const propertyName = card.querySelector('h3').textContent;
                 const location = card.querySelector('.location').textContent;
@@ -41,18 +44,17 @@ export const setupBookingButtons = () => {
                 
                 window.location.href = '../general/checkout.html';
             }
-        });
-    });
-    
-    // Setup Property Modal Click Event on the parent card
-    document.querySelectorAll('.listing-card').forEach(card => {
-        if (card.dataset.hasModalListener === 'true') return;
-        card.dataset.hasModalListener = 'true';
-        card.style.cursor = 'pointer';
-        card.addEventListener('click', (e) => {
-            if (e.target.classList.contains('book-btn') || e.target.closest('.book-btn')) return;
+            return; // Stop event from triggering the card modal below
+        }
+        
+        // 2. Property Card Modal Logic
+        const card = e.target.closest('.listing-card');
+        if (card) {
+            // Do not open modal if clicking on a button inside the card
+            if (e.target.closest('button')) return;
+            
             if (typeof openPropertyModal === 'function') openPropertyModal(card);
-        });
+        }
     });
 };
 
@@ -120,7 +122,7 @@ export const renderUserBookings = () => {
                     <p class="${colorClass} mt-2 font-bold mb-0">Status: <span style="text-transform: capitalize;">${displayStatus}</span> <span class="text-muted ml-1" style="font-size: 0.9em; font-weight: 500;">${dateInfo}</span></p>
                     ${durationText}
                     ${ratingHTML}
-                    <div class="flex-align-center flex-wrap gap-1 mt-3">
+                    <div class="flex-align-center flex-wrap mt-3" style="gap: 0.75rem; justify-content: flex-end;">
                         <button class="btn btn-outline view-unit-btn w-fit">View Unit</button>
                         ${actionBtn}
                     </div>
@@ -207,7 +209,7 @@ export const renderUserBookings = () => {
                         <p class="text-muted mb-2" style="font-size: 0.9rem;">${b.location}${guestText} - <span class="${statusColor}" style="font-weight: 600;">${displayStatus}</span> <span class="text-muted" style="font-weight: normal; font-size: 0.85rem; margin-left: 0.25rem;">${dateInfo}</span></p>
                         ${durationText}
                         <div class="mt-3">
-                            <button class="btn btn-outline view-unit-btn w-fit" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View Unit</button>
+                            <button class="btn btn-outline view-unit-btn w-fit">View Unit</button>
                         </div>
                     </div>
                 `;
@@ -240,17 +242,29 @@ export const renderAdminBookings = () => {
         return;
     }
 
-    adminContainer.innerHTML = allBookings.slice().reverse().map(b => `
-        <div class="glass-panel p-4 property-summary-card">
-            <div class="flex-between mb-1">
-                <h3 class="text-primary m-0">${b.property}</h3>
-                <span class="text-capitalize font-bold ${b.status === 'upcoming' ? 'text-green' : b.status === 'canceled' ? 'text-crimson' : 'text-gold'}">${b.status}</span>
+    adminContainer.innerHTML = allBookings.slice().reverse().map(b => {
+        let actionButtons = '';
+        if (b.status === 'upcoming') {
+            actionButtons = `<button class="btn btn-outline btn-danger w-fit admin-cancel-booking-btn" data-id="${b.id}">Cancel Booking</button>`;
+        } else {
+            actionButtons = `<button class="btn btn-outline w-fit admin-delete-booking-btn" data-id="${b.id}">Delete Record</button>`;
+        }
+
+        return `
+        <div class="glass-panel p-4 property-summary-card flex-col">
+            <div class="flex-between mb-2">
+                <h3 class="text-primary m-0">${b.property} <span class="text-muted" style="font-size: 0.9rem; font-weight: 500;">(${b.location})</span></h3>
+                <span class="text-capitalize font-bold ${b.status === 'upcoming' ? 'text-green' : b.status === 'canceled' ? 'text-crimson' : 'text-gold'}">${b.status === 'past' ? 'completed' : b.status}</span>
             </div>
             <p class="text-muted mb-1"><strong>Guest:</strong> <span class="text-capitalize">${b.user}</span></p>
             <p class="text-muted mb-1"><strong>Dates:</strong> ${b.checkin} to ${b.checkout}</p>
             <p class="text-muted mb-0" style="font-size: 0.85rem;"><strong>ID:</strong> ${b.id} &nbsp;|&nbsp; <strong>Total:</strong> ${b.price}</p>
+            ${b.note ? `<div class="mt-2 p-2 glass-panel-soft" style="border-left: 3px solid var(--primary-color); border-radius: 4px;"><p class="m-0 text-muted" style="font-size: 0.85rem;"><strong>Note:</strong> ${b.note}</p></div>` : ''}
+            <div class="flex-align-center flex-wrap mt-auto border-t pt-3 mt-3" style="gap: 0.75rem; justify-content: flex-end;">
+                ${actionButtons}
+            </div>
         </div>
-    `).join('');
+    `}).join('');
 };
 
 // Review and Completion Logic
@@ -705,6 +719,14 @@ export const initCheckout = () => {
                     <span class="text-muted" style="font-size: 0.9rem; line-height: 1.4;">I agree to the <a href="#" id="tc-link" class="text-primary font-bold">Terms of Service and Cancellation Policy</a>, including the rules on damages and breakages.</span>
                 </label>
             `;
+
+            const noteContainer = document.createElement('div');
+            noteContainer.className = 'form-group mt-4 mb-2';
+            noteContainer.innerHTML = `
+                <label class="form-label" for="checkout-note">Special Requests & Support Note</label>
+                <textarea id="checkout-note" class="form-control resize-y" rows="3" placeholder="Any special requests, early check-in needs, or questions for our support team?"></textarea>
+            `;
+            submitBtn.parentNode.insertBefore(noteContainer, submitBtn);
             submitBtn.parentNode.insertBefore(tcContainer, submitBtn);
 
             document.getElementById('tc-link').addEventListener('click', (e) => {
@@ -737,7 +759,8 @@ export const initCheckout = () => {
                         checkout: checkoutInput.value,
                         price: grandTotalStr,
                         status: 'upcoming',
-                        dateBooked: new Date().toLocaleDateString()
+                        dateBooked: new Date().toLocaleDateString(),
+                        note: document.getElementById('checkout-note') ? document.getElementById('checkout-note').value.trim() : ''
                     };
                     
                     const result = await saveBooking(newBooking);
@@ -768,4 +791,33 @@ export const initCheckout = () => {
             });
         }
     }
+};
+
+// Render Support Queue Logic
+export const renderSupportQueue = () => {
+    const queueContainer = document.getElementById('support-queue-list');
+    if (!queueContainer) return;
+
+    const bookingsWithNotes = getBookings().filter(b => b.note && b.note.trim() !== '');
+
+    if (bookingsWithNotes.length === 0) {
+        queueContainer.innerHTML = '<p class="text-center text-muted mt-4">No support inquiries at the moment.</p>';
+        return;
+    }
+
+    queueContainer.innerHTML = bookingsWithNotes.slice().reverse().map(b => `
+        <div class="glass-panel p-4 flex-col">
+            <div class="flex-between mb-2">
+                <h3 class="text-primary m-0">Booking Inquiry - ${b.id}</h3>
+                <span class="font-bold text-green">Open</span>
+            </div>
+            <p class="text-muted mb-1"><strong>From:</strong> <span class="text-capitalize">${b.user}</span> &nbsp;|&nbsp; <strong>Property:</strong> ${b.property}</p>
+            <p class="text-muted mb-2"><strong>Received:</strong> ${b.dateBooked}</p>
+            <p class="mb-3">"${b.note}"</p>
+            <div class="flex-align-center flex-wrap gap-1 mt-auto border-t pt-3">
+                <button class="btn btn-primary btn-glow w-fit">Reply</button>
+                <button class="btn btn-outline w-fit">Mark as Resolved</button>
+            </div>
+        </div>
+    `).join('');
 };

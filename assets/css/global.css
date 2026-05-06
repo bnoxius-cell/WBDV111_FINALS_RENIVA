@@ -559,6 +559,7 @@ details.faq-item .faq-content {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
@@ -600,8 +601,19 @@ details.faq-item .faq-content {
     margin-bottom: 1.5rem;
 }
 
+/* Ensure proper spacing for multiple action buttons (e.g., CRUD actions) */
+.listing-card .btn,
+.property-summary-card .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
 .card-content .btn {
     margin-top: auto;
+}
+
+.card-content .btn + .btn {
+    margin-left: 0.5rem;
 }
 
 /* Dynamic Search Result Elements */

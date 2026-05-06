@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Superadmin Dashboard | CozyCorner</title>
+    <title>Manage Properties | CozyCorner</title>
     <link rel="stylesheet" href="../../assets/css/global.css">
     <link rel="stylesheet" href="../../assets/css/dashboard.css">
 </head>
@@ -16,9 +16,9 @@
         <div class="dashboard-layout">
             <aside class="sidebar">
                 <ul class="sidebar-menu">
-                    <li><a href="dashboard.html" class="active">Overview</a></li>
+                    <li><a href="dashboard.html">Overview</a></li>
                     <li><a href="manage-reservations.html">Reservations</a></li>
-                    <li><a href="manage-properties.html">Properties</a></li>
+                    <li><a href="manage-properties.html" class="active">Properties</a></li>
                     <li><a href="manage-admins.html">Manage Admins</a></li>
                     <li><a href="support-queue.html">Support Queue</a></li>
                     <li><a href="profile-management.html">Profile Settings</a></li>
@@ -28,11 +28,16 @@
             
             <section class="dashboard-content">
                 <div class="card card-lg m-0 max-w-100">
-                    <h2 class="mb-4">Platform Overview</h2>
-                    <h3 class="text-primary mb-3">Recent Reservations</h3>
-                    <div id="admin-reservations-list" class="flex-col gap-1 mb-5"></div>
-                    <h3 class="text-primary mb-3 mt-5">Manage Properties</h3>
-                    <div id="admin-properties-grid" class="grid-auto-250"></div>
+                    <div class="flex-between mb-4">
+                        <div>
+                            <h2 class="mb-0">Manage Properties</h2>
+                            <p class="subtitle text-left m-0">Add, edit, or remove property listings.</p>
+                        </div>
+                        <a href="add-property.html" class="btn btn-primary btn-glow w-fit">Add New Property</a>
+                    </div>
+                    <div id="admin-properties-grid" class="grid-auto-250">
+                        <!-- Properties will be rendered here -->
+                    </div>
                 </div>
             </section>
         </div>

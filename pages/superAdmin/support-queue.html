@@ -11,7 +11,7 @@
     <div id="header-placeholder"></div>
 
     <main class="container py-section">
-        <h1 class="text-primary">Admin Dashboard</h1>
+        <h1 class="text-primary">Superadmin Dashboard</h1>
         
         <div class="dashboard-layout">
             <aside class="sidebar">
@@ -19,6 +19,7 @@
                     <li><a href="dashboard.html">Overview</a></li>
                     <li><a href="manage-reservations.html">Reservations</a></li>
                     <li><a href="manage-properties.html">Properties</a></li>
+                    <li><a href="manage-admins.html">Manage Admins</a></li>
                     <li><a href="support-queue.html" class="active">Support Queue</a></li>
                     <li><a href="profile-management.html">Profile Settings</a></li>
                     <li class="mt-4 border-t pt-3"><a href="#" class="sidebar-logout-btn text-crimson font-bold"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="align-middle mr-2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>Logout</a></li>
@@ -31,33 +32,14 @@
                     <p class="subtitle text-center mb-4">Respond to customer inquiries.</p>
 
                     <div id="support-queue-list" class="flex-col gap-1 mt-4">
-                        <!-- Ticket 1: Open -->
+                        <!-- This content is static but could be made dynamic -->
                         <div class="glass-panel p-4 flex-col">
                             <div class="flex-between mb-2">
                                 <h3 class="text-primary m-0">Booking Inquiry - BKG-1672531200000</h3>
                                 <span class="font-bold text-green">Open</span>
                             </div>
-                            <p class="text-muted mb-1"><strong>From:</strong> <span class="text-capitalize">user</span></p>
-                            <p class="text-muted mb-2"><strong>Received:</strong> 2 hours ago</p>
-                            <p class="mb-3">"Hi, I was wondering if it's possible to request an early check-in for my booking at Cozy Loft? Around 12 PM would be great. Thanks!"</p>
-                            <div class="flex-align-center flex-wrap gap-1 mt-auto border-t pt-3">
-                                <button class="btn btn-primary btn-glow w-fit">Reply</button>
-                                <button class="btn btn-outline w-fit">Mark as Resolved</button>
-                            </div>
-                        </div>
-
-                        <!-- Ticket 2: Resolved -->
-                        <div class="glass-panel p-4 flex-col" style="opacity: 0.6;">
-                            <div class="flex-between mb-2">
-                                <h3 class="text-primary m-0">Damage Report - BKG-1672444800000</h3>
-                                <span class="font-bold text-gold">Resolved</span>
-                            </div>
-                            <p class="text-muted mb-1"><strong>From:</strong> <span class="text-capitalize">another_user</span></p>
-                            <p class="text-muted mb-2"><strong>Received:</strong> 1 day ago</p>
-                            <p class="mb-3">"Hello, unfortunately, we accidentally broke a wine glass during our stay at the Azure Villa. Please let us know if there's anything we need to do."</p>
-                            <div class="flex-align-center flex-wrap gap-1 mt-auto border-t pt-3">
-                                <button class="btn btn-outline w-fit">View History</button>
-                            </div>
+                            <p class="text-muted mb-3">"Hi, I was wondering if it's possible to request an early check-in for my booking at Cozy Loft? Thanks!"</p>
+                            <div class="flex-align-center flex-wrap gap-1 mt-auto border-t pt-3"><button class="btn btn-primary btn-glow w-fit">Reply</button><button class="btn btn-outline w-fit">Mark as Resolved</button></div>
                         </div>
                     </div>
                 </div>

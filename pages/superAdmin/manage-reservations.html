@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Superadmin Dashboard | CozyCorner</title>
+    <title>Manage Reservations | CozyCorner</title>
     <link rel="stylesheet" href="../../assets/css/global.css">
     <link rel="stylesheet" href="../../assets/css/dashboard.css">
 </head>
@@ -16,8 +16,8 @@
         <div class="dashboard-layout">
             <aside class="sidebar">
                 <ul class="sidebar-menu">
-                    <li><a href="dashboard.html" class="active">Overview</a></li>
-                    <li><a href="manage-reservations.html">Reservations</a></li>
+                    <li><a href="dashboard.html">Overview</a></li>
+                    <li><a href="manage-reservations.html" class="active">Reservations</a></li>
                     <li><a href="manage-properties.html">Properties</a></li>
                     <li><a href="manage-admins.html">Manage Admins</a></li>
                     <li><a href="support-queue.html">Support Queue</a></li>
@@ -28,11 +28,9 @@
             
             <section class="dashboard-content">
                 <div class="card card-lg m-0 max-w-100">
-                    <h2 class="mb-4">Platform Overview</h2>
-                    <h3 class="text-primary mb-3">Recent Reservations</h3>
-                    <div id="admin-reservations-list" class="flex-col gap-1 mb-5"></div>
-                    <h3 class="text-primary mb-3 mt-5">Manage Properties</h3>
-                    <div id="admin-properties-grid" class="grid-auto-250"></div>
+                    <h2 class="mb-2">Manage All Reservations</h2>
+                    <p class="subtitle text-center mb-4">View, cancel, or delete booking records across the platform.</p>
+                    <div id="admin-reservations-list" class="flex-col gap-1 mt-4"></div>
                 </div>
             </section>
         </div>

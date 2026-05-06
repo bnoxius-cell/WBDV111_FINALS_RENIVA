@@ -1,6 +1,6 @@
 // Renders dynamic listing content, like trending properties and tickers
 
-import { getBookings, getProperties } from '../services/storage.js';
+import { getBookings, getProperties, getUsers } from '../services/storage.js';
 import { setupBookingButtons } from './booking.js';
 
 export const updateRecentTicker = () => {
@@ -129,4 +129,30 @@ export const renderAdminProperties = () => {
             </div>
         `).join('');
     }
+};
+
+export const renderSuperAdminUsers = () => {
+    const container = document.getElementById('manage-admins-list');
+    if (!container) return;
+
+    const allUsers = getUsers();
+    const adminUsers = allUsers.filter(u => u.role === 'admin');
+
+    if (adminUsers.length === 0) {
+        container.innerHTML = '<p class="text-center text-muted" style="grid-column: 1 / -1;">No admin accounts found.</p>';
+        return;
+    }
+
+    container.innerHTML = adminUsers.map(admin => `
+        <div class="glass-panel p-4 flex-col">
+            <div class="flex-between mb-2">
+                <h3 class="text-primary m-0">${admin.username}</h3>
+                <span class="text-muted" style="font-size: 0.9rem;">${admin.email}</span>
+            </div>
+            <p class="text-muted mb-3">Role: <span class="text-capitalize font-bold text-cyan">Admin</span></p>
+            <div class="flex-align-center flex-wrap gap-1 mt-auto border-t pt-3" style="justify-content: flex-end;">
+                <button class="btn btn-outline btn-danger w-fit remove-admin-btn" data-id="${admin.id}">Revoke Admin</button>
+            </div>
+        </div>
+    `).join('');
 };

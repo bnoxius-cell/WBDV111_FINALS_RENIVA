@@ -4,6 +4,7 @@ import { supabase } from './supabase-client.js';
 
 let bookingsCache = [];
 let propertiesCache = [];
+let usersCache = [];
 
 // Fetch everything from Supabase on page load
 export const fetchInitialData = async () => {
@@ -12,9 +13,14 @@ export const fetchInitialData = async () => {
 
     const { data: properties } = await supabase.from('properties').select('*');
     if (properties && properties.length > 0) propertiesCache = properties;
+
+    const { data: profiles } = await supabase.from('profiles').select('*');
+    if (profiles) usersCache = profiles;
 };
 
 export const getBookings = () => bookingsCache; // Keep synchronous for UI speed
+
+export const getUsers = () => usersCache;
 
 export const saveBooking = async (booking) => {
     const existingIndex = bookingsCache.findIndex(b => b.id === booking.id);
@@ -34,6 +40,14 @@ export const saveBooking = async (booking) => {
         bookingsCache.push(booking);
     }
     return { success: true };
+};
+
+export const deleteBooking = async (bookingId) => {
+    bookingsCache = bookingsCache.filter(b => b.id !== bookingId);
+    const { error } = await supabase.from('reservations').delete().eq('id', bookingId);
+    if (error) {
+        console.error("Error deleting booking:", error);
+    }
 };
 
 export const initProperties = async () => {
