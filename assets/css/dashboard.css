@@ -86,3 +86,26 @@
 @media (max-width: 768px) {
     .dashboard-layout { grid-template-columns: 1fr; }
 }
+
+/* =========================================
+   Grid Layout for Reservation Lists (User & Admin)
+   ========================================= */
+#upcoming-container,
+#past-container,
+#canceled-container,
+#dashboard-recent-bookings,
+#admin-reservations-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Ensure empty state messages span the full width of the grid */
+#upcoming-container > p,
+#past-container > p,
+#canceled-container > p,
+#dashboard-recent-bookings > p,
+#admin-reservations-list > p {
+    grid-column: 1 / -1;
+    width: 100%;
+}

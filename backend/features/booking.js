@@ -806,17 +806,17 @@ export const renderSupportQueue = () => {
     }
 
     queueContainer.innerHTML = bookingsWithNotes.slice().reverse().map(b => `
-        <div class="glass-panel p-4 flex-col">
+        <div class="glass-panel p-4 flex-col" ${b.noteResolved ? 'style="opacity: 0.6;"' : ''}>
             <div class="flex-between mb-2">
                 <h3 class="text-primary m-0">Booking Inquiry - ${b.id}</h3>
-                <span class="font-bold text-green">Open</span>
+                <span class="font-bold ${b.noteResolved ? 'text-gold' : 'text-green'}">${b.noteResolved ? 'Resolved' : 'Open'}</span>
             </div>
             <p class="text-muted mb-1"><strong>From:</strong> <span class="text-capitalize">${b.user}</span> &nbsp;|&nbsp; <strong>Property:</strong> ${b.property}</p>
             <p class="text-muted mb-2"><strong>Received:</strong> ${b.dateBooked}</p>
             <p class="mb-3">"${b.note}"</p>
             <div class="flex-align-center flex-wrap gap-1 mt-auto border-t pt-3">
-                <button class="btn btn-primary btn-glow w-fit">Reply</button>
-                <button class="btn btn-outline w-fit">Mark as Resolved</button>
+                <button class="btn btn-primary btn-glow w-fit reply-ticket-btn">Reply</button>
+                ${!b.noteResolved ? `<button class="btn btn-outline w-fit resolve-ticket-btn" data-id="${b.id}">Mark as Resolved</button>` : `<button class="btn btn-outline btn-danger w-fit delete-ticket-btn" data-id="${b.id}">Delete Ticket</button>`}
             </div>
         </div>
     `).join('');

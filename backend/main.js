@@ -265,6 +265,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // Promote Admin Logic (Super Admin)
+    const promoteAdminBtn = document.getElementById('promote-admin-btn');
+    if (promoteAdminBtn) {
+        promoteAdminBtn.addEventListener('click', async () => {
+            const usernameInput = document.getElementById('new-admin-username');
+            const username = usernameInput.value.trim();
+            if (!username) return showCustomAlert('Error', 'Please enter a username to promote.', 'error');
+            
+            const { getUsers, fetchInitialData } = await import('./services/storage.js');
+            const user = getUsers().find(u => u.username.toLowerCase() === username.toLowerCase());
+            
+            if (!user) return showCustomAlert('Not Found', 'User not found in the system.', 'error');
+            if (user.role === 'admin' || user.role === 'superadmin') return showCustomAlert('Notice', 'User is already an administrator.', 'error');
+            
+            const { updateUserRole } = await import('./services/auth-service.js');
+            await updateUserRole(user.id, 'admin');
+            await fetchInitialData(); // Refetch cache
+            renderSuperAdminUsers(); // Instantly update UI list
+            usernameInput.value = '';
+            showCustomAlert('Promoted', `${username} has been promoted to Admin.`, 'success');
+        });
+    }
+
     // Admin Delete Property Logic
     document.body.addEventListener('click', async (e) => {
         if (e.target.classList.contains('delete-property-btn')) {
@@ -301,6 +324,39 @@ document.addEventListener('DOMContentLoaded', async () => {
                 renderAdminBookings();
                 showCustomAlert('Record Deleted', 'The booking record has been permanently deleted.', 'success');
             }
+        }
+
+        // Support Queue Logic
+        if (e.target.classList.contains('resolve-ticket-btn')) {
+            const bookingId = e.target.getAttribute('data-id');
+            const confirmed = await showCustomConfirm("Resolve Ticket", "Are you sure you want to mark this ticket as resolved?");
+            if (confirmed) {
+                const booking = getBookings().find(b => b.id === bookingId);
+                if (booking) {
+                    booking.noteResolved = true;
+                    await saveBooking(booking);
+                    renderSupportQueue();
+                    showCustomAlert('Resolved', 'Support ticket marked as resolved.', 'success');
+                }
+            }
+        }
+
+        if (e.target.classList.contains('delete-ticket-btn')) {
+            const bookingId = e.target.getAttribute('data-id');
+            const confirmed = await showCustomConfirm("Delete Ticket", "Remove this resolved ticket from the queue?");
+            if (confirmed) {
+                const booking = getBookings().find(b => b.id === bookingId);
+                if (booking) {
+                    booking.note = ''; // Clear note to remove from queue
+                    booking.noteResolved = false;
+                    await saveBooking(booking);
+                    renderSupportQueue();
+                }
+            }
+        }
+
+        if (e.target.classList.contains('reply-ticket-btn')) {
+            showCustomAlert('Reply Interface', 'This action would open your mailing client or internal messaging system to reply to the guest. (Prototype Feature)', 'success');
         }
 
         // Superadmin: Remove Admin Logic

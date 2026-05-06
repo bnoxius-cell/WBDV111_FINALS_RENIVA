@@ -28,8 +28,16 @@
             
             <section class="dashboard-content">
                 <div class="card card-lg m-0 max-w-100">
-                    <h2 class="mb-2">Manage Admins</h2>
-                    <p class="subtitle text-center mb-4">Review and manage administrator accounts.</p>
+                    <div class="flex-between mb-4 flex-wrap gap-1">
+                        <div>
+                            <h2 class="mb-0 text-left">Manage Admins</h2>
+                            <p class="subtitle text-left m-0">Review and manage administrator accounts.</p>
+                        </div>
+                        <div class="flex-align-center gap-1">
+                            <input type="text" id="new-admin-username" class="form-control mb-0" placeholder="Enter exact username..." style="min-width: 200px; padding: 0.5rem 1rem;">
+                            <button id="promote-admin-btn" class="btn btn-primary btn-glow w-fit" style="white-space: nowrap;">Promote User</button>
+                        </div>
+                    </div>
                     <div id="manage-admins-list" class="grid-auto-250 mt-4"></div>
                 </div>
             </section>
