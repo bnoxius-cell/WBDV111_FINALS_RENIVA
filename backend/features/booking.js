@@ -89,7 +89,12 @@ export const renderUserBookings = () => {
             
             const propertyInfo = props.find(p => p.name === b.property);
             const guestText = propertyInfo ? ` | Recommended: ${propertyInfo.guests} person(s)` : '';
-            const bedText = propertyInfo && propertyInfo.beds ? ` | ${propertyInfo.beds}` : '';
+            let bedText = '';
+            if (propertyInfo && propertyInfo.beds) {
+                const beds = propertyInfo.beds;
+                const bedsDisplay = !isNaN(beds) && Number(beds) > 0 ? `${beds} bedroom${Number(beds) !== 1 ? 's' : ''}` : beds;
+                bedText = ` | ${bedsDisplay}`;
+            }
             const ratingText = propertyInfo ? ` | Avg Rating: ★ ${propertyInfo.rating > 0 ? propertyInfo.rating.toFixed(1) : 'New'}` : '';
 
             let durationText = '';
